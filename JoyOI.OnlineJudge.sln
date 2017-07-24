@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26711.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E126AED6-457B-468D-B51A-C6B1C8461BF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.Models", "JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj", "{469856FA-3348-4A5F-9443-FC60BE6870A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{469856FA-3348-4A5F-9443-FC60BE6870A5} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {637C8887-F52D-46D0-9DE6-E766C71A46C3}
+	EndGlobalSection
+EndGlobal
