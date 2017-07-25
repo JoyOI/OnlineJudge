@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -6,8 +7,11 @@ namespace JoyOI.OnlineJudge.Models
     {
         public Guid Id { get; set; }
 
+        [MaxLength(32)]
+
         public string Username { get; set; }
 
+        [MaxLength(64)]
         public string Password { get; set; }
 
         public bool IsInUse { get; set; }
