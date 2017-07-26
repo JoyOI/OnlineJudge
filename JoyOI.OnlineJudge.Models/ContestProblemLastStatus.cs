@@ -75,8 +75,8 @@ namespace JoyOI.OnlineJudge.Models
         /// <summary>
         /// Gets or sets the point #2.
         /// </summary>
-        /// <value>The point2.</value>
-        public int Point #2 { get; set; }
+        /// <value>The point #2.</value>
+        public int Point2 { get; set; }
 
         /// <summary>
         /// Gets or sets the point #3.
