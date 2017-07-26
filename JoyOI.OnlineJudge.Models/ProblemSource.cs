@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace JoyOI.OnlineJudge.Models
+﻿namespace JoyOI.OnlineJudge.Models
 {
+    /// <summary>
+    /// Problem source.
+    /// </summary>
     public enum ProblemSource
     {
         Local,
