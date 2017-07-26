@@ -36,7 +36,14 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The identifier.</value>
         [MaxLength(128)]
-        public string Id { get; set; }
+		public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the domain name.
+        /// </summary>
+        /// <value>The domain.</value>
+		[MaxLength(256)]
+		public string Domain { get; set; }
 
         /// <summary>
         /// Gets or sets the title.
