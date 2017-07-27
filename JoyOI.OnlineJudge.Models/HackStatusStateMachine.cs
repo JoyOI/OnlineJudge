@@ -19,7 +19,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the status.
         /// </summary>
         /// <value>The status.</value>
-        public virtual JudgeStatus Status { get; set; }
+        public virtual HackStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the state machine identifier.

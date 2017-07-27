@@ -101,7 +101,12 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the source.
         /// </summary>
         /// <value>The source.</value>
-        [MaxLength(64)]
-        public string Source { get; set; }
+        public ProblemSource Source { get; set; }
+
+        /// <summary>
+        /// Gets or sets the difficulty.
+        /// </summary>
+        /// <value>The difficulty.</value>
+        public int Difficulty { get; set; }
     }
 }

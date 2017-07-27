@@ -95,6 +95,13 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The time span #2.</value>
         public TimeSpan TimeSpan2 { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this
+        /// <see cref="T:JoyOI.OnlineJudge.Models.ContestProblemLastStatus"/> is locked.
+        /// </summary>
+        /// <value><c>true</c> if is locked; otherwise, <c>false</c>.</value>
+        public bool IsLocked { get; set; }
         #endregion
     }
 }
