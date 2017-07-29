@@ -120,6 +120,12 @@ namespace JoyOI.OnlineJudge.Models
         public DbSet<TestCase> TestCases { get; set; }
 
         /// <summary>
+        /// Gets or sets the test case buy logs
+        /// </summary>
+        /// <value>The test cases buy logs.</value>
+        public DbSet<TestCaseBuyLog> TestCaseBuyLogs { get; set; }
+
+        /// <summary>
         /// Gets or sets the virtual judge users.
         /// </summary>
         /// <value>The virtual judge users.</value>

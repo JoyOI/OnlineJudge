@@ -32,6 +32,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the tags, e.g. "DP:Linear", "Others:Force".
         /// </summary>
         /// <value>The tags.</value>
+        [MaxLength(1024)]
         public string Tags { get; set; }
 
         /// <summary>

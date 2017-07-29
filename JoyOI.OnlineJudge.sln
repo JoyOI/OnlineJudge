@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.26711.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E126AED6-457B-468D-B51A-C6B1C8461BF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.Models", "JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj", "{469856FA-3348-4A5F-9443-FC60BE6870A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.Models", "JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj", "{469856FA-3348-4A5F-9443-FC60BE6870A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.WebApi", "src\JoyOI.OnlineJudge.WebApi\JoyOI.OnlineJudge.WebApi.csproj", "{5F8A2C1D-CB77-4553-B523-7EF5EF190682}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +19,17 @@ Global
 		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{469856FA-3348-4A5F-9443-FC60BE6870A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F8A2C1D-CB77-4553-B523-7EF5EF190682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F8A2C1D-CB77-4553-B523-7EF5EF190682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F8A2C1D-CB77-4553-B523-7EF5EF190682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F8A2C1D-CB77-4553-B523-7EF5EF190682}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{469856FA-3348-4A5F-9443-FC60BE6870A5} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
+		{5F8A2C1D-CB77-4553-B523-7EF5EF190682} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {637C8887-F52D-46D0-9DE6-E766C71A46C3}

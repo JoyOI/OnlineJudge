@@ -58,5 +58,15 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The contest.</value>
         public virtual Contest Contest { get; set; }
+
+        /// <summary>
+        /// Gets or sets the input size in byte
+        /// </summary>
+        public ulong InputSizeInByte { get; set; }
+
+        /// <summary>
+        /// Gets or sets the output size in byte
+        /// </summary>
+        public ulong OutputSizeInByte { get; set; }
     }
 }
