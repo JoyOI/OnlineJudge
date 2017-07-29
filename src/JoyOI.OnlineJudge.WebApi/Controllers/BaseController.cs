@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using JoyOI.ManagementService.SDK;
 using JoyOI.OnlineJudge.Models;
+using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
 using Newtonsoft.Json;
 
@@ -15,6 +17,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
 {
     public class BaseController : BaseController<OnlineJudgeContext, User, Guid>
     {
+        public IcM IcM { get; set; }
+
+        [Inject]
+        public ManagementServiceClient ManagementService { get; set; }
+
         public static Expression<Func<T, bool>> ContainsWhere<T>(Expression<Func<T, string>> propSelector, IEnumerable<string> matches)
         {
             if (matches == null || matches.Count() < 1)
@@ -54,19 +61,22 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             };
         }
 
-        public Task<ApiResult<T>> Result<T>(T result, int code=  200)
+        public ApiResult<T> Result<T>(T result, int code=  200)
         {
-            return Task.FromResult(new ApiResult<T> { code = code, data = result });
+            Response.StatusCode = code;
+            return new ApiResult<T> { code = code, data = result };
         }
 
-        public Task<ApiResult<T>> Result<T>(int code, string msg)
+        public ApiResult<T> Result<T>(int code, string msg)
         {
-            return Task.FromResult(new ApiResult<T> { code = code, msg = msg });
+            Response.StatusCode = code;
+            return new ApiResult<T> { code = code, msg = msg };
         }
 
-        public Task<ApiResult> Result(int code, string msg)
+        public ApiResult Result(int code, string msg)
         {
-            return Task.FromResult(new ApiResult { code = code, msg = msg });
+            Response.StatusCode = code;
+            return new ApiResult { code = code, msg = msg };
         }
 
         public void PatchEntity<T>(string json, T entity)

@@ -102,6 +102,12 @@ namespace JoyOI.OnlineJudge.Models
         public DbSet<ProtectedProblemIdPrefix> ProtectedProblemIdPrefixes { get; set; }
 
         /// <summary>
+        /// Gets or sets the shared validators
+        /// </summary>
+        /// <value>The shared validators</value>
+        public DbSet<SharedValidator> SharedValidators { get; set; }
+
+        /// <summary>
         /// Gets or sets the state machines.
         /// </summary>
         /// <value>The state machines.</value>
@@ -228,6 +234,11 @@ namespace JoyOI.OnlineJudge.Models
             builder.Entity<ProtectedProblemIdPrefix>(e =>
             {
                 e.HasKey(x => x.Value);
+            });
+
+            builder.Entity<SharedValidator>(e =>
+            {
+                e.HasIndex(x => x.IsDefault);
             });
 
             builder.Entity<SubJudgeStatus>(e =>
