@@ -55,6 +55,12 @@ namespace JoyOI.OnlineJudge.Models
         public Guid? ValidatorBlobId { get; set; }
 
         /// <summary>
+        /// Gets or sets the validator error
+        /// </summary>
+        /// <value>The validator error</value>
+        public string ValidatorError { get; set; }
+
+        /// <summary>
         /// Gets or sets the standard code.
         /// </summary>
         /// <value>The standard code.</value>
@@ -66,6 +72,12 @@ namespace JoyOI.OnlineJudge.Models
 		/// <value>The standard language.</value>
 		[MaxLength(16)]
         public string StandardLanguage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the standard program error
+        /// </summary>
+        /// <value>The standard program error</value>
+        public string StandardError { get; set; }
 
         /// <summary>
         /// Gets or sets the standard BLOB identifier.
@@ -91,6 +103,12 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The range BLOB identifier.</value>
         public Guid? RangeBlobId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the range validator error
+        /// </summary>
+        /// <value>The range validator error</value>
+        public string RangeError { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="T:JoyOI.OnlineJudge.Models.Problem"/> is visiable.

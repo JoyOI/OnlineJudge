@@ -164,6 +164,7 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Duration);
 				e.HasIndex(x => x.Domain);
 				e.HasIndex(x => x.Type);
+                e.HasIndex(x => x.Title).ForMySqlIsSpatial();
             });
 
             builder.Entity<ContestProblem>(e =>
@@ -190,7 +191,7 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Domain);
 				e.HasIndex(x => x.Level);
 				e.HasIndex(x => x.Point);
-				e.HasIndex(x => x.Name);
+				e.HasIndex(x => x.Name).ForMySqlIsFullText();
                 e.HasIndex(x => x.Type);
             });
 
@@ -225,9 +226,9 @@ namespace JoyOI.OnlineJudge.Models
 
             builder.Entity<Problem>(e =>
 			{
-				e.HasIndex(x => x.Title);
+				e.HasIndex(x => x.Title).ForMySqlIsFullText();
 				e.HasIndex(x => x.Source);
-				e.HasIndex(x => x.Tags);
+				e.HasIndex(x => x.Tags).ForMySqlIsFullText();
                 e.HasIndex(x => x.Difficulty);
             });
 

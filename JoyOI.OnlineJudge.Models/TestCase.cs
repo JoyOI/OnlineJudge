@@ -62,11 +62,11 @@ namespace JoyOI.OnlineJudge.Models
         /// <summary>
         /// Gets or sets the input size in byte
         /// </summary>
-        public ulong InputSizeInByte { get; set; }
+        public int InputSizeInByte { get; set; }
 
         /// <summary>
         /// Gets or sets the output size in byte
         /// </summary>
-        public ulong OutputSizeInByte { get; set; }
+        public int OutputSizeInByte { get; set; }
     }
 }

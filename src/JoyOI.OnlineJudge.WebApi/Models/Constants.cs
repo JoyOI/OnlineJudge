@@ -20,9 +20,11 @@
                 case "C":
                     return ".c";
                 case "C++":
-                case "C++ 11":
-                case "C++ 14":
                     return ".cpp";
+                case "C++ 11":
+                    return "11.cpp";
+                case "C++ 14":
+                    return "14.cpp";
                 case "Python":
                     return ".py";
                 case "C#":
@@ -39,9 +41,9 @@
         // Claims
         public const string MasterOrHigherRoles = "Root, Master";
         public const string ProblemEditPermission = "Edit Problem";
+        public const string ContestEditPermission = "Edit Contest";
 
         // StateMachine
-        public const string CompileValidatorStateMachine = "CompileValidatorStateMachine";
-
+        public const string CompileOnlyStateMachine = "CompileValidatorStateMachine";
     }
 }
