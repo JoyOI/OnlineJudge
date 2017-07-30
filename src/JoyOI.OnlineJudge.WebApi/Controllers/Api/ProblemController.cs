@@ -305,9 +305,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Test Case Purchase
-        [HttpPut("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/Purchase")]
-        [HttpPost("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/Purchase")]
-        [HttpPatch("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/Purchase")]
+        [HttpPut("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPost("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPatch("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
         public async Task<ApiResult> PutTestCasePurchase(string problemId, Guid id, CancellationToken token)
         {
             // 判断是否已经购买
