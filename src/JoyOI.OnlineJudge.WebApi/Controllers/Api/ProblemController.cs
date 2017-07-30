@@ -81,11 +81,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpPatch("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
         public async Task<ApiResult> Patch(string id, [FromBody]string value, CancellationToken token)
         {
-            if (User.Current == null 
-                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles) 
-                && await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id 
-                    && x.ClaimType == Constants.ProblemEditPermission
-                    && x.ClaimValue == id, token))
+            if (!await HasPermissionToProblemAsync(id, token))
             {
                 return Result(401, "No Permission");
             }
@@ -151,11 +147,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpDelete("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
         public async Task<ApiResult> Delete(string id, CancellationToken token)
         {
-            if (User.Current == null
-               || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
-               && await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
-                   && x.ClaimType == Constants.ProblemEditPermission
-                   && x.ClaimValue == id, token))
+            if (!await HasPermissionToProblemAsync(id, token))
             {
                 return Result(401, "No Permission");
             }
@@ -210,7 +202,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpPut("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase")]
         public async Task<ApiResult<Guid>> PutTestCase(string problemId, [FromBody] TestCaseUpload value, CancellationToken token)
         {
-            if (await HasPermissionToProblemAsync(problemId, token))
+            if (!await HasPermissionToProblemAsync(problemId, token))
             {
                 return Result<Guid>(401, "No Permission");
             }
@@ -346,18 +338,18 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             => DB.Problems.AnyAsync(x => x.Id == problemId && x.IsVisiable, token);
 
         private async Task<bool> HasPermissionToProblemAsync(string problemId, CancellationToken token = default(CancellationToken))
-            => User.Current == null
+            => !(User.Current == null
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
-               && await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
+               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
-                   && x.ClaimValue == problemId);
+                   && x.ClaimValue == problemId));
 
         private async Task<bool> HasPermissionToContestAsync(string contestId, CancellationToken token = default(CancellationToken))
-            => User.Current == null
+            => !(User.Current == null
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
-               && await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
+               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ContestEditPermission
-                   && x.ClaimValue == contestId);
+                   && x.ClaimValue == contestId));
 
         private async Task CompileAsync(string id, string code, string language, CancellationToken token)
         {
