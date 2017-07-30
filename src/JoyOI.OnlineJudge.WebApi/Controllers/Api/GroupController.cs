@@ -13,6 +13,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     [Route("api/[controller]")]
     public class GroupController : BaseController
     {
+        #region Group
         [HttpGet("all")]
         public Task<ApiResult<PagedResult<IEnumerable<Group>>>> Get(GroupType? type, string name, int? page, CancellationToken token)
         {
@@ -78,13 +79,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             FilterEntity(value);
             value.Id = id;
+            value.CachedMemberCount = 1;
             DB.Groups.Add(value);
 
             DB.GroupMembers.Add(new GroupMember
             {
                 CreatedTime = DateTime.Now,
                 GroupId = value.Id,
-                Status = GroupJoinRequestStatus.Approved,
+                Status = GroupMemberStatus.Approved,
                 UserId = User.Current.Id
             });
 
@@ -111,8 +113,113 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(200, "Delete Succeeded");
             }
         }
+        #endregion
+
+        #region Group Member
+        [HttpGet("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/member/all")]
+        public Task<ApiResult<PagedResult<IEnumerable<GroupMember>>>> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)
+        {
+            IQueryable<GroupMember> ret = DB.GroupMembers
+                .Where(x => x.GroupId == groupId);
+
+            if (status.HasValue)
+            {
+                ret = ret.Where(x => x.Status == status.Value);
+            }
+
+            ret = ret.OrderBy(x => x.CreatedTime);
+
+            if (!page.HasValue)
+            {
+                page = 1;
+            }
+
+            return Paged(ret, page.Value, 20, token);
+        }
+        
+        [HttpPut("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/member/{userId:Guid?}")]
+        public async Task<ApiResult> PutMember(string groupId, Guid? userId, [FromBody] GroupMember value, CancellationToken token)
+        {
+            if (!await DB.Groups.AnyAsync(x => x.Id == groupId, token))
+            {
+                return Result(404, "Group Not Found");
+            }
+            else if (userId.HasValue && userId.Value != User.Current.Id && !await HasPermissionToGroupAsync(groupId))
+            {
+                return Result(401, "No permission");
+            }
+            else
+            {
+                FilterEntity(value);
+                value.GroupId = groupId;
+                if (userId.HasValue)
+                {
+                    value.UserId = userId.Value;
+                    value.Status = GroupMemberStatus.Approved;
+                }
+                else
+                {
+                    value.UserId = User.Current.Id;
+                }
+
+                value.CreatedTime = DateTime.Now;
+                DB.GroupMembers.Add(value);
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Put Succeeded");
+            }
+        }
+
+        [HttpPost("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/member/{userId:Guid}")]
+        [HttpPatch("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/member/{userId:Guid}")]
+        public async Task<ApiResult> PatchMember(string groupId, Guid userId, [FromBody] string value, CancellationToken token)
+        {
+            if (!await HasPermissionToGroupAsync(groupId, token))
+            {
+                return Result(401, "No permission");
+            }
+
+            var groupMember = await DB.GroupMembers.SingleOrDefaultAsync(x => x.GroupId == groupId && x.UserId == userId, token);
+            if (groupMember == null)
+            {
+                return Result(404, "Member Not Found");
+            }
+
+            PatchEntity(value, groupMember);
+            await DB.SaveChangesAsync(token);
+            return Result(200, "Patch Succeeded");
+        }
+
+        [HttpDelete("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/member/{userId:Guid?}")]
+        public async Task<ApiResult> DeleteMember(string groupId, Guid? userId, CancellationToken token)
+        {
+            if (userId.HasValue && userId.Value != User.Current.Id && !await HasPermissionToGroupAsync(groupId, token))
+            {
+                return Result(401, "No permission");
+            }
+
+            if (!userId.HasValue)
+            {
+                userId = User.Current.Id;
+            }
+
+            if (await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.ClaimValue == groupId && x.UserId == userId.Value, token))
+            {
+                return Result(400, "Cannot remove an owner from the group");
+            }
+
+            await DB.GroupMembers
+                .Where(x => x.UserId == userId.Value)
+                .Where(x => x.GroupId == groupId)
+                .DeleteAsync(token);
+
+            return Result(200, "Delete succeeded");
+        }
+        #endregion
 
         #region Private Functions
+        private Task<bool> IsMemberOfGroup(string groupId, Guid userId, CancellationToken token)
+            => DB.GroupMembers.AnyAsync(x => x.GroupId == groupId && x.UserId == userId, token);
+
         private async Task<bool> HasPermissionToGroupAsync(string groupId, CancellationToken token = default(CancellationToken))
             => !(User.Current == null
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)

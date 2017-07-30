@@ -7,7 +7,7 @@ namespace JoyOI.OnlineJudge.Models
     /// <summary>
     /// Group join request status.
     /// </summary>
-    public enum GroupJoinRequestStatus
+    public enum GroupMemberStatus
     {
         Pending,
         Approved,
@@ -62,7 +62,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the status.
         /// </summary>
         /// <value>The status.</value>
-        public GroupJoinRequestStatus Status { get; set; }
+        public GroupMemberStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the feedback.
