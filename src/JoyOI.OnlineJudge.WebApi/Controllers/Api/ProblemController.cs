@@ -60,7 +60,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 page = 1;
             }
 
-            return await Paged(ret, page.Value, 100, token);
+            return await Paged(ret.OrderBy(x => x.CreatedTime), page.Value, 100, token);
         }
         
         [HttpGet("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]

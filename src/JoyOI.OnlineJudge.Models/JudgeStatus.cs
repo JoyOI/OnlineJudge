@@ -60,7 +60,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the time.
         /// </summary>
         /// <value>The time.</value>
-        public DateTime Time { get; set; }
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the code.

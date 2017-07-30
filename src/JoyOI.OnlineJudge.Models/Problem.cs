@@ -141,5 +141,12 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The cached accepted count.</value>
         [Readonly]
         public int CachedAcceptedCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the created time.
+        /// </summary>
+        /// <value>The created time</value>
+        [Readonly]
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
     }
 }

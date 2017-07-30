@@ -216,7 +216,7 @@ namespace JoyOI.OnlineJudge.Models
 
             builder.Entity<JudgeStatus>(e =>
 			{
-				e.HasIndex(x => x.Time);
+				e.HasIndex(x => x.CreatedTime);
 				e.HasIndex(x => x.Result);
                 e.HasIndex(x => x.Language);
 			});
@@ -227,11 +227,12 @@ namespace JoyOI.OnlineJudge.Models
             });
 
             builder.Entity<Problem>(e =>
-			{
-				e.HasIndex(x => x.Title).ForMySqlIsFullText();
-				e.HasIndex(x => x.Source);
-				e.HasIndex(x => x.Tags).ForMySqlIsFullText();
+            {
+                e.HasIndex(x => x.CreatedTime);
                 e.HasIndex(x => x.Difficulty);
+                e.HasIndex(x => x.Source);
+                e.HasIndex(x => x.Tags).ForMySqlIsFullText();
+                e.HasIndex(x => x.Title).ForMySqlIsFullText();
             });
 
             builder.Entity<ProtectedProblemIdPrefix>(e =>

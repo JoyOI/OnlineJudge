@@ -56,7 +56,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the created time.
         /// </summary>
         /// <value>The created time.</value>
-        public DateTime CreatedTime { get; set; }
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the status.

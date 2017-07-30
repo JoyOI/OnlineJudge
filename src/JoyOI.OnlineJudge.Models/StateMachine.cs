@@ -19,7 +19,7 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The created time.</value>
         [Readonly]
-        public DateTime CreatedTime { get; set; }
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the name.
