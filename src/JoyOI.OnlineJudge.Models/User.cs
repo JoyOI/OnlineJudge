@@ -13,7 +13,8 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the registery time.
         /// </summary>
         /// <value>The registery time.</value>
-		public DateTime RegisteryTime { get; set; }
+        [Readonly]
+        public DateTime RegisteryTime { get; set; }
 
         /// <summary>
         /// Gets or sets the nickname.
@@ -52,13 +53,15 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the active time.
         /// </summary>
         /// <value>The active time.</value>
-		public DateTime ActiveTime { get; set; } = DateTime.Now;
+        [Readonly]
+        public DateTime ActiveTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the last login time.
         /// </summary>
         /// <value>The last login time.</value>
-		public DateTime LastLoginTime { get; set; } = DateTime.Now;
+        [Readonly]
+        public DateTime LastLoginTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the passed problems.

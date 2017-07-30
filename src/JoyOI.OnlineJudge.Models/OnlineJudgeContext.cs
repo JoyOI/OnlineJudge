@@ -64,7 +64,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the group join requests.
         /// </summary>
         /// <value>The group join requests.</value>
-        public DbSet<GroupJoinRequest> GroupJoinRequests { get; set; }
+        public DbSet<GroupMember> GroupJoinRequests { get; set; }
 
         /// <summary>
         /// Gets or sets the hack statuses.
@@ -196,8 +196,9 @@ namespace JoyOI.OnlineJudge.Models
                 e.HasIndex(x => x.Type);
             });
 
-            builder.Entity<GroupJoinRequest>(e =>
+            builder.Entity<GroupMember>(e =>
             {
+                e.HasKey(x => new { x.GroupId, x.UserId });
 				e.HasIndex(x => x.CreatedTime);
 				e.HasIndex(x => x.Status);
             });

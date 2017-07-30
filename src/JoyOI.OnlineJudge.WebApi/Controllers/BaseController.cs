@@ -88,7 +88,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             foreach (var x in keys)
             {
                 var propertyInfo = type.GetProperties().SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
-                if (propertyInfo == null)
+                if (propertyInfo == null || !propertyInfo.PropertyType.IsValueType || propertyInfo.GetCustomAttribute<ReadonlyAttribute>() != null)
                 {
                     continue;
                 }

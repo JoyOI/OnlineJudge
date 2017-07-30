@@ -15,6 +15,7 @@ namespace JoyOI.OnlineJudge.Models
 
         public virtual User User { get; set; }
 
+        [Readonly]
         public DateTime Time { get; set; }
     }
 }

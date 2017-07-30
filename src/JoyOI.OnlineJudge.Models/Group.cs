@@ -63,24 +63,28 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the created time.
         /// </summary>
         /// <value>The created time.</value>
+        [Readonly]
         public DateTime CreatedTime { get; set; }
 
         /// <summary>
         /// Gets or sets the point.
         /// </summary>
         /// <value>The point.</value>
+        [Readonly]
         public int Point { get; set; }
 
         /// <summary>
         /// Gets or sets the level.
         /// </summary>
         /// <value>The level.</value>
+        [Readonly]
         public int Level { get; set; }
 
         /// <summary>
         /// Gets or sets the cached member count.
         /// </summary>
         /// <value>The cached member count.</value>
+        [Readonly]
         public long CachedMemberCount { get; set; }
 
         /// <summary>

@@ -127,5 +127,19 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The difficulty.</value>
         public int Difficulty { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cached submit count.
+        /// </summary>
+        /// <value>The cached submit count.</value>
+        [Readonly]
+        public int CachedSubmitCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cached accepted count.
+        /// </summary>
+        /// <value>The cached accepted count.</value>
+        [Readonly]
+        public int CachedAcceptedCount { get; set; }
     }
 }

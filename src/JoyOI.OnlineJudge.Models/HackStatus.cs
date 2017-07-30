@@ -39,7 +39,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the status.
         /// </summary>
         /// <value>The status.</value>
-        public JudgeStatus Status { get; set; }
+        public virtual JudgeStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the time.

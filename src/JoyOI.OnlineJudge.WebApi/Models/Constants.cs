@@ -42,6 +42,7 @@
         public const string MasterOrHigherRoles = "Root, Master";
         public const string ProblemEditPermission = "Edit Problem";
         public const string ContestEditPermission = "Edit Contest";
+        public const string GroupEditPermission = "Edit Group";
 
         // StateMachine
         public const string CompileOnlyStateMachine = "CompileValidatorStateMachine";

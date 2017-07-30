@@ -35,6 +35,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the register time.
         /// </summary>
         /// <value>The register time.</value>
+        [Readonly]
         public DateTime RegisterTime { get; set; }
 
         /// <summary>

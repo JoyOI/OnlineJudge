@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -105,6 +106,15 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the banned languages.
         /// </summary>
         /// <value>The banned languages.</value>
-        public JsonObject<List<string>> BannedLanguages { get; set; } = "[]";
+        public string BannedLanguages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the banned languages array.
+        /// </summary>
+        /// <value>The banned languages array.</value>
+        public IEnumerable<string> BannedLanguagesArray
+        {
+            get => BannedLanguages.Split(',').Select(x => x.Trim()); 
+        }
     }
 }

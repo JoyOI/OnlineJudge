@@ -10,21 +10,15 @@ namespace JoyOI.OnlineJudge.Models
     public enum GroupJoinRequestStatus
     {
         Pending,
-        Accepted,
+        Approved,
         Rejected
     }
 
     /// <summary>
     /// Group join request.
     /// </summary>
-    public class GroupJoinRequest
+    public class GroupMember
     {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Gets or sets the group identifier.
         /// </summary>
