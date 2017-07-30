@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj" />
+    <ProjectReference Include="..\JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj" />
   </ItemGroup>
 
 </Project>
