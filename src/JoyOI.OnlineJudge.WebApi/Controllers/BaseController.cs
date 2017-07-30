@@ -97,5 +97,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 propertyInfo.SetValue(entity, value);
             }
         }
+
+        public void FilterEntity<T>(T entity)
+        {
+            var type = typeof(T);
+            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<ReadonlyAttribute>() != null))
+            {
+                x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
+            }
+        }
     }
 }

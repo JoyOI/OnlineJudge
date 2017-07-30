@@ -88,6 +88,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             else
             {
                 var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == id, token);
+                if (problem == null)
+                {
+                    return Result(404, "Not Found");
+                }
+
                 PatchEntity(value, problem);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
@@ -101,6 +106,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(403, "The problem id is already exists.");
             }
+
+            FilterEntity(value);
+            value.Id = id;
 
             // 处理比较器
             if (value.ValidatorBlobId.HasValue)
