@@ -12,12 +12,6 @@ namespace JoyOI.OnlineJudge.Models
     public class SubJudgeStatus
     {
         /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public Guid Id { get; set; }
-
-        /// <summary>
         /// Gets or sets the status identifier.
         /// </summary>
         /// <value>The status identifier.</value>
@@ -29,6 +23,12 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The status.</value>
         public virtual JudgeStatus Status { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sub id
+        /// </summary>
+        /// <value>The sub id</value>
+        public int SubId { get; set; }
 
         /// <summary>
         /// Gets or sets the result.

@@ -244,6 +244,7 @@ namespace JoyOI.OnlineJudge.Models
 
             builder.Entity<SubJudgeStatus>(e =>
 			{
+                e.HasKey(x => new { x.StatusId, x.SubId });
 				e.HasIndex(x => x.Result);
             });
 
