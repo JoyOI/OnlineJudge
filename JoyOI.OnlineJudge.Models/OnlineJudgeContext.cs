@@ -24,8 +24,9 @@ namespace JoyOI.OnlineJudge.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="T:JoyOI.OnlineJudge.Models.OnlineJudgeContext"/> class.
         /// </summary>
-        /// <param name="opt">Opt.</param>
-        public OnlineJudgeContext(DbContextOptions opt) : base(opt)
+        /// <param name="opt">Db context option.</param>
+        public OnlineJudgeContext(DbContextOptions opt) 
+            : base(opt)
         {
         }
 
@@ -129,7 +130,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the test case buy logs
         /// </summary>
         /// <value>The test cases buy logs.</value>
-        public DbSet<TestCaseBuyLog> TestCaseBuyLogs { get; set; }
+        public DbSet<TestCasePurchase> TestCasePurchases { get; set; }
 
         /// <summary>
         /// Gets or sets the virtual judge users.

@@ -173,7 +173,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
-        #region TestCase
+        #region Test Case
         [HttpGet("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/all")]
         public async Task<ApiResult<List<TestCase>>> GetTestCase(string problemid, TestCaseType? type, CancellationToken token)
         {
@@ -197,7 +197,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result<TestCase>(404, "Not Found");
             }
             else if (!await HasPermissionToProblemAsync(problemId, token)
-                || !await DB.TestCaseBuyLogs.AnyAsync(x => x.TestCaseId == id && x.UserId == User.Current.Id, token))
+                || !await DB.TestCasePurchases.AnyAsync(x => x.TestCaseId == id && x.UserId == User.Current.Id, token))
             {
                 return Result<TestCase>(401, "No Permission");
             }
@@ -304,6 +304,47 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Test Case Purchase
+        [HttpPut("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/Purchase")]
+        [HttpPost("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/Purchase")]
+        [HttpPatch("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/Purchase")]
+        public async Task<ApiResult> PutTestCasePurchase(string problemId, Guid id, CancellationToken token)
+        {
+            // 判断是否已经购买
+            if (await DB.TestCasePurchases.AnyAsync(x => x.TestCaseId == id && x.UserId == User.Current.Id, token))
+            {
+                return Result(400, "Already purchased");
+            }
+            else if (!await ProblemIsVisiableAsync(problemId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else
+            {
+                // TODO: 扣除积分
+                if (true == false)
+                {
+                    return Result(400, "Not enough point");
+                }
+                else
+                {
+                    DB.TestCasePurchases.Add(new TestCasePurchase
+                    {
+                        TestCaseId = id,
+                        Time = DateTime.Now,
+                        UserId = User.Current.Id
+                    });
+                    await DB.SaveChangesAsync(token);
+                    return Result(200, "Succeeded");
+                }
+            }
+        }
+        #endregion
+
+        #region Private Functions
+        private Task<bool> ProblemIsVisiableAsync(string problemId, CancellationToken token = default(CancellationToken))
+            => DB.Problems.AnyAsync(x => x.Id == problemId && x.IsVisiable, token);
+
         private async Task<bool> HasPermissionToProblemAsync(string problemId, CancellationToken token = default(CancellationToken))
             => User.Current == null
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
@@ -341,5 +382,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             await DB.SaveChangesAsync(token);
         }
+        #endregion
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JoyOI.OnlineJudge.Models
 {
-    public class TestCaseBuyLog
+    public class TestCasePurchase
     {
         [ForeignKey("TestCase")]
         public Guid TestCaseId { get; set; }
