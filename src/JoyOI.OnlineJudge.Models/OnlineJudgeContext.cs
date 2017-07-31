@@ -158,6 +158,12 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.IsVirtual);
             });
 
+            builder.Entity<Clarification>(e =>
+            {
+                e.HasIndex(x => x.Status);
+                e.HasIndex(x => x.CreatedTime);
+            });
+
             builder.Entity<Contest>(e =>
 			{
                 e.HasIndex(x => x.AttendPermission);
