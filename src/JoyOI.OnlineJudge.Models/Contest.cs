@@ -94,7 +94,8 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the password or team, for password, it should be the password string, for team, it should be the team identifier.
         /// </summary>
         /// <value>The password or team.</value>
-        public string PasswordOrTeam { get; set; }
+        [Hidden]
+        public string PasswordOrTeamId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the virtual mode has been disabled.
@@ -103,9 +104,16 @@ namespace JoyOI.OnlineJudge.Models
         public bool DisableVirtual { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the contest has been highlighted.
+        /// </summary>
+        /// <value><c>true</c> if highlighted; otherwise, <c>false</c>.</value>
+        public bool IsHighlighted { get; set; }
+
+        /// <summary>
         /// Gets or sets the banned languages.
         /// </summary>
         /// <value>The banned languages.</value>
+        [Hidden]
         public string BannedLanguages { get; set; }
 
         /// <summary>

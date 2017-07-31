@@ -16,6 +16,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         #region Group
         [HttpGet("all")]
+        [HttpGet("all/page/{page:int}")]
         public Task<ApiResult<PagedResult<IEnumerable<Group>>>> Get(GroupType? type, string name, int? page, CancellationToken token)
         {
             IQueryable<Group> ret = DB.Groups;

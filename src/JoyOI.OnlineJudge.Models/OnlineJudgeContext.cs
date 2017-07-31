@@ -170,6 +170,7 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Begin);
 				e.HasIndex(x => x.Duration);
 				e.HasIndex(x => x.Domain);
+                e.HasIndex(x => x.IsHighlighted);
 				e.HasIndex(x => x.Type);
                 e.HasIndex(x => x.Title).ForMySqlIsSpatial();
             });

@@ -46,6 +46,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         {
             var total = src.Count();
             var result = await src.Skip((currentPage - 1) * size).Take(size).ToListAsync(token);
+            var type = typeof(T);
+            var hiddenProperties = type.GetProperties().Where(x => x.GetCustomAttribute<HiddenAttribute>() != null);
+            foreach (var x in result)
+            {
+                foreach (var y in hiddenProperties)
+                {
+                    y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                }
+            }
             return new ApiResult<PagedResult<IEnumerable<T>>>
             {
                 code = 200,
@@ -102,6 +111,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         {
             var type = typeof(T);
             foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<ReadonlyAttribute>() != null))
+            {
+                x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
+            }
+        }
+
+        public void HideEntity<T>(T entity)
+        {
+            var type = typeof(T);
+            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<HiddenAttribute>() != null))
             {
                 x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
             }
