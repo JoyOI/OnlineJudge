@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -174,11 +175,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Test Case
-        [HttpGet("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/all")]
-        public async Task<ApiResult<List<TestCase>>> GetTestCase(string problemid, TestCaseType? type, CancellationToken token)
+        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/all")]
+        public async Task<ApiResult<List<TestCase>>> GetTestCase(string problemId, TestCaseType? type, CancellationToken token)
         {
             IQueryable<TestCase> ret = DB.TestCases
-                .Where(x => x.ProblemId == problemid);
+                .Where(x => x.ProblemId == problemId);
 
             if (type.HasValue)
             {
@@ -188,7 +189,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(await ret.ToListAsync(token));
         }
 
-        [HttpGet("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
         public async Task<ApiResult<TestCase>> GetTestCase(string problemId, Guid id, CancellationToken token)
         {
             var ret = await DB.TestCases.SingleOrDefaultAsync(x => x.ProblemId == problemId && x.Id == id, token);
@@ -207,7 +208,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPut("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase")]
+        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase")]
         public async Task<ApiResult<Guid>> PutTestCase(string problemId, [FromBody] TestCaseUpload value, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -235,8 +236,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPost("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
-        [HttpPatch("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpPost("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpPatch("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
         public async Task<ApiResult> PatchTestCase(string problemId, Guid id, [FromBody] string value, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -286,7 +287,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpDelete("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpDelete("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
         public async Task<ApiResult> DeleteTestCase(string problemId, Guid id, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -305,9 +306,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Test Case Purchase
-        [HttpPut("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
-        [HttpPost("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
-        [HttpPatch("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPost("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPatch("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
         public async Task<ApiResult> PutTestCasePurchase(string problemId, Guid id, CancellationToken token)
         {
             // 判断是否已经购买
@@ -337,6 +338,67 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     await DB.SaveChangesAsync(token);
                     return Result(200, "Succeeded");
                 }
+            }
+        }
+        #endregion
+
+        #region Claims
+        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/all")]
+        public async Task<ApiResult<List<IdentityUserClaim<Guid>>>> GetClaims(string problemId, CancellationToken token)
+        {
+            var ret = await DB.UserClaims
+                .Where(x => x.ClaimType == Constants.ProblemEditPermission)
+                .Where(x => x.ClaimValue == problemId)
+                .ToListAsync(token);
+            return Result(ret);
+        }
+
+        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim")]
+        public async Task<ApiResult> PutClaims(string problemId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        {
+            if (!await HasPermissionToProblemAsync(problemId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == problemId && x.ClaimType == Constants.ProblemEditPermission && x.UserId == value.UserId, token))
+            {
+                return Result(400, "Already exists");
+            }
+            else
+            {
+                DB.UserClaims.Add(new IdentityUserClaim<Guid>
+                {
+                    ClaimType = Constants.ProblemEditPermission,
+                    UserId = value.UserId,
+                    ClaimValue = problemId
+                });
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Succeeded");
+            }
+        }
+
+        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/{userId:Guid}")]
+        public async Task<ApiResult> DeleteClaim(Guid userId, string problemId, CancellationToken token)
+        {
+            if (!await HasPermissionToProblemAsync(problemId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == problemId && x.ClaimType == Constants.ProblemEditPermission && x.UserId == userId, token))
+            {
+                return Result(404, "Claim not found");
+            }
+            else if (userId == User.Current.Id)
+            {
+                return Result(400, "Cannot remove yourself");
+            }
+            else
+            {
+                await DB.UserClaims
+                    .Where(x => x.ClaimValue == problemId && x.ClaimType == Constants.ProblemEditPermission && x.UserId == userId)
+                    .DeleteAsync(token);
+
+                return Result(200, "Delete succeeded");
             }
         }
         #endregion

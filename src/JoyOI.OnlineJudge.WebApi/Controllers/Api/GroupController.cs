@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
@@ -213,6 +214,67 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .DeleteAsync(token);
 
             return Result(200, "Delete succeeded");
+        }
+        #endregion
+
+        #region Claims
+        [HttpGet("{problemid:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/all")]
+        public async Task<ApiResult<List<IdentityUserClaim<Guid>>>> GetClaims(string problemId, CancellationToken token)
+        {
+            var ret = await DB.UserClaims
+                .Where(x => x.ClaimType == Constants.ProblemEditPermission)
+                .Where(x => x.ClaimValue == problemId)
+                .ToListAsync(token);
+            return Result(ret);
+        }
+
+        [HttpPut("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim")]
+        public async Task<ApiResult> PutClaims(string groupId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        {
+            if (!await HasPermissionToGroupAsync(groupId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == value.UserId, token))
+            {
+                return Result(400, "Already exists");
+            }
+            else
+            {
+                DB.UserClaims.Add(new IdentityUserClaim<Guid>
+                {
+                    ClaimType = Constants.GroupEditPermission,
+                    UserId = value.UserId,
+                    ClaimValue = groupId
+                });
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Succeeded");
+            }
+        }
+
+        [HttpPut("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/{userId:Guid}")]
+        public async Task<ApiResult> DeleteClaim(Guid userId, string groupId, CancellationToken token)
+        {
+            if (!await HasPermissionToGroupAsync(groupId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == userId, token))
+            {
+                return Result(404, "Claim not found");
+            }
+            else if (userId == User.Current.Id)
+            {
+                return Result(400, "Cannot remove yourself");
+            }
+            else
+            {
+                await DB.UserClaims
+                    .Where(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == userId)
+                    .DeleteAsync(token);
+
+                return Result(200, "Delete succeeded");
+            }
         }
         #endregion
 
