@@ -47,12 +47,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             var total = src.Count();
             var result = await src.Skip((currentPage - 1) * size).Take(size).ToListAsync(token);
             var type = typeof(T);
-            var hiddenProperties = type.GetProperties().Where(x => x.GetCustomAttribute<HiddenAttribute>() != null);
+            var webapiAttributedProperty = type.GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null);
             foreach (var x in result)
             {
-                foreach (var y in hiddenProperties)
+                foreach (var y in webapiAttributedProperty)
                 {
-                    y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    var level = y.GetCustomAttribute<WebApiAttribute>().Level;
+                    if (level == FilterLevel.GetHidden || level == FilterLevel.GetEnumerateHidden)
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
                 }
             }
             return new ApiResult<PagedResult<IEnumerable<T>>>
@@ -73,6 +77,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         public ApiResult<T> Result<T>(T result, int code=  200)
         {
             Response.StatusCode = code;
+            var type = typeof(T);
+            var webapiAttributedProperties = type.GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null);
+            foreach (var x in webapiAttributedProperties)
+            {
+                var level = x.GetCustomAttribute<WebApiAttribute>().Level;
+                if (level == FilterLevel.GetHidden || level == FilterLevel.GetSingleHidden)
+                {
+                    x.SetValue(result, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
+                }
+            }
             return new ApiResult<T> { code = code, data = result };
         }
 
@@ -97,7 +111,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             foreach (var x in keys)
             {
                 var propertyInfo = type.GetProperties().SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
-                if (propertyInfo == null || !propertyInfo.PropertyType.IsValueType || propertyInfo.GetCustomAttribute<ReadonlyAttribute>() != null)
+                if (propertyInfo == null || !propertyInfo.PropertyType.IsValueType || propertyInfo.GetCustomAttribute<WebApiAttribute>() != null)
                 {
                     continue;
                 }

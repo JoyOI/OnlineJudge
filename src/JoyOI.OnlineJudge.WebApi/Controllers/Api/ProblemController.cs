@@ -94,7 +94,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchEntity(value, problem);
+                PatchFilter(value, problem);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }

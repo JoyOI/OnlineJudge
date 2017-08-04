@@ -75,6 +75,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         // POST api/values
         [HttpPost]
+        [HttpPatch]
         public void Post([FromBody]string value)
         {
         }
