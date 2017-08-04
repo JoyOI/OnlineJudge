@@ -124,18 +124,26 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         public void FilterEntity<T>(T entity)
         {
             var type = typeof(T);
-            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<ReadonlyAttribute>() != null))
+            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<WebApiAttribute>() != null))
             {
-                x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
+                var level = x.GetCustomAttribute<WebApiAttribute>().Level;
+                if (level != FilterLevel.CouldNotPatch)
+                {
+                    x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
+                }
             }
         }
 
         public void HideEntity<T>(T entity)
         {
             var type = typeof(T);
-            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<HiddenAttribute>() != null))
+            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<WebApiAttribute>() != null))
             {
-                x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
+                var level = x.GetCustomAttribute<WebApiAttribute>().Level;
+                if (level == FilterLevel.GetHidden || level == FilterLevel.GetSingleHidden)
+                {
+                    x.SetValue(entity, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
+                }
             }
         }
     }

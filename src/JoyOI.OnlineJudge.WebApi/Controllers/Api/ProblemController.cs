@@ -94,7 +94,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchFilter(value, problem);
+                PatchEntity(value, problem);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }
@@ -332,7 +332,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     DB.TestCasePurchases.Add(new TestCasePurchase
                     {
                         TestCaseId = id,
-                        Time = DateTime.Now,
+                        CreatedTime = DateTime.Now,
                         UserId = User.Current.Id
                     });
                     await DB.SaveChangesAsync(token);

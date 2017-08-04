@@ -18,7 +18,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the created time.
         /// </summary>
         /// <value>The created time.</value>
-        [Readonly]
+        [WebApi(FilterLevel.ReadOnly)]
         public DateTime CreatedTime { get; set; } = DateTime.Now;
 
         /// <summary>
