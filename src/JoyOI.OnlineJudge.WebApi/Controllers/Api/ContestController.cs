@@ -86,7 +86,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                var contest = DB.Contests
+                var contest = await DB.Contests
                     .SingleOrDefaultAsync(x => x.Id == id, token);
 
                 if (contest == null)
@@ -97,7 +97,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var fields = PatchEntity(contest, value);
                 if (fields.Contains(nameof(Contest.Begin)))
                 {
+                    if (contest.Begin < DateTime.Now)
+                    {
+                        return Result(400, "Invalid begin time");
+                    }
+                }
 
+                if (fields.Contains(nameof(Contest.Domain)) && !string.IsNullOrWhiteSpace(contest.Domain) && !await DB.Contests.AnyAsync(x => x.Domain == contest.Domain, token))
+                {
+                    return Result(400, "The domain is already existed.");
                 }
 
                 await DB.SaveChangesAsync(token);
@@ -120,6 +128,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(400, "The begin time is invalid.");
                 }
+                if (!string.IsNullOrWhiteSpace(contest.Domain) && await DB.Contests.AnyAsync(x => x.Domain == contest.Domain, token))
+                {
+                    return Result(400, "The domain is already existed.");
+                }
 
                 DB.Contests.Add(contest);
                 DB.UserClaims.Add(new IdentityUserClaim<Guid> { ClaimType = Constants.ContestEditPermission, ClaimValue = id, UserId = User.Current.Id });
@@ -130,8 +142,37 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ApiResult> Delete(string id, CancellationToken token)
         {
+            if (await DB.Contests.AnyAsync(x => x.Id == id, token))
+            {
+                return Result(400, "The contest id is already exists.");
+            }
+            else if (!await HasPermissionToContestAsync(id, token))
+            {
+                return Result(401, "No permission");
+            }
+            else
+            {
+                var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == id, token);
+                if (contest == null)
+                {
+                    return Result(404, "Contest not found");
+                }
+                else if (contest.Begin <= DateTime.Now)
+                {
+                    return Result(400, "Cannot remove a started contest.");
+                }
+                else
+                {
+                    await DB.UserClaims
+                        .Where(x => x.ClaimType == Constants.ContestEditPermission)
+                        .Where(x => x.ClaimValue == id)
+                        .DeleteAsync(token);
+
+                    return Result(200, "Delete succeeded");
+                }
+            }
         }
 
         #region Private Functions

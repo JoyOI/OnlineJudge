@@ -32,7 +32,7 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         }
 
         [Fact]
-        public void Patch_filter_tests()
+        public void Patch_filter_test()
         {
             var baseController = new BaseController();
             var entity = new TestModel
@@ -50,7 +50,7 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         }
 
         [Fact]
-        public void Get_single_without_root_tests()
+        public void Get_single_without_root_test()
         {
             var controller = new Mock<BaseController>();
             controller.Setup(x => x.IsRoot).Returns(false);
@@ -67,7 +67,7 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         }
 
         [Fact]
-        public void Get_single_within_root_tests()
+        public void Get_single_within_root_test()
         {
             var controller = new Mock<BaseController>();
             controller.Setup(x => x.IsRoot).Returns(true);
@@ -84,7 +84,7 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         }
 
         [Fact]
-        public void Get_patched_property_names()
+        public void Get_patched_property_names_test()
         {
             var baseController = new BaseController();
             var entity = new TestModel
@@ -102,13 +102,30 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         }
 
         [Fact]
-        public void Get_put_property_names()
+        public void Get_put_property_names_test()
         {
             var baseController = new BaseController();
             var fields = baseController.PutEntity<TestModel>("{ \"A\": 5, \"b\": \"123\" }").Fields;
 
             Assert.Equal(1, fields.Count());
             Assert.Equal("B", fields.First());
+        }
+
+        [Fact]
+        public void Patch_same_value_ignore_test()
+        {
+            var baseController = new BaseController();
+            var entity = new TestModel
+            {
+                A = 6,
+                B = "Hello World",
+                C = 123.456
+            };
+
+            var json = "{ \"a\": 6 }";
+            var changes = baseController.PatchEntity(entity, json);
+
+            Assert.Equal(0, changes.Count());
         }
     }
 }

@@ -152,8 +152,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 if (webapiAttribute != null && webapiAttribute.Level.HasFlag(FilterLevel.PatchDisabled))
                     continue;
 
-                property.SetValue(entity, property.GetValue(jsonToObject));
-                ret.Add(property.Name);
+                if (!property.GetValue(jsonToObject).Equals(property.GetValue(entity)))
+                {
+                    property.SetValue(entity, property.GetValue(jsonToObject));
+                    ret.Add(property.Name);
+                }
             }
 
             return ret;
