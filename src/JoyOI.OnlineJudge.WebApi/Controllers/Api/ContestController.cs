@@ -93,11 +93,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(404, "Contest not found");
                 }
+               
+                var fields = PatchEntity(contest, value);
+                if (fields.Contains(nameof(Contest.Begin)))
+                {
 
-                var dicionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(value);
-                
-                var changes = PatchEntity(contest, value);
-                if (changes.Contains(""))
+                }
 
                 await DB.SaveChangesAsync(token);
 
