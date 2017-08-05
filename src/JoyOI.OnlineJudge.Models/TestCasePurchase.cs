@@ -15,7 +15,7 @@ namespace JoyOI.OnlineJudge.Models
 
         public virtual User User { get; set; }
 
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public DateTime CreatedTime { get; set; }
     }
 }

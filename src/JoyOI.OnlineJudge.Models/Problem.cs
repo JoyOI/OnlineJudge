@@ -132,21 +132,21 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the cached submit count.
         /// </summary>
         /// <value>The cached submit count.</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public int CachedSubmitCount { get; set; }
 
         /// <summary>
         /// Gets or sets the cached accepted count.
         /// </summary>
         /// <value>The cached accepted count.</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public int CachedAcceptedCount { get; set; }
 
         /// <summary>
         /// Gets or sets the created time.
         /// </summary>
         /// <value>The created time</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public DateTime CreatedTime { get; set; } = DateTime.Now;
     }
 }

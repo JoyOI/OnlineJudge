@@ -2,13 +2,14 @@
 
 namespace JoyOI.OnlineJudge.Models
 {
+    [Flags]
     public enum FilterLevel
     {
-        ReadOnly,
-        CouldNotPatch,
-        GetHidden,
-        GetEnumerateHidden,
-        GetSingleHidden
+        GetListDisabled = 1,
+        GetSingleDisabled = 2,
+        GetNeedRoot = 4,
+        PutDisabled = 8,
+        PatchDisabled = 16
     }
 
     public class WebApiAttribute : Attribute

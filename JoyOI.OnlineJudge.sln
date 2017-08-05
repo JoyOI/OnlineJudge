@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.WebApi", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.Models", "src\JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj", "{38B57CB9-C24A-4DEB-8AC3-F8B26296C4CF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A66ED214-78F2-4494-A971-F9957A87A504}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.WebApi.Tests", "test\JoyOI.OnlineJudge.WebApi.Tests\JoyOI.OnlineJudge.WebApi.Tests.csproj", "{C5A5C94B-3076-4F8B-81BA-861E73080159}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +27,10 @@ Global
 		{38B57CB9-C24A-4DEB-8AC3-F8B26296C4CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38B57CB9-C24A-4DEB-8AC3-F8B26296C4CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38B57CB9-C24A-4DEB-8AC3-F8B26296C4CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A5C94B-3076-4F8B-81BA-861E73080159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A5C94B-3076-4F8B-81BA-861E73080159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A5C94B-3076-4F8B-81BA-861E73080159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A5C94B-3076-4F8B-81BA-861E73080159}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5F8A2C1D-CB77-4553-B523-7EF5EF190682} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
 		{38B57CB9-C24A-4DEB-8AC3-F8B26296C4CF} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
+		{C5A5C94B-3076-4F8B-81BA-861E73080159} = {A66ED214-78F2-4494-A971-F9957A87A504}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {637C8887-F52D-46D0-9DE6-E766C71A46C3}

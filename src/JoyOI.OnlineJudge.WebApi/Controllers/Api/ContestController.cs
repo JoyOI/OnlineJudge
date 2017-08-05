@@ -68,28 +68,63 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                HideEntity(ret);
+                FilterEntity(ret);
                 return Result(ret);
             }
         }
 
         // POST api/values
-        [HttpPost]
-        [HttpPatch]
-        public void Post([FromBody]string value)
+        [HttpPost("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        [HttpPatch("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        public async Task<ApiResult> Patch(string id, [FromBody]string value, CancellationToken token)
         {
+            if (!await HasPermissionToContestAsync(id, token))
+            {
+                return Result(401, "No Permission");
+            }
+            else
+            {
+                var contest = DB.Contests
+                    .SingleOrDefaultAsync(x => x.Id == id, token);
+
+                if (contest == null)
+                {
+                    return Result(404, "Contest not found");
+                }
+
+                PatchEntity(contest, value);
+                await DB.SaveChangesAsync(token);
+
+                return Result(200, "Patch succeeded");
+            }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+        //[HttpPut("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        //public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
+        //{
+        //    if (await DB.Contests.AnyAsync(x => x.Id == id, token))
+        //    {
+        //        return Result(400, "The problem id is already exists.");
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //}
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
         }
+
+        #region Private Functions
+        private async Task<bool> HasPermissionToContestAsync(string contestId, CancellationToken token = default(CancellationToken))
+            => !(User.Current == null
+               || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
+               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
+                   && x.ClaimType == Constants.ContestEditPermission
+                   && x.ClaimValue == contestId));
+        #endregion
     }
 }

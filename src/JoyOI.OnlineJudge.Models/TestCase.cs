@@ -62,13 +62,13 @@ namespace JoyOI.OnlineJudge.Models
         /// <summary>
         /// Gets or sets the input size in byte
         /// </summary>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public int InputSizeInByte { get; set; }
 
         /// <summary>
         /// Gets or sets the output size in byte
         /// </summary>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public int OutputSizeInByte { get; set; }
     }
 }

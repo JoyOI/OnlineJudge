@@ -94,33 +94,33 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchEntity(value, problem);
+                PatchEntity(problem, value);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }
         }
         
         [HttpPut("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
-        public async Task<ApiResult> Put(string id, [FromBody]Problem value, CancellationToken token)
+        public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
         {
             if (await DB.Problems.AnyAsync(x => x.Id == id, token))
             {
-                return Result(403, "The problem id is already exists.");
+                return Result(400, "The problem id is already exists.");
             }
 
-            FilterEntity(value);
-            value.Id = id;
+            var problem = PutEntity<Problem>(value);
+            problem.Id = id;
 
             // 处理比较器
-            if (value.ValidatorBlobId.HasValue)
+            if (problem.ValidatorBlobId.HasValue)
             {
                 // 检查使用的Blob是否合法
-                if (!await DB.SharedValidators.AnyAsync(x => x.Id == value.ValidatorBlobId.Value, token) && await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles))
+                if (!await DB.SharedValidators.AnyAsync(x => x.Id == problem.ValidatorBlobId.Value, token) && await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles))
                 {
-                    return Result(401, "You don't have the permission to the specified validator, id=" + value.ValidatorBlobId.Value);
+                    return Result(401, "You don't have the permission to the specified validator, id=" + problem.ValidatorBlobId.Value);
                 }
             }
-            else if (string.IsNullOrWhiteSpace(value.ValidatorCode) && string.IsNullOrEmpty(value.ValidatorLanguage))
+            else if (string.IsNullOrWhiteSpace(problem.ValidatorCode) && string.IsNullOrEmpty(problem.ValidatorLanguage))
             {
                 // 如果没有指定Validator，则自动使用默认Validator
                 var defaultValidator = await DB.SharedValidators.FirstOrDefaultAsync(x => x.IsDefault, token);
@@ -131,24 +131,24 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     await IcM.TriggerIncidentAsync(2, "默认比较器未设定", $"用户 { User.Current.UserName } 创建题目时未设置比较器，系统在尝试为其设置默认比较器时，没有找到默认比较器。");
                     return Result(500, "Default Validator Not Found");
                 }
-                value.ValidatorBlobId = defaultValidator.Id;
+                problem.ValidatorBlobId = defaultValidator.Id;
             }
             else
             {
                 // 如果用户上传了比较器代码
-                if (Constants.CompileNeededLanguages.Contains(value.ValidatorLanguage))
+                if (Constants.CompileNeededLanguages.Contains(problem.ValidatorLanguage))
                 {
                     // 编译自定义比较器并缓存编译后的blob
-                    await CompileAsync(id, value.ValidatorCode, value.ValidatorLanguage, token);
+                    await CompileAsync(id, problem.ValidatorCode, problem.ValidatorLanguage, token);
                 }
                 else
                 {
                     // 直接缓存比较器脚本的blob
-                    value.ValidatorBlobId = await ManagementService.PutBlobAsync(id + ".validator", Encoding.UTF8.GetBytes(value.ValidatorCode), token);
+                    problem.ValidatorBlobId = await ManagementService.PutBlobAsync(id + ".validator", Encoding.UTF8.GetBytes(problem.ValidatorCode), token);
                 }
             }
 
-            DB.Problems.Add(value);
+            DB.Problems.Add(problem);
             await DB.SaveChangesAsync(token);
             return Result(200, "Put Succeeded");
         }

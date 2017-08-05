@@ -63,28 +63,28 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the created time.
         /// </summary>
         /// <value>The created time.</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public DateTime CreatedTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Gets or sets the point.
         /// </summary>
         /// <value>The point.</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public int Point { get; set; }
 
         /// <summary>
         /// Gets or sets the level.
         /// </summary>
         /// <value>The level.</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public int Level { get; set; }
 
         /// <summary>
         /// Gets or sets the cached member count.
         /// </summary>
         /// <value>The cached member count.</value>
-        [WebApi(FilterLevel.ReadOnly)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public long CachedMemberCount { get; set; }
 
         /// <summary>

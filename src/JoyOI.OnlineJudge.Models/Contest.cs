@@ -94,7 +94,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the password or team, for password, it should be the password string, for team, it should be the team identifier.
         /// </summary>
         /// <value>The password or team.</value>
-        [WebApi(FilterLevel.GetHidden)]
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetListDisabled)]
         public string PasswordOrTeamId { get; set; }
 
         /// <summary>
@@ -113,7 +113,6 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the banned languages.
         /// </summary>
         /// <value>The banned languages.</value>
-        [WebApi(FilterLevel.GetHidden)]
         public string BannedLanguages { get; set; }
 
         /// <summary>

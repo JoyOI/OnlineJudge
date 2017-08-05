@@ -12,12 +12,36 @@ using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers
 {
     public class BaseController : BaseController<OnlineJudgeContext, User, Guid>
     {
+        public virtual bool IsRoot
+        {
+            get
+            {
+                if (!_isRoot.HasValue)
+                {
+                    if (User.Current == null)
+                    {
+                        _isRoot = false;
+                    }
+                    else
+                    {
+                        _isRoot = User.Manager.IsInRoleAsync(User.Current, "Root").Result;
+                    }
+                }
+
+                return _isRoot.Value;
+            }
+        }
+        
+        // [Inject]
         public IcM IcM { get; set; }
+
+        private bool? _isRoot;
 
         [Inject]
         public ManagementServiceClient ManagementService { get; set; }
@@ -53,7 +77,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 foreach (var y in webapiAttributedProperty)
                 {
                     var level = y.GetCustomAttribute<WebApiAttribute>().Level;
-                    if (level == FilterLevel.GetHidden || level == FilterLevel.GetEnumerateHidden)
+                    if (level.HasFlag(FilterLevel.GetListDisabled))
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                    else if (level.HasFlag(FilterLevel.GetNeedRoot) && !IsRoot)
                     {
                         y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
                     }
@@ -82,7 +110,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             foreach (var x in webapiAttributedProperties)
             {
                 var level = x.GetCustomAttribute<WebApiAttribute>().Level;
-                if (level == FilterLevel.GetHidden || level == FilterLevel.GetSingleHidden)
+                if (level.HasFlag(FilterLevel.GetSingleDisabled))
+                {
+                    x.SetValue(result, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
+                }
+                else if (level.HasFlag(FilterLevel.GetNeedRoot) && !IsRoot)
                 {
                     x.SetValue(result, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }
@@ -102,45 +134,61 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             return new ApiResult { code = code, msg = msg };
         }
 
-        public void PatchEntity<T>(string json, T entity)
+        public void PatchEntity<T>(T entity, string json)
         {
             var type = typeof(T);
+            var properties = type.GetProperties();
             var jsonToObject = JsonConvert.DeserializeObject<T>(json);
-            var jsonToDictionary = JsonConvert.DeserializeObject<IDictionary<string, object>>(json);
-            var keys = jsonToDictionary.Keys.Where(x => x.ToLower() != "id");
-            foreach (var x in keys)
+            var jsonToDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            foreach (var x in jsonToDictionary.Keys)
             {
-                var propertyInfo = type.GetProperties().SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
-                if (propertyInfo == null || !propertyInfo.PropertyType.IsValueType || propertyInfo.GetCustomAttribute<WebApiAttribute>() != null)
-                {
-                    continue;
-                }
+                var property = properties.SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
 
-                var value = propertyInfo.GetValue(jsonToObject);
-                propertyInfo.SetValue(entity, value);
+                if (property == null)
+                    continue;
+
+                var webapiAttribute = property.GetCustomAttribute<WebApiAttribute>();
+                if (webapiAttribute != null && webapiAttribute.Level.HasFlag(FilterLevel.PatchDisabled))
+                    continue;
+
+                property.SetValue(entity, property.GetValue(jsonToObject));
             }
+        }
+
+        public T PutEntity<T>(string json)
+        {
+            var entity = Activator.CreateInstance<T>();
+            var type = typeof(T);
+            var properties = type.GetProperties();
+            var jsonToObject = JsonConvert.DeserializeObject<T>(json);
+            var jsonToDictionary= JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            foreach (var x in jsonToDictionary.Keys)
+            {
+                var property = properties.SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
+
+                if (property == null)
+                    continue;
+
+                var webapiAttribute = property.GetCustomAttribute<WebApiAttribute>();
+                if (webapiAttribute != null && webapiAttribute.Level == FilterLevel.PutDisabled)
+                    continue;
+
+                property.SetValue(entity, property.GetValue(jsonToObject));
+            }
+            return entity;
         }
 
         public void FilterEntity<T>(T entity)
         {
             var type = typeof(T);
-            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<WebApiAttribute>() != null))
+            foreach (var x in type.GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null))
             {
                 var level = x.GetCustomAttribute<WebApiAttribute>().Level;
-                if (level != FilterLevel.CouldNotPatch)
+                if (level.HasFlag(FilterLevel.GetSingleDisabled))
                 {
-                    x.SetValue(entity, Activator.CreateInstance(x.PropertyType));
+                    x.SetValue(entity, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }
-            }
-        }
-
-        public void HideEntity<T>(T entity)
-        {
-            var type = typeof(T);
-            foreach (var x in type.GetProperties().Where(x => x.PropertyType.IsValueType && x.GetCustomAttribute<WebApiAttribute>() != null))
-            {
-                var level = x.GetCustomAttribute<WebApiAttribute>().Level;
-                if (level == FilterLevel.GetHidden || level == FilterLevel.GetSingleHidden)
+                else if (level.HasFlag(FilterLevel.GetNeedRoot) && !IsRoot)
                 {
                     x.SetValue(entity, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }

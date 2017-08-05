@@ -58,14 +58,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchEntity(value, group);
+                PatchEntity(group, value);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }
         }
         
         [HttpPut("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
-        public async Task<ApiResult> Put(string id, [FromBody]Group value, CancellationToken token)
+        public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
         {
             if (await DB.Groups.AnyAsync(x => x.Id == id, token))
             {
@@ -79,15 +79,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "You cannot own more than 5 groups.");
             }
 
-            FilterEntity(value);
-            value.Id = id;
-            value.CachedMemberCount = 1;
-            DB.Groups.Add(value);
+            var group = PutEntity<Group>(value);
+            group.Id = id;
+            group.CachedMemberCount = 1;
+            DB.Groups.Add(group);
 
             DB.GroupMembers.Add(new GroupMember
             {
                 CreatedTime = DateTime.Now,
-                GroupId = value.Id,
+                GroupId = group.Id,
                 Status = GroupMemberStatus.Approved,
                 UserId = User.Current.Id
             });
@@ -140,7 +140,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         
         [HttpPut("{groupId:(^[a-zA-Z0-9-_ ]{4,128}$)}/member/{userId:Guid?}")]
-        public async Task<ApiResult> PutMember(string groupId, Guid? userId, [FromBody] GroupMember value, CancellationToken token)
+        public async Task<ApiResult> PutMember(string groupId, Guid? userId, [FromBody] string value, CancellationToken token)
         {
             if (!await DB.Groups.AnyAsync(x => x.Id == groupId, token))
             {
@@ -152,20 +152,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                FilterEntity(value);
-                value.GroupId = groupId;
+                var groupMember = PutEntity<GroupMember>(value);
+                groupMember.GroupId = groupId;
                 if (userId.HasValue)
                 {
-                    value.UserId = userId.Value;
-                    value.Status = GroupMemberStatus.Approved;
+                    groupMember.UserId = userId.Value;
+                    groupMember.Status = GroupMemberStatus.Approved;
                 }
                 else
                 {
-                    value.UserId = User.Current.Id;
+                    groupMember.UserId = User.Current.Id;
                 }
 
-                value.CreatedTime = DateTime.Now;
-                DB.GroupMembers.Add(value);
+                groupMember.CreatedTime = DateTime.Now;
+                DB.GroupMembers.Add(groupMember);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Put Succeeded");
             }
@@ -186,7 +186,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(404, "Member Not Found");
             }
 
-            PatchEntity(value, groupMember);
+            PatchEntity(groupMember, value);
             await DB.SaveChangesAsync(token);
             return Result(200, "Patch Succeeded");
         }
