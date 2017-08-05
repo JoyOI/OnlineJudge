@@ -375,6 +375,67 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Standings
+        [HttpGet("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/standings/all")]
+        public async Task<ApiResult<Standings>> GetStandings(string contestId, bool? includingVirtual, CancellationToken token)
+        {
+            // TODO: Hide OI standings
+            if (!includingVirtual.HasValue)
+                includingVirtual = true;
+            var exceptNestedQuery = DB.Attendees
+                .Where(x => x.ContestId == contestId)
+                .Where(x => x.IsVirtual)
+                .Select(x => x.UserId);
+            IQueryable<ContestProblemLastStatus> query = DB.ContestProblemLastStatuses
+                .Where(x => x.ContestId == contestId);
+            if (!includingVirtual.Value)
+                query = query.Where(x => !exceptNestedQuery.Contains(x.UserId));
+            dynamic ret = await query
+                .GroupBy(x => x.UserId)
+                .Select(x => new Standings
+                {
+                    UserId = x.Key,
+                    Point = x.Count() > 0 ? x.Sum(y => y.Point) : 0,
+                    Point2 = x.Count() > 0 ? x.Sum(y => y.Point2) : 0,
+                    Point3 = x.Count() > 0 ? x.Sum(y => y.Point3) : 0,
+                    TimeSpan = x.Count() > 0 ? new TimeSpan(x.Sum(y => y.TimeSpan.Ticks)) : new TimeSpan(),
+                    TimeSpan2 = x.Count() > 0 ? new TimeSpan(x.Sum(y => y.TimeSpan2.Ticks)) : new TimeSpan(),
+                    Statuses = x.ToList()
+                })
+                .OrderByDescending(x => x.Point)
+                .ThenByDescending(x => x.Point2)
+                .ThenBy(x => x.Point3)
+                .ThenBy(x => x.TimeSpan)
+                .ThenBy(x => x.TimeSpan2)
+                .ToListAsync(token);
+
+            return Result(ret);
+        }
+
+        [HttpGet("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/standings/{userId:Guid}")]
+        public async Task<ApiResult<Standings>> GetStandings(string contestId, Guid userId, CancellationToken token)
+        {
+            // TODO: Hide OI standings
+            var statuses = await DB.ContestProblemLastStatuses
+                .Where(x => x.ContestId == contestId)
+                .Where(x => x.UserId == userId)
+                .ToListAsync(token);
+
+            var ret = new Standings
+            {
+                UserId = userId,
+                Point = statuses.Count > 0 ? statuses.Sum(x => x.Point) : 0,
+                Point2 = statuses.Count > 0 ? statuses.Sum(x => x.Point2) : 0,
+                Point3 = statuses.Count > 0 ? statuses.Sum(x => x.Point3) : 0,
+                TimeSpan = statuses.Count > 0 ? new TimeSpan(statuses.Sum(x => x.TimeSpan.Ticks)) : new TimeSpan(),
+                TimeSpan2 = statuses.Count > 0 ? new TimeSpan(statuses.Sum(x => x.TimeSpan2.Ticks)) : new TimeSpan(),
+                Statuses = statuses.ToList()
+            };
+
+            return Result(ret);
+        }
+        #endregion
+
         #region Private Functions
         private const string ProblemNumberString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
