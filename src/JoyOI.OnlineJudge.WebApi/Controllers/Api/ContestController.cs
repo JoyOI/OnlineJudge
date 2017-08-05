@@ -436,6 +436,72 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Lock
+        [HttpGet("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/lock")]
+        public async Task<ApiResult<IEnumerable<string>>> GetAllLocks(string contestId, CancellationToken token)
+        {
+            if (User.Current == null)
+            {
+                return Result<IEnumerable<string>>(401, "Not authorized");
+            }
+            else
+            {
+                var contest = await DB.Contests
+                    .SingleOrDefaultAsync(x => x.Id == contestId, token);
+                if (contest == null)
+                {
+                    return Result<IEnumerable<string>>(404, "Contest not found");
+                }
+                else if (contest.Type != ContestType.Codeforces)
+                {
+                    return Result<IEnumerable<string>>(400, "You can only get the lock status in Codeforces contest");
+                }
+                else
+                {
+                    var ret = await DB.ContestProblemLastStatuses
+                        .Where(x => x.UserId == User.Current.Id)
+                        .Where(x => x.IsLocked)
+                        .Select(x => x.ProblemId)
+                        .ToListAsync(token);
+
+                    return Result(ret.AsEnumerable());
+                }
+            }
+        }
+
+        [HttpPut("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/lock/{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        public async Task<ApiResult> PutLock(string contestId, string problemId, CancellationToken token)
+        {
+            if (User.Current == null)
+            {
+                return Result(401, "Not authorized");
+            }
+            else
+            {
+                var status = await DB.ContestProblemLastStatuses
+                    .Where(x => x.ContestId == contestId)
+                    .Where(x => x.UserId == User.Current.Id)
+                    .Where(x => x.ProblemId == problemId)
+                    .SingleOrDefaultAsync(token);
+
+                if (status == null)
+                {
+                    return Result(404, "Not found");
+                }
+                else if (status.IsLocked)
+                {
+                    return Result(400, "Already locked");
+                }
+                else
+                {
+                    status.IsLocked = true;
+                    await DB.SaveChangesAsync(token);
+                    return Result(200, "Put succeeded");
+                }
+            }
+        }
+        #endregion
+
         #region Private Functions
         private const string ProblemNumberString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
