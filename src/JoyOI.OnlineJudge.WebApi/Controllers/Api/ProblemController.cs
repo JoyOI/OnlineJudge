@@ -108,7 +108,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "The problem id is already exists.");
             }
 
-            var problem = PutEntity<Problem>(value);
+            var problem = PutEntity<Problem>(value).Entity;
             problem.Id = id;
 
             // 处理比较器

@@ -134,12 +134,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             return new ApiResult { code = code, msg = msg };
         }
 
-        public void PatchEntity<T>(T entity, string json)
+        public IEnumerable<string> PatchEntity<T>(T entity, string json)
         {
-            var type = typeof(T);
+            var type = entity.GetType();
             var properties = type.GetProperties();
             var jsonToObject = JsonConvert.DeserializeObject<T>(json);
             var jsonToDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var ret = new List<string>();
             foreach (var x in jsonToDictionary.Keys)
             {
                 var property = properties.SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
@@ -152,16 +153,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                     continue;
 
                 property.SetValue(entity, property.GetValue(jsonToObject));
+                ret.Add(property.Name);
             }
+
+            return ret;
         }
 
-        public T PutEntity<T>(string json)
+        public (T Entity, IEnumerable<string> Fields) PutEntity<T>(string json)
         {
             var entity = Activator.CreateInstance<T>();
             var type = typeof(T);
             var properties = type.GetProperties();
             var jsonToObject = JsonConvert.DeserializeObject<T>(json);
             var jsonToDictionary= JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var ret = new List<string>();
             foreach (var x in jsonToDictionary.Keys)
             {
                 var property = properties.SingleOrDefault(y => y.Name.ToLower() == x.ToLower());
@@ -174,8 +179,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                     continue;
 
                 property.SetValue(entity, property.GetValue(jsonToObject));
+                ret.Add(property.Name);
             }
-            return entity;
+            return (entity, ret);
         }
 
         public void FilterEntity<T>(T entity)

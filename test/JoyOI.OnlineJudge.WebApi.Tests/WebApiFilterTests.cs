@@ -11,25 +11,25 @@ using JoyOI.OnlineJudge.WebApi.Controllers;
 
 namespace JoyOI.OnlineJudge.WebApi.Tests
 {
+    public class TestModel
+    {
+        [WebApi(FilterLevel.PutDisabled)]
+        public int A { get; set; }
+
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.GetNeedRoot)]
+        public string B { get; set; }
+
+        [WebApi(FilterLevel.GetSingleDisabled | FilterLevel.GetListDisabled)]
+        public double C { get; set; }
+    }
+
     public class WebApiFilterTests
     {
-        public class TestClass
-        {
-            [WebApi(FilterLevel.PutDisabled)]
-            public int A { get; set; }
-
-            [WebApi(FilterLevel.PatchDisabled | FilterLevel.GetNeedRoot)]
-            public string B { get; set; }
-
-            [WebApi(FilterLevel.GetSingleDisabled | FilterLevel.GetListDisabled)]
-            public double C { get; set; }
-        }
-
         [Fact]
         public void Put_filter_tests()
         {
             var baseController = new BaseController();
-            var entity = baseController.PutEntity<TestClass>("{ \"A\": 5, \"B\": \"123\", \"C\": 1.23 }");
+            var entity = baseController.PutEntity<TestModel>("{ \"A\": 5, \"B\": \"123\", \"C\": 1.23 }").Entity;
 
             Assert.Equal(0, entity.A);
             Assert.Equal("123", entity.B);
@@ -40,9 +40,9 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         public void Patch_filter_tests()
         {
             var baseController = new BaseController();
-            var entity = new TestClass
+            var entity = new TestModel
             {
-                A = 0,
+                A = 7,
                 B = "Hello World",
                 C = 123.456
             };
@@ -59,7 +59,7 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         {
             var controller = new Mock<BaseController>();
             controller.Setup(x => x.IsRoot).Returns(false);
-            var entity = new TestClass
+            var entity = new TestModel
             {
                 A = 0,
                 B = "Hello World",
@@ -76,7 +76,7 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
         {
             var controller = new Mock<BaseController>();
             controller.Setup(x => x.IsRoot).Returns(true);
-            var entity = new TestClass
+            var entity = new TestModel
             {
                 A = 0,
                 B = "Hello World",
@@ -86,6 +86,34 @@ namespace JoyOI.OnlineJudge.WebApi.Tests
 
             Assert.Equal("Hello World", entity.B);
             Assert.Equal(default(double), entity.C);
+        }
+
+        [Fact]
+        public void Get_patched_property_names()
+        {
+            var baseController = new BaseController();
+            var entity = new TestModel
+            {
+                A = 0,
+                B = "Hello World",
+                C = 123.456
+            };
+
+            var json = "{ \"a\": 24680 }";
+            var changes = baseController.PatchEntity(entity, json);
+
+            Assert.Equal(1, changes.Count());
+            Assert.Equal("A", changes.First());
+        }
+
+        [Fact]
+        public void Get_put_property_names()
+        {
+            var baseController = new BaseController();
+            var fields = baseController.PutEntity<TestModel>("{ \"A\": 5, \"b\": \"123\" }").Fields;
+
+            Assert.Equal(1, fields.Count());
+            Assert.Equal("B", fields.First());
         }
     }
 }

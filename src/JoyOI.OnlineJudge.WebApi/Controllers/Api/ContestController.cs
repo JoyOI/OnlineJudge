@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
+using Newtonsoft.Json;
+
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 {
     [Route("api/[controller]")]
@@ -92,25 +94,38 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Contest not found");
                 }
 
-                PatchEntity(contest, value);
+                var dicionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(value);
+                
+                var changes = PatchEntity(contest, value);
+                if (changes.Contains(""))
+
                 await DB.SaveChangesAsync(token);
 
                 return Result(200, "Patch succeeded");
             }
         }
 
-        //[HttpPut("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
-        //public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
-        //{
-        //    if (await DB.Contests.AnyAsync(x => x.Id == id, token))
-        //    {
-        //        return Result(400, "The problem id is already exists.");
-        //    }
-        //    else
-        //    {
+        [HttpPut("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
+        {
+            if (await DB.Contests.AnyAsync(x => x.Id == id, token))
+            {
+                return Result(400, "The contest id is already exists.");
+            }
+            else
+            {
+                var contest = PutEntity<Contest>(value).Entity;
+                if (contest.Begin < DateTime.Now)
+                {
+                    return Result(400, "The begin time is invalid.");
+                }
 
-        //    }
-        //}
+                DB.Contests.Add(contest);
+                DB.UserClaims.Add(new IdentityUserClaim<Guid> { ClaimType = Constants.ContestEditPermission, ClaimValue = id, UserId = User.Current.Id });
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Put succeeded");
+            }
+        }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]

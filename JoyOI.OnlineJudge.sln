@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26711.1
+VisualStudioVersion = 15.0.26730.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E126AED6-457B-468D-B51A-C6B1C8461BF7}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.Models", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A66ED214-78F2-4494-A971-F9957A87A504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.WebApi.Tests", "test\JoyOI.OnlineJudge.WebApi.Tests\JoyOI.OnlineJudge.WebApi.Tests.csproj", "{C5A5C94B-3076-4F8B-81BA-861E73080159}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.WebApi.Tests", "test\JoyOI.OnlineJudge.WebApi.Tests\JoyOI.OnlineJudge.WebApi.Tests.csproj", "{C5A5C94B-3076-4F8B-81BA-861E73080159}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

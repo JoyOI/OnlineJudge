@@ -79,7 +79,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "You cannot own more than 5 groups.");
             }
 
-            var group = PutEntity<Group>(value);
+            var group = PutEntity<Group>(value).Entity;
             group.Id = id;
             group.CachedMemberCount = 1;
             DB.Groups.Add(group);
@@ -152,7 +152,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                var groupMember = PutEntity<GroupMember>(value);
+                var groupMember = PutEntity<GroupMember>(value).Entity;
                 groupMember.GroupId = groupId;
                 if (userId.HasValue)
                 {

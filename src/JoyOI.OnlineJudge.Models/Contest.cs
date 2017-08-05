@@ -63,6 +63,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the contest type <see cref="ContestType"/>.
         /// </summary>
         /// <value>The type.</value>
+        [WebApi(FilterLevel.PatchDisabled)]
         public ContestType Type { get; set; }
 
         /// <summary>
