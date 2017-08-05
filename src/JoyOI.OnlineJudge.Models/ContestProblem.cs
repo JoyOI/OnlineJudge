@@ -28,6 +28,7 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The problem identifier.</value>
         [MaxLength(128)]
         [ForeignKey("Problem")]
+        [WebApi(FilterLevel.PatchDisabled)]
         public string ProblemId { get; set; }
 
         /// <summary>

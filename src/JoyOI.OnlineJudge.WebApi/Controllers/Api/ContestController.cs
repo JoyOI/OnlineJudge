@@ -15,6 +15,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     [Route("api/[controller]")]
     public class ContestController : BaseController
     {
+        #region Contest
         [HttpGet("all")]
         [HttpGet("all/page/{page:int}")]
         public Task<ApiResult<PagedResult<IEnumerable<Contest>>>> Get(
@@ -74,8 +75,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(ret);
             }
         }
-
-        // POST api/values
+        
         [HttpPost("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
         [HttpPatch("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
         public async Task<ApiResult> Patch(string id, [FromBody]string value, CancellationToken token)
@@ -140,8 +140,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
         public async Task<ApiResult> Delete(string id, CancellationToken token)
         {
             if (await DB.Contests.AnyAsync(x => x.Id == id, token))
@@ -174,14 +173,224 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
             }
         }
+        #endregion
+
+        #region Contest Problem
+        [HttpGet("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/problem/all")]
+        public async Task<ApiResult<IEnumerable<ContestProblem>>> GetContestProblems(string contestId, CancellationToken token)
+        {
+            var contest = await DB.Contests
+                .SingleOrDefaultAsync(x => x.Id == contestId, token);
+
+            if (contest == null)
+            {
+                return Result<IEnumerable<ContestProblem>>(404, "Contest not found");
+            }
+            else if (contest.Begin > DateTime.Now && !await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result<IEnumerable<ContestProblem>>(400, "The contest has not started");
+            }
+            else
+            {
+                var ret = await DB.ContestProblems
+                    .Where(x => x.ContestId == contestId)
+                    .OrderBy(x => x.Number)
+                    .ThenBy(x => x.Point)
+                    .ToListAsync(token);
+
+                return Result<IEnumerable<ContestProblem>>(ret);
+            }
+        }
+
+        [HttpPut("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/problem/{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        public async Task<ApiResult> PutContestProblem(string contestId, string problemId, [FromBody] string value, CancellationToken token)
+        {
+            var contest = await DB.Contests
+                .SingleOrDefaultAsync(x => x.Id == contestId, token);
+            var problem = await DB.Problems
+                .SingleOrDefaultAsync(x => x.Id == problemId, token);
+            var problemCount = await DB.ContestProblems.CountAsync(x => x.ContestId == contestId);
+            if (contest == null)
+            {
+                return Result(404, "Contest not found");
+            }
+            else if (problem == null)
+            {
+                return Result(404, "Problem not found");
+            }
+            else if (problemCount >= 26)
+            {
+                return Result(400, "The contest problem count cannot be greater than 26");
+            }
+            else if (!await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission to this contest");
+            }
+            else if (!problem.IsVisiable && !await HasPermissionToProblemAsync(contestId, token))
+            {
+                return Result(401, "No permission to this problem");
+            }
+            else if (await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token))
+            {
+                return Result(400, "The problem has been already added into this contest");
+            }
+            else
+            {
+                var contestProblem = PutEntity<ContestProblem>(value);
+                if (contestProblem.Fields.Contains("Number"))
+                {
+                    if (await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.Number == contestProblem.Entity.Number, token))
+                    {
+                        return Result(400, "The problem number is already existed.");
+                    }
+                }
+                else
+                {
+                    contestProblem.Entity.Number = ProblemNumberString[problemCount].ToString();
+                }
+
+                DB.ContestProblems.Add(contestProblem.Entity);
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Put succeeded");
+            }
+        }
+
+        [HttpPost("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/problem/{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        [HttpPatch("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/problem/{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        public async Task<ApiResult> PatchContestProblem(string contestId, string problemId, [FromBody] string value, CancellationToken token)
+        {
+            var contestProblem = await DB.ContestProblems
+                .SingleOrDefaultAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
+            if (contestProblem == null)
+            {
+                return Result(404, "Contest problem not found");
+            }
+            else if (!await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission to this contest");
+            }
+            else
+            {
+                var fields = PatchEntity(contestProblem, value);
+                if (fields.Contains(nameof(ContestProblem.Number)))
+                {
+                    if (await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.Number == contestProblem.Number))
+                    {
+                        return Result(400, "The problem number is already existed.");
+                    }
+                }
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Patch succeeded");
+            }
+        }
+
+        [HttpDelete("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/problem/{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        public async Task<ApiResult> DeleteContestProblem(string contestId, string problemId, [FromBody] string value, CancellationToken token)
+        {
+            var contestProblem = await DB.ContestProblems
+                .SingleOrDefaultAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
+            if (contestProblem == null)
+            {
+                return Result(404, "Contest problem not found");
+            }
+            else if (!await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission to this contest");
+            }
+            else
+            {
+                await DB.JudgeStatuses
+                    .Where(x => x.ContestId == contestId)
+                    .Where(x => x.ProblemId == problemId)
+                    .DeleteAsync(token);
+
+                await DB.ContestProblems
+                    .Where(x => x.ProblemId == problemId)
+                    .Where(x => x.ContestId == contestId)
+                    .DeleteAsync(token);
+
+                return Result(200, "Delete succeeded");
+            }
+        }
+        #endregion
+
+        #region Claims
+        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/all")]
+        public async Task<ApiResult<List<IdentityUserClaim<Guid>>>> GetClaims(string problemId, CancellationToken token)
+        {
+            var ret = await DB.UserClaims
+                .Where(x => x.ClaimType == Constants.ProblemEditPermission)
+                .Where(x => x.ClaimValue == problemId)
+                .ToListAsync(token);
+            return Result(ret);
+        }
+
+        [HttpPut("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim")]
+        public async Task<ApiResult> PutClaims(string contestId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        {
+            if (!await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == value.UserId, token))
+            {
+                return Result(400, "Already exists");
+            }
+            else
+            {
+                DB.UserClaims.Add(new IdentityUserClaim<Guid>
+                {
+                    ClaimType = Constants.ContestEditPermission,
+                    UserId = value.UserId,
+                    ClaimValue = contestId
+                });
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Succeeded");
+            }
+        }
+
+        [HttpPut("{contestId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/{userId:Guid}")]
+        public async Task<ApiResult> DeleteClaim(Guid userId, string contestId, CancellationToken token)
+        {
+            if (!await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission");
+            }
+            else if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == userId, token))
+            {
+                return Result(404, "Claim not found");
+            }
+            else if (userId == User.Current.Id)
+            {
+                return Result(400, "Cannot remove yourself");
+            }
+            else
+            {
+                await DB.UserClaims
+                    .Where(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == userId)
+                    .DeleteAsync(token);
+
+                return Result(200, "Delete succeeded");
+            }
+        }
+        #endregion
 
         #region Private Functions
+        private const string ProblemNumberString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         private async Task<bool> HasPermissionToContestAsync(string contestId, CancellationToken token = default(CancellationToken))
             => !(User.Current == null
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ContestEditPermission
                    && x.ClaimValue == contestId));
+
+        private async Task<bool> HasPermissionToProblemAsync(string problemId, CancellationToken token = default(CancellationToken))
+            => !(User.Current == null
+               || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
+               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
+                   && x.ClaimType == Constants.ProblemEditPermission
+                   && x.ClaimValue == problemId));
         #endregion
     }
 }
