@@ -64,7 +64,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return await Paged(ret.OrderBy(x => x.CreatedTime), page.Value, 100, token);
         }
         
-        [HttpGet("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<ApiResult<Problem>> Get(string id, CancellationToken token)
         {
             var ret = await DB.Problems.SingleOrDefaultAsync(x => x.Id == id, token);
@@ -78,8 +78,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPost("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
-        [HttpPatch("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<ApiResult> Patch(string id, [FromBody]string value, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(id, token))
@@ -100,7 +100,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
         
-        [HttpPut("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        [HttpPut("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
         {
             if (await DB.Problems.AnyAsync(x => x.Id == id, token))
@@ -153,7 +153,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(200, "Put Succeeded");
         }
         
-        [HttpDelete("{id:(^[a-zA-Z0-9-_ ]{4,128}$)}")]
+        [HttpDelete("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<ApiResult> Delete(string id, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(id, token))
@@ -175,7 +175,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Test Case
-        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/all")]
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/all")]
         public async Task<ApiResult<List<TestCase>>> GetTestCase(string problemId, TestCaseType? type, CancellationToken token)
         {
             IQueryable<TestCase> ret = DB.TestCases
@@ -189,7 +189,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(await ret.ToListAsync(token));
         }
 
-        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
         public async Task<ApiResult<TestCase>> GetTestCase(string problemId, Guid id, CancellationToken token)
         {
             var ret = await DB.TestCases.SingleOrDefaultAsync(x => x.ProblemId == problemId && x.Id == id, token);
@@ -208,7 +208,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase")]
+        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase")]
         public async Task<ApiResult<Guid>> PutTestCase(string problemId, [FromBody] TestCaseUpload value, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -236,8 +236,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPost("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
-        [HttpPatch("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpPost("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
+        [HttpPatch("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
         public async Task<ApiResult> PatchTestCase(string problemId, Guid id, [FromBody] string value, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -287,7 +287,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpDelete("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}")]
+        [HttpDelete("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
         public async Task<ApiResult> DeleteTestCase(string problemId, Guid id, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -306,9 +306,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Test Case Purchase
-        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
-        [HttpPost("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
-        [HttpPatch("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPost("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/purchase")]
+        [HttpPatch("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/purchase")]
         public async Task<ApiResult> PutTestCasePurchase(string problemId, Guid id, CancellationToken token)
         {
             // 判断是否已经购买
@@ -343,7 +343,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Claims
-        [HttpGet("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/all")]
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
         public async Task<ApiResult<List<IdentityUserClaim<Guid>>>> GetClaims(string problemId, CancellationToken token)
         {
             var ret = await DB.UserClaims
@@ -353,7 +353,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(ret);
         }
 
-        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim")]
+        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim")]
         public async Task<ApiResult> PutClaims(string problemId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
@@ -377,7 +377,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPut("{problemId:(^[a-zA-Z0-9-_ ]{4,128}$)}/claim/{userId:Guid}")]
+        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{userId:Guid}")]
         public async Task<ApiResult> DeleteClaim(Guid userId, string problemId, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))

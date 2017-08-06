@@ -124,5 +124,9 @@ namespace JoyOI.OnlineJudge.Models
         {
             get => BannedLanguages.Split(',').Select(x => x.Trim()); 
         }
+
+        public virtual ICollection<JudgeStatus> JudgeStatuses { get; set; } = new List<JudgeStatus>();
+
+        public virtual ICollection<HackStatus> HackStatuses { get; set; } = new List<HackStatus>();
     }
 }

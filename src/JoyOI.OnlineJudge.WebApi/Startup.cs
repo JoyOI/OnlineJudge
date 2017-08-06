@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
 
@@ -12,13 +14,16 @@ namespace JoyOI.OnlineJudge.WebApi
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<OnlineJudgeContext>(x => 
-            {
-                x.UseMySql("server=localhost;uid=root;pwd=123456;database=joyoi_oj");
-                x.UseMySqlLolita();
-            });
+            services.AddConfiguration(out IConfiguration config);
+            services.AddEntityFrameworkMySql()
+                .AddDbContextPool<OnlineJudgeContext>(x => 
+                {
+                    x.UseMySql(config["Data:MySQL"]);
+                    x.UseMySqlLolita();
+                });
 
             services.AddJoyOIManagementService();
+            services.AddJoyOIUserCenter();
 
             services.AddIdentity<User, IdentityRole<Guid>>(x =>
             {
@@ -35,10 +40,17 @@ namespace JoyOI.OnlineJudge.WebApi
             services.AddMvc();
         }
         
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var db = serviceScope.ServiceProvider.GetService<OnlineJudgeContext>())
+            {
+                await db.InitializeAsync();
+            }
         }
     }
 }

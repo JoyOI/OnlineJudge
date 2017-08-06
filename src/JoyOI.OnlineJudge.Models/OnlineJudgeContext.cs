@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,17 +11,6 @@ namespace JoyOI.OnlineJudge.Models
     /// </summary>
     public class OnlineJudgeContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
-        private string _connectionString;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:JoyOI.OnlineJudge.Models.OnlineJudgeContext"/> class.
-        /// </summary>
-        /// <param name="connectionString">Connection string.</param>
-        public OnlineJudgeContext(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="T:JoyOI.OnlineJudge.Models.OnlineJudgeContext"/> class.
         /// </summary>
@@ -28,6 +18,11 @@ namespace JoyOI.OnlineJudge.Models
         public OnlineJudgeContext(DbContextOptions opt) 
             : base(opt)
         {
+        }
+
+        public Task InitializeAsync()
+        {
+            return Database.EnsureCreatedAsync();
         }
 
         /// <summary>
@@ -138,16 +133,6 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The virtual judge users.</value>
         public DbSet<VirtualJudgeUser> VirtualJudgeUsers { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            if (_connectionString != null)
-            {
-                optionsBuilder.UseMySql(_connectionString);
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -172,7 +157,8 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Domain);
                 e.HasIndex(x => x.IsHighlighted);
 				e.HasIndex(x => x.Type);
-                e.HasIndex(x => x.Title).ForMySqlIsSpatial();
+                e.HasIndex(x => x.Title).ForMySqlIsFullText();
+                e.HasMany(x => x.JudgeStatuses).WithOne(x => x.Contest).IsRequired(false);
             });
 
             builder.Entity<ContestProblem>(e =>
@@ -262,6 +248,11 @@ namespace JoyOI.OnlineJudge.Models
             {
                 e.HasIndex(x => x.Type);
 			});
+
+            builder.Entity<TestCasePurchase>(e =>
+            {
+                e.HasKey(x => new { x.UserId, x.TestCaseId });
+            });
 
             builder.Entity<User>(e =>
 			{
