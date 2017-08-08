@@ -38,11 +38,19 @@ namespace JoyOI.OnlineJudge.WebApi
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
+
+            services.AddCors(c => c.AddPolicy("OnlineJudge", x =>
+                x.AllowCredentials()
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            ));
         }
         
         public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
+            app.UseCors("OnlineJudge");
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
 
