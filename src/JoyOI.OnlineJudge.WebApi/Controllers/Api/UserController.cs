@@ -16,8 +16,22 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         private static Regex CookieExpireRegex = new Regex("(?<=; expires=)[0-9a-zA-Z: -/]{1,}(?=; path=)");
 
+        [HttpGet("session/info")]
+        public ApiResult<dynamic> GetSessionInfo()
+        {
+            var ret = new Dictionary<string, object>();
+            ret.Add("isSignedIn", User.Current != null);
+            if (User.Current != null)
+            {
+                ret.Add("username", User.Current.UserName);
+                ret.Add("email", User.Current.Email);
+                ret.Add("nickname", User.Current.Nickname);
+            }
+            return Result<dynamic>(ret);
+        }
+
         [HttpPut("session")]
-        public async Task<ApiResult<dynamic>> Session([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
+        public async Task<ApiResult<dynamic>> PutSession([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
         {
             var authorizeResult = await UC.TrustedAuthorizeAsync(login.Username, login.Password);
             if (authorizeResult.succeeded)
@@ -62,6 +76,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 var cookie = HttpContext.Response.Headers["Set-Cookie"].ToString();
                 var expire = DateTime.Parse(CookieExpireRegex.Match(cookie).Value).ToTimeStamp();
+                cookie = cookie.Substring(0, cookie.IndexOf("; path="));
 
                 return Result<dynamic>(new { Cookie = cookie, Expire = expire });
             }

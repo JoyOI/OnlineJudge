@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
+using JoyOI.OnlineJudge.WebApi.Lib;
 
 namespace JoyOI.OnlineJudge.WebApi
 {
@@ -37,6 +38,8 @@ namespace JoyOI.OnlineJudge.WebApi
                 .AddEntityFrameworkStores<OnlineJudgeContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddSmartCookies();
+            services.AddSmartUser<User, Guid>();
             services.AddMvc();
 
             services.AddCors(c => c.AddPolicy("OnlineJudge", x =>
@@ -51,6 +54,7 @@ namespace JoyOI.OnlineJudge.WebApi
         {
             loggerFactory.AddConsole();
             app.UseCors("OnlineJudge");
+            app.UseCookieMiddleware();
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
 
