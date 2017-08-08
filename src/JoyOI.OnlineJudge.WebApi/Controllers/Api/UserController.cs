@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     [Route("api/[controller]")]
     public class UserController : BaseController
     {
+        private static Regex CookieExpireRegex = new Regex("(?<=; expires=)[0-9a-zA-Z: -/]{1,}(?=; path=)");
+
         [HttpPut("session")]
-        public async Task<ApiResult> Session([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
+        public async Task<ApiResult<dynamic>> Session([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
         {
             var authorizeResult = await UC.TrustedAuthorizeAsync(login.Username, login.Password);
             if (authorizeResult.succeeded)
@@ -57,7 +60,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 user.LastLoginTime = DateTime.Now;
                 DB.SaveChanges();
 
-                return Result(200, "Login succeeded");
+                var cookie = HttpContext.Response.Headers["Set-Cookie"].ToString();
+                var expire = DateTime.Parse(CookieExpireRegex.Match(cookie).Value).ToTimeStamp();
+
+                return Result<dynamic>(new { Cookie = cookie, Expire = expire });
             }
             else
             {
