@@ -1,6 +1,10 @@
 ﻿LazyRouting.SetRoute({
     "/home": null,
     "/foo/:id": { id: "[0-9a-zA-Z-]{3,16}" },
-    "/bar": null
+    "/bar": null,
+    "/404": null
 });
-LazyRouting.PushAsync("/404", "/views/404.html");
+
+LazyRouting.SetMirror({
+    "/": "/home"
+});

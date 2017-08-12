@@ -2,6 +2,7 @@
 LazyRouting._routeMap = {};
 LazyRouting.__routeMap = {};
 LazyRouting._controlJs = {};
+LazyRouting.__mirror = [];
 
 var router = new VueRouter({
     mode: 'history'
@@ -11,8 +12,15 @@ var app;
 
 LazyRouting.SetRoute = function (routemap) {
     LazyRouting._routeMap = routemap;
-    console.warn(router.history.current.fullPath);
 }
+
+LazyRouting.SetMirror = function (map) {
+    LazyRouting.__mirror = [];
+    for (var x in map)
+    {
+        LazyRouting.__mirror.push({ src: x, dest: map[x] });
+    }
+};
 
 LazyRouting._documentReadyPromise = new Promise(function (resolve) {
     $(document).ready(function () {
@@ -37,8 +45,9 @@ LazyRouting._documentReadyPromise = new Promise(function (resolve) {
                         }
                     }
                     var regex = new RegExp("^" + regexStr + "$", "g");
-                    if (regex.test(router.history.current.fullPath)) {
-                        LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(x), x);
+                    if (regex.test(router.history.current.fullPath) || LazyRouting.__mirror.some(y => y.src == router.history.current.fullPath && y.dest == x)) {
+                        var mapping = [];
+                        LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(x), x, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == x));
                         is404 = false;
                         break;
                     }
@@ -95,17 +104,7 @@ LazyRouting._getHtmlAsync =function(url, unsafe) {
     });
 }
 
-LazyRouting.PushAsync = async function (rule, view, func) {
-    var html = await LazyRouting._getHtmlAsync(view);
-    var component = { template: html.toString() };
-    if (func)
-    {
-        func(component);
-    }
-    router.addRoutes([{ path: rule, name: rule, component: component }]);
-};
-
-LazyRouting._loadComponentAsync = function (path, rule) {
+LazyRouting._loadComponentAsync = function (path, rule, map) {
     return LazyRouting._getHtmlAsync("/views" + path + ".html")
         .then(async (result) => {
             try {
@@ -136,6 +135,17 @@ LazyRouting._loadComponentAsync = function (path, rule) {
             }
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
             router.addRoutes([LazyRouting.__routeMap[rule]]);
+            if (map && map.length > 0)
+            {
+                for (var i = 0; i < map.length; i++)
+                {
+                    try {
+                        router.addRoutes([{ path: map[i].src, name: map[i].src, component: component }]);
+                    } catch (ex) {
+                    }
+                }
+            }
+            return Promise.resolve(component);
         }, (err) => console.error(err));
 }
 
@@ -164,7 +174,6 @@ $(window).click(async function (e) {
                 path = path.replace(new RegExp(":" + x, "g"), params[x]);
             }
         }
-        console.log(path);
         router.push(path);
         return false;
     }

@@ -1,0 +1,12 @@
+﻿<route-script>    
+    component.created = function () {
+        app.title = app.$route.params.id;   
+        app.links = [{ text: 'Foo', to:'/foo' }];
+    }    
+    
+    component.data = function() {
+        return {
+            id: app.$route.params.id
+        }
+    }
+</route-script>

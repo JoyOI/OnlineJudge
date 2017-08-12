@@ -10,4 +10,13 @@
             ]
         }
     }
+
+    component.methods = {
+        append: function() {
+            this.todos.push({ text: 'New Item' })
+        },
+        clear: function() {
+            this.todos = [];
+        }
+    };
 </route-script>

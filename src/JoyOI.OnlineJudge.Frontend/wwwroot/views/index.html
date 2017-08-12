@@ -9,8 +9,8 @@
     <link href="/styles/joyoi.base.min.css" rel="stylesheet" />
     <link href="/styles/joyoi.extend.css" rel="stylesheet" />
     <script src="/scripts/jquery-3.2.1.min.js"></script>
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="/scripts/vue.js"></script>
+    <script src="/scripts/vue-router.js"></script>
     <script src="/scripts/vue-lazy-routing.js"></script>
     <script src="/scripts/joyoi.routing.js"></script>
     <script src="/scripts/joyoi.base.min.js"></script>
@@ -28,12 +28,12 @@
                             <i class="fa fa-list mobile-menu"></i>
                         </button>
                         <!-- start logo -->
-                        <router-link to="/home" class="navbar-logo"><img src="/images/logo-bk.png" /></router-link>
+                        <router-link to="/" class="navbar-logo"><img src="/images/logo-bk.png" /></router-link>
                         <!-- end logo -->
                     </div><div id="navbar" class="navbar-collapse collapse">
 
                         <ul class="nav navbar-nav navbar-left">
-                            <li class="home"><router-link to="/home">Home</router-link></li>
+                            <li class="home"><router-link to="/">Home</router-link></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
 
@@ -60,7 +60,7 @@
                     <div class="grid_12" style="text-align:left">
                         <div class="columns">
                             <div class="location-path">
-                                / <router-link to="/home">Joy OI</router-link> /
+                                / <router-link to="/">Joy OI</router-link> /
                                 <span v-for="link in links">
                                     <router-link v-bind:to="link.to">{{ link.text }}</router-link> /
                                 </span>
