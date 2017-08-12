@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="origin" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <link href="/styles/joyoi.base.min.css" rel="stylesheet" />
+    <link href="/styles/joyoi.extend.css" rel="stylesheet" />
+    <script src="/scripts/jquery-3.2.1.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="/scripts/vue-lazy-routing.js"></script>
+    <script src="/scripts/joyoi.base.min.js"></script>
+    <script src="/scripts/joyoi.extend.js"></script>
+    <script>
+        LazyRouting.SetRoute({
+            "/foo/:id": { id: "[0-9a-zA-Z-]{3,16}" },
+            "/bar": null
+        });
+        LazyRouting.PushAsync("/404", "/views/404.html");
+    </script>
+</head>
+<body class="home-template fixed-navbar">
+    <div id="app">
+        <!-- start header -->
+        <header class="main-header">
+            <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <i class="fa fa-list mobile-menu"></i>
+                        </button>
+                        <!-- start logo -->
+                        <a class="navbar-logo" asp-controller="Home" asp-action="Index"><img src="/images/logo-bk.png" /></a>
+                        <!-- end logo -->
+                    </div><div id="navbar" class="navbar-collapse collapse">
+
+                        <ul class="nav navbar-nav navbar-left">
+                            <li class="home"><a asp-action="Index" asp-controller="Home">Home</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+
+                            <li class="logout"><a href="javascript:$('#frmLogout').submit()">Logout</a></li>
+                            <li class="login"><a asp-action="Login" asp-controller="Account">Login</a></li>
+                            <li class="register"><a asp-action="Register" asp-controller="Account">Register</a></li>
+                            <li class="register"><router-link to="/bar">Go to Bar</router-link></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </nav>
+        </header>
+        <!-- end header -->
+
+        <div class="cover cover-single mobile-cover cover-url">
+            <div class="cont-wrap">
+                <div class="grid_12 mobile-cover-center" style="text-align:left">
+                    <img src="/images/logo.png" class="mobile-cover-img" style="height:140px;margin-top:-60px;" />
+                </div>
+            </div>
+            <div class="cover-url-inner">
+                <div class="cont-wrap">
+                    <div class="grid_12" style="text-align:left">
+                        <div class="columns">
+                            <div class="location-path">
+                                / <a href="/">JoyOI</a> /
+                            </div>
+                            <h1 class="location-current" data-emoji-enabled="">@SR["Applications"]</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-content-area">
+            <div class="container">
+                <router-view></router-view>
+            </div>
+        </div>
+        <!-- start footer -->
+        <footer class="main-footer">
+            <div class="footer-widget-area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4">
+                            <!-- start widget -->
+                            <div class="widget">
+                                <h4 class="title"></h4>
+                                <div class="content recent-post">
+                                </div>
+                            </div>
+                            <!-- end widget -->
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="widget">
+                                <h4 class="title">关注我们</h4>
+                                <div class="content clearfix">
+                                    <ul class="social">
+                                        <!-- start social links -->
+                                        <!-- replace the # with your own profile link address -->
+                                        <li><a href="#" class="facebook"><i class="fa fa-facebook"></i></a></li>
+                                        <li><a href="#" class="twitter"><i class="fa fa-twitter"></i></a></li>
+                                        <li><a href="#" class="google-plus"><i class="fa fa-google-plus"></i></a></li>
+                                        <li><a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a></li>
+                                        <li><a href="#" class="skype"><i class="fa fa-skype"></i></a></li>
+                                        <li><a href="#" class="pinterest"><i class="fa  fa-pinterest"></i></a></li>
+                                        <li><a href="#" class="youtube"><i class="fa fa-youtube"></i></a></li>
+                                        <li><a href="#" class="vimeo"><i class="fa fa-vimeo-square"></i></a></li>
+                                        <li><a href="#" class="dribbble"><i class="fa fa-dribbble"></i></a></li>
+                                        <li><a href="#" class="flickr"><i class="fa fa-flickr"></i></a></li>
+                                        <li><a href="#" class="instagram"><i class="fa fa-instagram"></i></a></li>
+                                        <li><a href="http://avant-ghost.gbjsolution.com/rss/" class="rss"><i class="fa fa-rss"></i></a></li>
+                                        <!-- end social links -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <!-- start widget -->
+                            <div class="widget">
+                                <h4 class="title">最新公告</h4>
+                                <div class="content">
+                                </div>
+                            </div>
+                            <!-- end widget -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom copyright-area">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="copyright">
+                                &copy; 2017 <a href="https://github.com/JoyOI">Beijing Tsba Education &amp; Technologies Co., Ltd.</a> All right Reserved
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end footer -->
+        <a href="#" id="back-to-top"><i class="fa fa-chevron-up"></i></a>
+        <div class="search-popup">
+            <div class="close-button">
+                <i class="material-icons">&#xE5C9;</i>
+            </div>
+            <div class="container popup-inner">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form>
+                            <div class="input-group">
+                                <input type="email" class="required" id="search-input">
+                                <span class="bar"></span>
+                                <label>Type to search</label>
+                            </div>
+                            <!-- <input type="text"  placeholder="" /> -->
+                        </form>
+                        <div id="search-results">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

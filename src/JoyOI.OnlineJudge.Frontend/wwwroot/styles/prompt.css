@@ -1,0 +1,117 @@
+﻿body {
+	background-image: url(../images/bg-sign-in.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.logo {
+    margin-top: 40px;
+    width: 100%;
+    text-align: center;
+}
+
+.logo img {
+    height: 140px;
+}
+
+.content {
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 25px;
+}
+
+.trapezoid {
+	height: 0;
+    margin-top: 5px;
+    margin-left: 15px;
+	border-top: 40px solid rgb(129, 142, 151);
+	border-left: 6px solid transparent;
+	border-right: 8px solid transparent;
+    display: inline-block;
+}
+
+.trapezoid-main {
+	height: 0;
+    position: relative;
+    top: -50px;
+    left: -15px;
+    width: inherit;
+	border-top: 40px solid #5f9fd6;
+	border-left: 6px solid transparent;
+	border-right: 8px solid transparent;
+    display: inline-block;
+}
+
+.trapezoid-inner {
+    position: relative;
+    top: -40px;
+    line-height: 30px;
+    padding: 5px 15px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.detail-outer {
+    margin: 25px;
+}
+
+.detail-content {
+    background: rgba(0,0,0,0.8);
+    color: #ddd;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.0);
+    transition: box-shadow 0.2s linear;
+}
+
+    .detail-content:hover {
+        box-shadow: 0 3px 10px rgba(0,0,0,.3);
+    }
+
+.button {
+    text-decoration: none;
+    display: inline-block;
+    height: 24px;
+    padding: 5px 20px;
+    outline: 0;
+    background: #5f9fd6;
+    color: #fff;
+    line-height: 24px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #5f9fd6;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: border 0.2s linear, background-color 0.2s linear, box-shadow 0.2s linear;
+}
+
+.button:hover {
+    box-shadow: 0 3px 10px #5290c6;
+    background: #5290c6;
+    border: 1px solid #5290c6;
+}
+
+    .button.purple {
+        border: 1px solid #c84fd7;
+        background: #c84fd7;
+    }
+
+    .button.purple:hover {
+        box-shadow: 0 3px 10px #b443c2;
+        background: #b443c2;
+        border: 1px solid #b443c2;
+}
+
+.copyright {
+    font-size: 12px;
+    padding: 15px 0;
+    text-align: center;
+    color: #fff;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 0px;
+}
