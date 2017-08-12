@@ -105,6 +105,9 @@ LazyRouting._getHtmlAsync =function(url, unsafe) {
 }
 
 LazyRouting._loadComponentAsync = function (path, rule, map) {
+    if (LazyRouting.__mirror.some(x => x.src == path))
+        return Promise.reject();
+
     return LazyRouting._getHtmlAsync("/views" + path + ".html")
         .then(async (result) => {
             try {
