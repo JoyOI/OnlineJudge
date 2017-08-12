@@ -1,6 +1,15 @@
 ﻿<route-script>
-    app.data =
-    {
-        isSignedIn: true
-    }
+    app = new Vue({
+        router: router,
+        data: {
+            links:[],
+            title: '',
+            showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home'
+        }
+    });
+
+    router.afterEach(() =>
+    {    
+        Vue.set(app.$data, 'showUrlCover', router.history.current.fullPath != '/' && router.history.current.fullPath != '/home');
+    });
 </route-script>

@@ -12,15 +12,9 @@
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <script src="/scripts/vue-lazy-routing.js"></script>
+    <script src="/scripts/joyoi.routing.js"></script>
     <script src="/scripts/joyoi.base.min.js"></script>
     <script src="/scripts/joyoi.extend.js"></script>
-    <script>
-        LazyRouting.SetRoute({
-            "/foo/:id": { id: "[0-9a-zA-Z-]{3,16}" },
-            "/bar": null
-        });
-        LazyRouting.PushAsync("/404", "/views/404.html");
-    </script>
 </head>
 <body class="home-template fixed-navbar">
     <div id="app">
@@ -34,12 +28,12 @@
                             <i class="fa fa-list mobile-menu"></i>
                         </button>
                         <!-- start logo -->
-                        <a class="navbar-logo" asp-controller="Home" asp-action="Index"><img src="/images/logo-bk.png" /></a>
+                        <router-link to="/home" class="navbar-logo"><img src="/images/logo-bk.png" /></router-link>
                         <!-- end logo -->
                     </div><div id="navbar" class="navbar-collapse collapse">
 
                         <ul class="nav navbar-nav navbar-left">
-                            <li class="home"><a asp-action="Index" asp-controller="Home">Home</a></li>
+                            <li class="home"><router-link to="/home">Home</router-link></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
 
@@ -55,29 +49,30 @@
         </header>
         <!-- end header -->
 
-        <div class="cover cover-single mobile-cover cover-url">
+        <div id="cover" class="cover cover-single mobile-cover" v-bind:class="{ 'cover-url': showUrlCover }">
             <div class="cont-wrap">
                 <div class="grid_12 mobile-cover-center" style="text-align:left">
                     <img src="/images/logo.png" class="mobile-cover-img" style="height:140px;margin-top:-60px;" />
                 </div>
             </div>
-            <div class="cover-url-inner">
+            <div class="cover-url-inner" v-show="showUrlCover">
                 <div class="cont-wrap">
                     <div class="grid_12" style="text-align:left">
                         <div class="columns">
                             <div class="location-path">
-                                / <a href="/">JoyOI</a> /
+                                / <router-link to="/home">Joy OI</router-link> /
+                                <span v-for="link in links">
+                                    <router-link v-bind:to="link.to">{{ link.text }}</router-link> /
+                                </span>
                             </div>
-                            <h1 class="location-current" data-emoji-enabled="">@SR["Applications"]</h1>
+                            <h1 class="location-current" data-emoji-enabled="">{{ title }}</h1>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="main-content-area">
-            <div class="container">
-                <router-view></router-view>
-            </div>
+            <router-view></router-view>
         </div>
         <!-- start footer -->
         <footer class="main-footer">
