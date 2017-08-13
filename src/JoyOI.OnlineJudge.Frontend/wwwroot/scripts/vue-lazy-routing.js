@@ -181,3 +181,10 @@ $(window).click(async function (e) {
         return false;
     }
 });
+
+LazyRouting.GetCurrentComponent = function () {
+    if (router.history.current.matches.length)
+        return router.history.current.matches[0].instances.default;
+    else
+        return null;
+}
