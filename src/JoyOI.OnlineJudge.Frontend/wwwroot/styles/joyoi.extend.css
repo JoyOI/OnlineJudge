@@ -158,3 +158,44 @@
     border-right: 1px solid #ddd;
     display: inline-block;
 }
+
+.thread-outer {
+    border-top: 1px solid #ddd;
+    border-left: 5px solid #fff;
+    padding: 30px 20px;
+    height: 120px;
+    margin: 0 -25px -25px -25px;
+}
+
+    .thread-outer.highlight {
+        border-left: 5px solid #df6589;
+    }
+
+.thread-avatar {
+    height: 60px;
+    width: 60px;
+    float: left;
+    margin-right: 20px;
+}
+
+    .thread-avatar img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+    }
+
+.thread-body {
+    height: 60px;
+    float: left;
+}
+
+    .thread-body a {
+        font-size: 22px;
+        line-height: 36px;
+        display: block;
+    }
+
+    .thread-body-subline {
+        height: 24px;
+        line-height: 24px;
+    }
