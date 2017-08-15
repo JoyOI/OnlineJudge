@@ -8,6 +8,18 @@ var router = new VueRouter({
     mode: 'history'
 });
 
+router.beforeEach(function (to, from, next) {
+    if (to.name && LazyRouting._controlJs[to.name]) {
+        try {
+            var component = { };
+            eval(LazyRouting._controlJs[to.name]);
+        } catch (ex) {
+            console.error(ex);
+        }
+    }
+    next();
+})
+
 var app;
 
 LazyRouting.SetRoute = function (routemap) {
@@ -112,11 +124,11 @@ LazyRouting._loadComponentAsync = function (path, rule, map) {
         .then(async (result) => {
             try {
                 var js = await LazyRouting._getHtmlAsync("/views" + path + ".control.html");
+                js = js.replace('<route-script>', '').replace('</route-script>', '')
                 js = $('<div/>').html(js).text();
-                LazyRouting._controlJs[path] = js.replace('<route-script>', '').replace('</route-script>', '');
+                LazyRouting._controlJs[path] = js;
             }
             catch (ex) {
-                LazyRouting._controlJs[path] = '';
             }
             return Promise.resolve(result);
         }, () => {
@@ -125,11 +137,11 @@ LazyRouting._loadComponentAsync = function (path, rule, map) {
         .then(async (result) => {
             try {
                 var js = await LazyRouting._getHtmlAsync("/views" + path + "/index.control.html");
+                js = js.replace('<route-script>', '').replace('</route-script>', '')
                 js = $('<div/>').html(js).text();
-                LazyRouting._controlJs[path] = js.replace('<route-script>', '').replace('</route-script>', '');
+                LazyRouting._controlJs[path] = js;
             }
             catch (ex) {
-                LazyRouting._controlJs[path] = '';
             }
 
             var component = { template: result };
@@ -162,11 +174,18 @@ LazyRouting._convertToViewNameBase = function(path) {
 
 $(window).click(async function (e) {
     if (e.target.__vue__ && !e.target.lazyload) {
-        e.preventDefault();
         var name = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.name;
         var path = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.path;
 
-        await LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(name), name);
+        if (LazyRouting.__mirror.some(x => x.src == path))
+        {
+            var dest = LazyRouting.__mirror.filter(x => x.src == path)[0].dest;
+            await LazyRouting._loadComponentAsync(dest, dest, [{ src: path, dest: dest }]);
+        }
+        else
+        {
+            await LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(name), name);
+        }
         e.target.lazyload = true;
         if (e.target.__vue__.$options.propsData.to.params)
         {
@@ -178,6 +197,7 @@ $(window).click(async function (e) {
             }
         }
         router.push(path);
+        e.preventDefault();
         return false;
     }
 });
