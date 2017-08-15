@@ -36,3 +36,19 @@ function removeApplicationManager(uid)
         $('#frmApplicationManagerRemove').submit();
     }
 }
+
+$(window).on('mousemove', function (e) {
+    console.log(e);
+    if ($(e.target).hasClass('tag-item') || $(e.target).parents().hasClass('tag-item')) {
+        var val = $(e.target).attr('data-value');
+        $('[data-parent="' + val + '"]').addClass('active');
+        $('[data-parent="' + val + '"]').outerWidth($('.grid_3').outerWidth());
+        $('[data-parent="' + val + '"]').css('top', $('[data-value="' + val + '"]').offset().top);
+        $('[data-parent="' + val + '"]').css('margin-left', -$('.grid_3').outerWidth()-5);
+    }
+
+    if (!$(e.target).parents().hasClass('tag-item') && !$(e.target).hasClass('tag-item') && !$(e.target).parents().hasClass('tag-extend-outer') && !$(e.target).hasClass('tag-extend-outer'))
+    {
+        $('[data-parent]').removeClass('active');
+    }
+});

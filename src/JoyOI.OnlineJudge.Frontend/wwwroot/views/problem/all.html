@@ -58,7 +58,6 @@
         </div>
 
         <div class="grid_3">
-
             <div class="sidebar-section">
                 <div v-for="tag in tags" class="tag-outer">
                     <div class="sidebar-section-header">
@@ -67,11 +66,11 @@
                     <div class="sidebar-section-body">
                         <ul class="tag-list">
                             <li v-for="sub in tag.data">
-                                <a v-if="typeof sub == 'string'" v-bind:data-value="tag.text + ':' + sub" class="tag-item">{{ sub }}</a>
-                                <a v-if="typeof sub == 'object'" v-bind:data-value="tag.text + ':' + sub.text" class="tag-item">{{ sub.text }}</a>
-                                <div v-if="typeof sub == 'object'" class="tag-extend-outer">
+                                <a v-if="typeof sub == 'string'" v-bind:data-value="tag.text + ':' + sub" v-on:click="triggerTag(tag.text + ':' + sub)" class="tag-item">{{ sub }}</a>
+                                <a v-if="typeof sub == 'object'" v-bind:data-value="tag.text + ':' + sub.text" v-on:click="triggerTag(tag.text + ':' + sub.text)" class="tag-item">{{ sub.text }}</a>
+                                <div v-if="typeof sub == 'object'" v-bind:data-parent="tag.text + ':' + sub.text" class="tag-extend-outer">
                                     <ul class="tag-list">
-                                        <li v-for="final in sub.data"><a>{{ final }}</a></li>
+                                        <li v-for="final in sub.data"><a class="tag-item" v-bind:data-value="tag.text + ':' + sub.text + ':' + final" v-on:click="triggerTag(tag.text + ':' + sub.text + ':' + final)">{{ final }}</a></li>
                                     </ul>
                                 </div>
                             </li>

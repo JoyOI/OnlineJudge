@@ -12,7 +12,33 @@
                     ]
                 },
                 { text: '按年份', data: [ '2017', '2016', '2015', '2014' ]  }
-            ]
+            ],
+            selected: []
         };
     }
+
+    component.methods = {
+        triggerTag: function (tag) {
+            if (this.selected.some(x => x == tag))
+            {
+                var subs = this.selected.filter(x => x.indexOf(tag) >= 0);
+                for (var i = 0; i < subs.length; i ++) {    
+                    this.selected.pop(subs[i]);
+                    $('[data-value="' + subs[i] + '"]').removeClass('active');
+                }
+            }
+            else
+            {    
+                this.selected.push(tag);
+                if (tag.indexOf(':') >= 0 && tag.lastIndexOf(':') >=0 && tag.indexOf(':') != tag.lastIndexOf(':')) {
+                    var parent = tag.substr(0, tag.lastIndexOf(':'));
+                    if (!this.selected.some(x => x == parent)) {
+                        this.selected.push(parent);    
+                        $('[data-value="' + parent + '"]').addClass('active');
+                    }
+                }
+                $('[data-value="' + tag + '"]').addClass('active');
+            }
+        }
+    };
 </route-script>
