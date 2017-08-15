@@ -174,7 +174,8 @@
 
     .thread-body a {
         font-size: 22px;
-        line-height: 36px;
+        line-height: 22px;
+        margin-bottom: 14px;
         display: block;
     }
 
