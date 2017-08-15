@@ -1,4 +1,8 @@
-﻿.avatar-section {
+﻿a {
+    cursor: pointer;
+}
+
+.avatar-section {
     display: none;
 }
 
@@ -207,12 +211,12 @@
     padding: 0 10px;
     border-radius: 12px;
     border: 1px solid #ddd;
-    margin-right: 7px;
+    margin-right: 5px;
     color: #666;
 }
 
 .thread-body-plain {
-    margin: 0 7px;
+    margin: 0 5px;
     height: 24px;
     line-height: 24px;
     font-size: 16px;
@@ -222,4 +226,25 @@
 
 .thread-revert-padding {
     margin: 0 -25px -25px -25px;
+}
+
+.sidebar-button {
+    font-size: 14px;
+    line-height: 30px;
+    background-color: #eee;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    color: #888;
+    display: block;
+    text-align: center;
+}
+
+    .sidebar-button:hover {
+        background-color: #5590ae;
+        border: 1px solid #5590ae;
+        color: #fff;
+    }
+
+.sidebar-section {
+    margin-bottom: 35px;
 }
