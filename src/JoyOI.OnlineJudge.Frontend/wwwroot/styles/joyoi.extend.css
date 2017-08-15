@@ -249,7 +249,7 @@
     margin-bottom: 35px;
 }
 
-.problem-list {
+.table-list {
     width: 100%;
     background: #fff;
     box-shadow: 0 0.375rem 1.375rem rgba(175,190,201, .5);
@@ -257,7 +257,7 @@
     color: #666;
 }
 
-    .problem-list th, .problem-list td {
+    .table-list th, .table-list td {
         padding: 13px 15px;
         font-weight: normal;
         text-align: center;
@@ -265,11 +265,11 @@
         font-size: 14px;
     }
 
-    .problem-list th {
+    .table-list th {
         color: #888
     }
 
-    .problem-list td {
+    .table-list td {
         padding: 5px 15px;
         font-size: 12px;
     }
@@ -283,7 +283,7 @@
         border-left: 1px solid #ddd;
     }
 
-    .problem-list tbody tr:nth-child(odd) {
+    .table-list tbody tr:nth-child(odd) {
         background-color: #f4f4f4;
     }
 
@@ -312,7 +312,7 @@
         color: #666;
         background-color: #eee;
     }
-
+     
 .tag-extend-outer {
     display: none;
     padding: 15px;
@@ -328,4 +328,51 @@
 
 .tag-extend-outer.active {
     display: block;
+}
+
+.judge-list th:first-child, .judge-list td:first-child {
+    text-align: left;
+    border-right: 1px solid #ddd;
+}
+
+.judge-list td:first-child {
+    border-left: 3px solid #ccc;
+}
+
+.judge-green {
+    border-left: 3px solid #2ac649 !important;
+    color: #2ac649;
+}
+
+.judge-red {
+    border-left: 3px solid #fb6666!important;
+    color: #fb6666;
+}
+
+.judge-orange {
+    border-left: 3px solid #f39800 !important;
+    color: #f39800;
+}
+
+.judge-list td i {
+    width: 20px!important;
+    height: 12px!important;
+    font-size: 12px!important;
+    display: inline-block!important;
+}
+
+.judge-list td:nth-child(2), .judge-list th:nth-child(2) {
+    text-align: left;
+}
+
+.judge-list td:nth-child(3), .judge-list th:nth-child(3) {
+    text-align: right;
+}
+
+.judge-list td:nth-child(4), .judge-list th:nth-child(4) {
+    border-left: 1px solid #ddd;
+}
+
+.judge-list td:nth-child(6), .judge-list th:nth-child(6) {
+    border-right: 1px solid #ddd;
 }
