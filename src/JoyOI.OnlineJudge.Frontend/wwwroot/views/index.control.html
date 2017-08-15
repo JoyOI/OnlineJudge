@@ -5,6 +5,11 @@
             links:[],
             title: '',
             showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home'
+        }, 
+        watch: {
+            title: function (val) {
+                $('title').text(val + ' - JoyOI Online Judge');
+            }
         }
     });
 

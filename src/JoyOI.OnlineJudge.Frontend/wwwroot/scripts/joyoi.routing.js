@@ -8,5 +8,6 @@
 });
 
 LazyRouting.SetMirror({
-    '/': '/home'
+    '/': '/home',
+    '/problem': '/problem/all'
 });

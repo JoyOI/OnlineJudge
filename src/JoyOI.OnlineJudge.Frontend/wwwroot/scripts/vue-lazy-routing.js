@@ -17,6 +17,15 @@ router.beforeEach(function (to, from, next) {
             console.error(ex);
         }
     }
+    else if (to.name && LazyRouting.__mirror.some(x => x.src == to.name) && LazyRouting._controlJs[LazyRouting.__mirror.filter(x => x.src == to.name)[0].dest])
+    {
+        try {
+            var component = { };
+            eval(LazyRouting._controlJs[LazyRouting.__mirror.filter(x => x.src == to.name)[0].dest]);
+        } catch (ex) {
+            console.error(ex);
+        }
+    }
     next();
 })
 
@@ -184,7 +193,7 @@ $(window).click(async function (e) {
         }
         else
         {
-            await LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(name), name);
+            await LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(name), name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
         }
         e.target.lazyload = true;
         if (e.target.__vue__.$options.propsData.to.params)
