@@ -354,11 +354,23 @@
     color: #f39800;
 }
 
+.judge-purple {
+    border-left: 3px solid #be3fe2 !important;
+    color: #be3fe2;
+}
+
+.judge-blue {
+    border-left: 3px solid #0074d9 !important;
+    color: #0074d9;
+}
+
 .judge-list td i {
-    width: 20px!important;
+    width: 16px!important;
     height: 12px!important;
     font-size: 12px!important;
     display: inline-block!important;
+    text-align: center;
+    margin-right: 6px;
 }
 
 .judge-list td:nth-child(2), .judge-list th:nth-child(2) {
