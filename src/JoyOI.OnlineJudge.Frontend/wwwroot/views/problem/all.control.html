@@ -1,3 +1,18 @@
 ﻿<route-script>    
     app.title = '题目列表';
+
+    component.data = function () {
+        return {
+            tags: [
+                { 
+                    text: '按解法', 
+                    data: [ 
+                        { text: '搜索', data: ['暴力', '二分法', 'DFS', 'BFS', '双向BFS', '剪枝'] },
+                        { text: '动态规划', data: ['线性', '树形', '背包问题'] }
+                    ]
+                },
+                { text: '按年份', data: [ '2017', '2016', '2015', '2014' ]  }
+            ]
+        };
+    }
 </route-script>

@@ -56,5 +56,29 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="grid_3">
+
+            <div class="sidebar-section">
+                <div v-for="tag in tags" class="tag-outer">
+                    <div class="sidebar-section-header">
+                        <h1>{{ tag.text }}</h1>
+                    </div>
+                    <div class="sidebar-section-body">
+                        <ul class="tag-list">
+                            <li v-for="sub in tag.data">
+                                <a v-if="typeof sub == 'string'" v-bind:data-value="tag.text + ':' + sub" class="tag-item">{{ sub }}</a>
+                                <a v-if="typeof sub == 'object'" v-bind:data-value="tag.text + ':' + sub.text" class="tag-item">{{ sub.text }}</a>
+                                <div v-if="typeof sub == 'object'" class="tag-extend-outer">
+                                    <ul class="tag-list">
+                                        <li v-for="final in sub.data"><a>{{ final }}</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
