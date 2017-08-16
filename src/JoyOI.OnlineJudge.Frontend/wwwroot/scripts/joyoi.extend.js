@@ -110,3 +110,10 @@ $(window).click(function (e) {
         }
     }
 });
+
+$(window).click(function (e) {
+    var dom = $(e.target);
+    if (!dom.hasClass('filter-outer') && !dom.parents('.filter-outer').length && !dom.hasClass('filter-button') && !dom.parents('.filter-button').length) {
+        $('.filter-outer').removeClass('active');
+    }
+});
