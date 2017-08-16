@@ -506,3 +506,20 @@
         border-top: 3px solid #ed5f82;
         color: #ed5f82;
     }
+
+.problem-tag {
+    color: #666;
+    padding: 5px 10px;
+    line-height: 12px;
+    font-size: 12px;
+    transition: all 0.25s linear;
+    float: right;
+    background-color: #eaeaea;
+    margin-left: 2px;
+    cursor: pointer;
+}
+
+    .problem-tag:hover {
+        color: #fff;
+        background-color: #5590ae;
+    }
