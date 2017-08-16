@@ -104,7 +104,7 @@ $(window).click(function (e) {
                 box.css('left', box.parent('th').offset().left);
             }
 
-            if (box.hasClass('problem-filter')) {
+            if (box.hasClass('problem-filter') || box.hasClass('time-filter')) {
                 box.outerWidth(box.parent('th').outerWidth());
             }
         }

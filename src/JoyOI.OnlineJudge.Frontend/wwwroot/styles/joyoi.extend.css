@@ -464,3 +464,11 @@
 .language-filter {
     width: 270px;
 }
+
+.form-control {
+    border-radius: 0;
+}
+
+.filter-outer {
+    border: 1px solid rgba(175,190,201, .5);
+}

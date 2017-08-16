@@ -8,7 +8,9 @@
             selectedStatus: null,
             selectedProblem: null,
             selectedSubmittor: null,
-            selectedLanguage: null
+            selectedLanguage: null,
+            selectedContest: null,
+            selectedTime: null
         };
     };
 
@@ -36,6 +38,13 @@
             setTimeout(function () {
                 $('.filter-outer').removeClass('active');
             }, 300);
+        },
+        filterTime: function(start, end) {
+            if (!start && !end) {
+                this.selectedTime = null;
+            } else {
+                this.selectedTime = { start: start, end: end };
+            }
         }
     };
 </route-script>
