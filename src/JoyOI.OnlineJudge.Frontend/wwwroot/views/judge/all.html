@@ -5,20 +5,84 @@
                 <colgroup>
                     <col style="width: 170px;" />
                     <col />
-                    <col />
+                    <col style="width: 125px;" />
                     <col style="width: 70px;" />
                     <col style="width: 70px;" />
-                    <col style="width: 70px;" />
+                    <col style="width: 80px;" />
                     <col style="width: 200px;" />
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>状态</th>
-                        <th>题目</th>
-                        <th>提交者</th>
+                        <th>
+                            <a class="filter-button">{{ selectedStatus !== null ? statuses[selectedStatus].display : '状态' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer status-filter">
+                                <ul class="filter-list">
+                                    <li v-for="status in statuses">
+                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue', 'judge-purple': status.color === 'purple' }" v-on:click="filterStatus(status.value)" class="filter-item">
+                                            <i class="fa" v-bind:class="{ 'fa-question': status.color === 'blue', 'fa-check': status.color === 'green', 'fa-eye-slash': status.color === 'purple', 'fa-exclamation': status.color === 'orange', 'fa-remove': status.color === 'red' }"></i>
+                                            {{ status.display }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="filter-button">{{ selectedProblem ? selectedProblem.display : '题目' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer problem-filter">
+                                <p><input type="text" class="form-control" placeholder="题目ID或名称" /></p>
+                                <div class="problem-filter-list">
+                                    <div class="problem-filter-list-item">
+                                        <div class="problem-filter-list-item-title">A+B Problem</div>
+                                        <div class="problem-filter-list-item-id">ID: a-plus-b-problem</div>
+                                    </div>
+                                    <div class="problem-filter-list-item">
+                                        <div class="problem-filter-list-item-title">A+B Problem</div>
+                                        <div class="problem-filter-list-item-id">ID: a-plus-b-problem</div>
+                                    </div>
+                                    <div class="problem-filter-list-item">
+                                        <div class="problem-filter-list-item-title">A+B Problem</div>
+                                        <div class="problem-filter-list-item-id">ID: a-plus-b-problem</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="filter-button">{{ selectedUser ? selectedUser : '提交者' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer submit-filter">
+                                <p><input type="text" class="form-control" placeholder="用户名" /></p>
+                                <div class="submit-filter-list">
+                                    <div class="submit-filter-list-item">
+                                        <img src="/images/non-avatar.png" class="submit-filter-list-item-avatar" />
+                                        <div class="submit-filter-list-item-username">Yuko</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="submit-filter-list-item">
+                                        <img src="/images/non-avatar.png" class="submit-filter-list-item-avatar" />
+                                        <div class="submit-filter-list-item-username">Yuko</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="submit-filter-list-item">
+                                        <img src="/images/non-avatar.png" class="submit-filter-list-item-avatar" />
+                                        <div class="submit-filter-list-item-username">Yuko</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
                         <th>耗时</th>
                         <th>内存</th>
-                        <th>语言</th>
+                        <th>
+                            <a class="filter-button">{{ selectedLanguage ? selectedLanguage : '语言' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer language-filter">
+                                <ul class="filter-list">
+                                    <li v-for="language in languages">
+                                        <a v-bind:data-value="language" v-on:click="filterLanguage(language)" class="filter-item">
+                                            {{ language }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>
                         <th>提交时间</th>
                     </tr>
                 </thead>

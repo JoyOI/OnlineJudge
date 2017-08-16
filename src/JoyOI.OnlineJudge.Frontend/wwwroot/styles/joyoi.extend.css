@@ -267,12 +267,12 @@
         background-color: #f4f4f4;
     }
 
-    .tag-list {
+    .tag-list, .filter-list {
         margin: 0;
         padding: 0;
     }
 
-        .tag-list li {
+        .tag-list li, .filter-list li {
             width: 50%;
             margin-bottom: 5px;
             display: inline-block;
@@ -282,13 +282,13 @@
     margin-top: -30px;
 }
 
-.tag-item {
+.tag-item, .filter-item {
     color: #666;
     padding: 5px 10px;
     transition: all 0.25s linear;
 }
 
-    .tag-item:hover {
+    .tag-item:hover, .filter-item:hover {
         color: #666;
         background-color: #eee;
     }
@@ -301,7 +301,7 @@
     box-shadow: 0 0.375rem 1.375rem rgba(175,190,201, .5);
 }
 
-.tag-item.active {
+.tag-item.active, .filter-item.active {
     background-color: #ed5f82;
     color: #fff;
 }
@@ -344,7 +344,7 @@
     color: #0074d9;
 }
 
-.judge-list td i {
+.judge-list td i, .filter-item i {
     width: 16px!important;
     height: 12px!important;
     font-size: 12px!important;
@@ -371,4 +371,96 @@
 
 .sidebar-section-body p:last-child {
     margin-bottom: 0;
+}
+
+.filter-outer {
+    visibility: hidden;
+    opacity: 0;
+    padding: 15px;
+    background-color: rgba(255,255,255,0.95);
+    box-shadow: 0 0.375rem 1.375rem rgba(175,190,201, .5);
+    position: absolute;
+    text-align: left;
+    transform: scale(0.4);
+    transition: all 0.2s ease-in-out;
+}
+
+    .filter-outer.active {
+        visibility: visible;
+        opacity: 1;
+        transform: scale(1);
+    }
+
+
+
+.status-filter {
+    width: 520px;
+}
+
+    .status-filter li a {
+        border-left: none!important;
+    }
+
+@media (min-width:768px) {
+    .status-filter li, .language-filter li {
+        width: 33.3%;
+    }
+}
+
+@media (max-width:767px) {
+    .status-filter, .language-filter {
+        width: 100%;
+        left:0
+    }
+}
+
+.problem-filter-list, .submit-filter-list {
+    margin: 0 -15px -15px -15px;
+}
+
+.problem-filter-list-item, .submit-filter-list-item {
+    padding: 15px;
+    cursor: pointer;
+    border-top: 1px solid #ddd;
+    transition: all 0.2s linear;
+    width: 100%;
+}
+
+.problem-filter-list-item-title {
+    font-size: 16px;
+    line-height: 16px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.problem-filter-list-item-id {
+    font-size: 12px;
+    line-height: 12px;
+    color: #999
+}
+
+.problem-filter-list-item:hover, .submit-filter-list-item:hover {
+    background-color: #5590ae;
+}
+
+    .problem-filter-list-item:hover div, .submit-filter-list-item:hover div {
+        color: #fff !important;
+    }
+
+.submit-filter-list-item-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+    float: left;
+}
+
+.submit-filter-list-item-username {
+    line-height: 32px;
+    font-size: 16px;
+    float: left;
+}
+
+.language-filter {
+    width: 270px;
 }
