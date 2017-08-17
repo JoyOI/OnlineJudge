@@ -1,17 +1,52 @@
 ﻿<div class="container" id="problem">
     <div class="row">
         <div class="col-md-9">
-            <div class="area-outer">
+            <div class="area-outer problem-body">
                 <div class="area-item">
-                    <div class="area-title">A+B Problem</div>
-                    <div>123</div>
-                    <div class="contest-footer">
-                        <div class="contest-footer-icon" style="color: #1d76c7"><i class="fa fa-arrow-circle-right"></i> Ready</div>
-                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> ACM/ICPC</div>
-                        <div class="contest-footer-icon"><i class="fa fa-users"></i> 348</div>
-                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> 2017-08-13 9:00</div>
-                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> 2.5h</div>
+                    <div class="area-title">Limitations</div>
+                    <div>
+                        <table class="limitation-table">
+                            <tr>
+                                <td>时间限制</td>
+                                <td>内存限制</td>
+                                <td>评测方式</td>
+                                <td>题目来源</td>
+                            </tr>
+                            <tr>
+                                <td>{{ timelimit }}ms</td>
+                                <td>{{ memorylimit / 1024 }}KiB</td>
+                                <td>{{ isSpecialJudge ? '特殊比较器' : '标准比较器' }}</td>
+                                <td>{{ source }}</td>
+                            </tr>
+                        </table>
                     </div>
+                    <div class="area-title" v-if="background">Background</div>
+                    <div v-if="background">{{ background }}</div>
+                    <div class="area-title" v-if="description">Description</div>
+                    <div v-if="description">{{ description }}</div>
+                    <div class="area-title" v-if="inputFormat">Input Format</div>
+                    <div v-if="inputFormat">{{ inputFormat }}</div>
+                    <div class="area-title" v-if="outputFormat">Output Format</div>
+                    <div v-if="outputFormat">{{ outputFormat }}</div>
+                    <div class="area-title" v-if="sampleData.length">Sample Data</div>
+                    <div v-for="(data,index) in sampleData" v-bind:class="{ 'sample-data-outer': index > 0 }">
+                        <table class="sample-data-table">
+                            <thead>
+                                <tr>
+                                    <th>输入样例 #{{ index + 1 }}</th>
+                                    <th>输出样例 #{{ index + 1 }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><pre>{{ data.input }}</pre></td>
+                                    <td><pre>{{ data.output }}</pre></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="area-title" v-if="hint">Hint</div>
+                    <div v-if="hint">{{ hint }}</div>
                 </div>
             </div>
         </div>

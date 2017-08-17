@@ -526,3 +526,26 @@
         color: #fff;
         background-color: #5590ae;
     }
+
+.problem-body .area-title {
+    margin-bottom: 20px;
+}
+
+.problem-body .area-title:not(:first-child) {
+    margin-top: 35px;
+}
+
+.sample-data-table, .limitation-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .sample-data-table td, .sample-data-table th, .sample-data-table pre, .limitation-table td {
+        padding: 10px;
+        color: #666;
+        border: 1px solid #ddd;
+    }
+
+.sample-data-outer:not(:first-child) {
+    margin-top: 35px;
+}
