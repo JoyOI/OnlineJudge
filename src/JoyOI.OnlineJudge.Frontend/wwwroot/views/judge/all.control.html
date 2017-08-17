@@ -17,10 +17,6 @@
         };
     };
 
-    component.created = function () {
-        $('.datetime').datetimepicker();
-    };
-
     component.methods = {
         filterStatus: function (status) {
             $('[data-value="' + this.selectedStatus + '"]').removeClass('active');

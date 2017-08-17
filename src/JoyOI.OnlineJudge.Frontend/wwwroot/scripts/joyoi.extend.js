@@ -138,3 +138,10 @@ $(window).click(function (e) {
         $('.collapse.in').removeClass('in');
     }
 });
+
+$(document).bind('DOMNodeInserted', function (e) {
+    var dom = $(e.target).find('.datetime')
+    if (dom.length) {
+        dom.datetimepicker();
+    }
+});

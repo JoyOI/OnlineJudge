@@ -13,6 +13,11 @@
         }
     });
 
+    router.beforeEach((to, from, next) => {
+        $('.xdsoft_datetimepicker').remove();
+        next();
+    });
+
     router.afterEach(() =>
     {    
         app.showUrlCover = router.history.current.fullPath != '/' && router.history.current.fullPath != '/home';
