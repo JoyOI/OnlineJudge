@@ -2,6 +2,8 @@
     '/home': null,
     '/problem/all': null,
     '/problem/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
+    '/contest/all': null,
+    '/contest/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/judge/all': null,
     '/foo/:id': { id: '[0-9a-zA-Z-]{3,16}' },
     '/bar': null,
@@ -11,5 +13,6 @@
 LazyRouting.SetMirror({
     '/': '/home',
     '/problem': '/problem/all',
-    '/judge': '/judge/all'
+    '/judge': '/judge/all',
+    '/contest': '/contest/all'
 });

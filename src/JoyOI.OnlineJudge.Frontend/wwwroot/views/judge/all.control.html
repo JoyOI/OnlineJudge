@@ -1,5 +1,6 @@
 ﻿<route-script>
     app.title = '评测记录';
+    app.links = [];
 
     component.data = function () {
         return {
@@ -14,6 +15,10 @@
             selectedContest: null,
             selectedTime: null
         };
+    };
+
+    component.created = function () {
+        $('.datetime').datetimepicker();
     };
 
     component.methods = {

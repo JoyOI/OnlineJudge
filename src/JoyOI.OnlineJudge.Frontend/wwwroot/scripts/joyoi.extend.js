@@ -80,6 +80,9 @@ var languages = [
 
 $(window).click(function (e) {
     var dom = $(e.target);
+    if (!dom.parents('#app').length) {
+        return;
+    }
     if (dom.parents('.filter-button').length)
         dom = dom.parents('.filter-button');
     else if (!dom.hasClass('filter-button'))
@@ -119,6 +122,11 @@ $(window).click(function (e) {
 
 $(window).click(function (e) {
     var dom = $(e.target);
+
+    if (!dom.parents('#app').length) {
+        return;
+    }
+
     if (!dom.hasClass('filter-outer') && !dom.parents('.filter-outer').length && !dom.hasClass('filter-button') && !dom.parents('.filter-button').length) {
         $('.filter-outer').removeClass('active');
     }

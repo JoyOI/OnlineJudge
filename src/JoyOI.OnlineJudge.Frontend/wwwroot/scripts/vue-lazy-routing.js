@@ -9,6 +9,9 @@ var router = new VueRouter({
 });
 
 router.beforeEach(function (to, from, next) {
+    if (to.name && !LazyRouting.__routeMap[to.name] && !LazyRouting.__mirror.some(x => x.src == to.path))
+        LazyRouting._loadComponentAsync(to.name, LazyRouting.__mirror.filter(x => x.src == router.history.current.fullPath && x.dest == to.name));
+
     if (to.name && LazyRouting._controlJs[to.name]) {
         try {
             var component = { };
@@ -68,7 +71,7 @@ LazyRouting._documentReadyPromise = new Promise(function (resolve) {
                     var regex = new RegExp("^" + regexStr + "$", "g");
                     if (regex.test(router.history.current.fullPath) || LazyRouting.__mirror.some(y => y.src == router.history.current.fullPath && y.dest == x)) {
                         var mapping = [];
-                        LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(x), x, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == x));
+                        LazyRouting._loadComponentAsync(x, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == x));
                         is404 = false;
                         break;
                     }
@@ -125,9 +128,11 @@ LazyRouting._getHtmlAsync =function(url, unsafe) {
     });
 }
 
-LazyRouting._loadComponentAsync = function (path, rule, map) {
-    if (LazyRouting.__mirror.some(x => x.src == path))
+LazyRouting._loadComponentAsync = function (rule, map) {
+    if (LazyRouting.__mirror.some(x => x.src == rule))
         return Promise.reject();
+
+    var path = LazyRouting._convertToViewNameBase(rule);
 
     return LazyRouting._getHtmlAsync("/views" + path + ".html")
         .then(async (result) => {
@@ -135,7 +140,7 @@ LazyRouting._loadComponentAsync = function (path, rule, map) {
                 var js = await LazyRouting._getHtmlAsync("/views" + path + ".control.html");
                 js = js.replace('<route-script>', '').replace('</route-script>', '')
                 js = $('<div/>').html(js).text();
-                LazyRouting._controlJs[path] = js;
+                LazyRouting._controlJs[rule] = js;
             }
             catch (ex) {
             }
@@ -148,14 +153,14 @@ LazyRouting._loadComponentAsync = function (path, rule, map) {
                 var js = await LazyRouting._getHtmlAsync("/views" + path + "/index.control.html");
                 js = js.replace('<route-script>', '').replace('</route-script>', '')
                 js = $('<div/>').html(js).text();
-                LazyRouting._controlJs[path] = js;
+                LazyRouting._controlJs[rule] = js;
             }
             catch (ex) {
             }
 
             var component = { template: result };
-            if (LazyRouting._controlJs[path]) {
-                eval(LazyRouting._controlJs[path]);
+            if (LazyRouting._controlJs[rule]) {
+                eval(LazyRouting._controlJs[rule]);
             }
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
             router.addRoutes([LazyRouting.__routeMap[rule]]);
@@ -189,11 +194,11 @@ $(window).click(async function (e) {
         if (LazyRouting.__mirror.some(x => x.src == path))
         {
             var dest = LazyRouting.__mirror.filter(x => x.src == path)[0].dest;
-            await LazyRouting._loadComponentAsync(dest, dest, [{ src: path, dest: dest }]);
+            await LazyRouting._loadComponentAsync(dest, [{ src: path, dest: dest }]);
         }
         else
         {
-            await LazyRouting._loadComponentAsync(LazyRouting._convertToViewNameBase(name), name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
+            await LazyRouting._loadComponentAsync(name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
         }
         e.target.lazyload = true;
         if (e.target.__vue__.$options.propsData.to.params)
@@ -206,7 +211,6 @@ $(window).click(async function (e) {
             }
         }
         router.push(path);
-        e.preventDefault();
         return false;
     }
 });
