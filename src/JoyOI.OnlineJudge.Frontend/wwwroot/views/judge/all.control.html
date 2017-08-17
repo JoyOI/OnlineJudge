@@ -3,6 +3,8 @@
 
     component.data = function () {
         return {
+            page: 1,
+            pageCount: 10,
             statuses: statuses,
             languages: languages,
             selectedStatus: null,
@@ -45,6 +47,9 @@
             } else {
                 this.selectedTime = { start: start, end: end };
             }
+        },
+        toPage: function (p) {
+            this.page = p;
         }
     };
 </route-script>

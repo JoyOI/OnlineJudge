@@ -47,7 +47,7 @@
                             </div>
                         </th>
                         <th>
-                            <a class="filter-button">{{ selectedUser ? selectedUser : '提交者' }} <i class="fa fa-filter"></i></a>
+                            <a class="filter-button">{{ selectedSubmittor ? selectedSubmittor : '提交者' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer submit-filter">
                                 <p><input type="text" class="form-control" placeholder="用户名" /></p>
                                 <div class="submit-filter-list">
@@ -145,14 +145,19 @@
                     <tr>
                         <td colspan="7" class="tfoot-paging">
                             <div class="tfoot-paging-outer">
-                                <div class="tfoot-paging-item">首页</div>
-                                <div class="tfoot-paging-item">上一页</div>
-                                <div class="tfoot-paging-item">1</div>
-                                <div class="tfoot-paging-item current">2</div>
-                                <div class="tfoot-paging-item">3</div>
-                                <div class="tfoot-paging-item">4</div>
-                                <div class="tfoot-paging-item">下一页</div>
-                                <div class="tfoot-paging-item">尾页</div>
+                                <a class="tfoot-paging-item" v-on:click="toPage(1)">首页</a>
+                                <div class="tfoot-paging-item" v-on:click="toPage(Math.max(page - 1, 1))">上一页</div>
+                                <div class="tfoot-paging-item" v-if="page > 3">...</div>
+                                <a class="tfoot-paging-item" 
+                                   v-for="p in 5" 
+                                   v-if="page + p - 3 >= 1 && page + p - 3 <= pageCount" 
+                                   v-on:click="toPage(page + p - 3)" 
+                                   v-bind:class="{ 'current': page + p - 3 === page }">
+                                   {{ page + p - 3 }}
+                                </a>
+                                <div class="tfoot-paging-item" v-if="page < pageCount - 2">...</div>
+                                <div class="tfoot-paging-item" v-on:click="toPage(Math.min(page + 1, pageCount))">下一页</div>
+                                <a class="tfoot-paging-item" v-on:click="toPage(pageCount)">尾页</a>
                             </div>
                         </td>
                     </tr>

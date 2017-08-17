@@ -410,9 +410,10 @@
 }
 
 @media (max-width:767px) {
-    .status-filter, .language-filter {
-        width: 100%;
-        left:0
+    .filter-outer {
+        width: calc(100% - 30px)!important;
+        left: 0!important;
+        margin-left: 15px;
     }
 }
 
