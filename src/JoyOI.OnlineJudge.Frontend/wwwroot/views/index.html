@@ -31,7 +31,8 @@
                         <!-- start logo -->
                         <router-link to="/" class="navbar-logo"><img src="/images/logo-bk.png" /></router-link>
                         <!-- end logo -->
-                    </div><div id="navbar" class="navbar-collapse collapse">
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
 
                         <ul class="nav navbar-nav navbar-left">
                             <li class="home"><router-link to="/">首页</router-link></li>
@@ -42,7 +43,6 @@
                             <li class="home"><router-link to="/hack">Hack</router-link></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-
                             <li class="logout"><a href="javascript:$('#frmLogout').submit()">Logout</a></li>
                             <li class="login"><a asp-action="Login" asp-controller="Account">Login</a></li>
                             <li class="register"><a asp-action="Register" asp-controller="Account">Register</a></li>
@@ -55,15 +55,15 @@
         </header>
         <!-- end header -->
 
-        <div id="cover" class="cover cover-single mobile-cover" v-bind:class="{ 'cover-url': showUrlCover }">
+        <div id="cover" class="cover cover-single mobile-cover" v-bind:class="{ 'cover-url': showUrlCover, 'cover-without-url': !showUrlCover }">
             <div class="cont-wrap">
-                <div class="grid_12 mobile-cover-center" style="text-align:left">
+                <div class="col-md-12 mobile-cover-center" style="text-align:left">
                     <img src="/images/logo.png" class="mobile-cover-img" style="height:140px;margin-top:-60px;" />
                 </div>
             </div>
             <div class="cover-url-inner" v-show="showUrlCover">
                 <div class="cont-wrap">
-                    <div class="grid_12" style="text-align:left">
+                    <div class="col-md-12" style="text-align:left">
                         <div class="columns">
                             <div class="location-path">
                                 / <router-link to="/">Joy OI</router-link> /

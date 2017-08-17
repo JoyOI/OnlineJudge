@@ -235,6 +235,7 @@
     box-shadow: 0 0.375rem 1.375rem rgba(175,190,201, .5);
     border-collapse: collapse;
     color: #666;
+    margin-bottom: 35px;
 }
 
     .table-list th, .table-list td {
@@ -383,6 +384,7 @@
     text-align: left;
     transform: scale(0.4);
     transition: all 0.2s ease-in-out;
+    margin-top: 13px;
 }
 
     .filter-outer.active {

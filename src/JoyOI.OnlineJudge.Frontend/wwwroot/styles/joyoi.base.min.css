@@ -4840,7 +4840,6 @@ select[multiple].input-group-sm > .form-control, select[multiple].input-group-sm
 
     .navbar-right {
         float: right !important;
-        margin-right: -15px
     }
 
         .navbar-right ~ .navbar-right {
@@ -15434,6 +15433,17 @@ img {
     background: rgba(0,0,0,.5)
 }
 
+@media(max-width: 991px) {
+    .cover-url-inner {
+        padding-top: 12px;
+        margin-top: 30px;
+    }
+
+    .cover-url-inner .columns {
+        margin: 0;
+    }
+}
+
 .columns {
     margin-top: 12px
 }
@@ -15755,7 +15765,6 @@ td i {
         margin-top: 40px;
         padding-top: 12px;
         padding-bottom: 14px;
-        display: none;
     }
 
         .cover-url-inner .columns {
@@ -15837,4 +15846,8 @@ td i {
     .sidebar-first {
         margin-top: -30px;
     }
+}
+
+.cover-without-url {
+    height: 200px;
 }

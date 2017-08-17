@@ -41,9 +41,9 @@ $(window).on('mousemove', function (e) {
     if ($(e.target).hasClass('tag-item') || $(e.target).parents().hasClass('tag-item')) {
         var val = $(e.target).attr('data-value');
         $('[data-parent="' + val + '"]').addClass('active');
-        $('[data-parent="' + val + '"]').outerWidth($('.grid_3').outerWidth());
-        $('[data-parent="' + val + '"]').css('top', $('[data-value="' + val + '"]').offset().top);
-        $('[data-parent="' + val + '"]').css('margin-left', -$('.grid_3').outerWidth()-5);
+        $('[data-parent="' + val + '"]').outerWidth($('.col-md-3').outerWidth());
+        $('[data-parent="' + val + '"]').css('margin-top', -$('[data-value="' + val + '"]').outerHeight());
+        $('[data-parent="' + val + '"]').css('margin-left', -$('.col-md-3').outerWidth() - 5);
     }
 
     if (!$(e.target).parents().hasClass('tag-item') && !$(e.target).hasClass('tag-item') && !$(e.target).parents().hasClass('tag-extend-outer') && !$(e.target).hasClass('tag-extend-outer'))
@@ -80,7 +80,7 @@ var languages = [
 
 $(window).click(function (e) {
     var dom = $(e.target);
-    if (dom.parents('.filter-button'))
+    if (dom.parents('.filter-button').length)
         dom = dom.parents('.filter-button');
     else if (!dom.hasClass('filter-button'))
         return;
@@ -95,17 +95,16 @@ $(window).click(function (e) {
     {
         $('.filter-outer.active').removeClass('active');
         box.addClass('active');
-        box.css('top', box.parent('th').offset().top + box.parent('th').outerHeight());
 
         if ($(window).width() >= 768) {
             if (box.hasClass('submit-filter') || box.hasClass('language-filter')) {
-                box.css('left', box.parent('th').offset().left - box.outerWidth() + box.parent('th').outerWidth());
+                box.css('left', box.parents('th').offset().left - 12 - box.outerWidth() + box.parents('th').outerWidth());
             } else {
-                box.css('left', box.parent('th').offset().left);
+                box.css('left', box.parents('th').offset().left - 12);
             }
 
             if (box.hasClass('problem-filter') || box.hasClass('time-filter')) {
-                box.outerWidth(box.parent('th').outerWidth());
+                box.outerWidth(box.parents('th').outerWidth());
             }
         }
     }
@@ -115,5 +114,12 @@ $(window).click(function (e) {
     var dom = $(e.target);
     if (!dom.hasClass('filter-outer') && !dom.parents('.filter-outer').length && !dom.hasClass('filter-button') && !dom.parents('.filter-button').length) {
         $('.filter-outer').removeClass('active');
+    }
+});
+
+$(window).click(function (e) {
+    var dom = $(e.target);
+    if (dom.parents('#navbar').length) {
+        $('.collapse.in').removeClass('in');
     }
 });
