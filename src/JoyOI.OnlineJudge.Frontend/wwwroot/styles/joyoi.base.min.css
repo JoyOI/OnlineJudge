@@ -15831,6 +15831,12 @@ td i {
     margin-right: 2px;
 }
 
+    .sidebar-section-button.highlight {
+        border-color: #ffdd94;
+        background: #fff4db;
+        color: #333 !important;
+    }
+
     .sidebar-section-button:hover {
         border-color: #4690d0;
         background: #f4f4f4;
