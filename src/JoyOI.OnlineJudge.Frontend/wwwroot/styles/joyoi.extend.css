@@ -664,7 +664,7 @@
 
 .problem-body-set-off {
     position: fixed;
-    width: 50%;
+    width: 100%;
     height: calc(100% - 50px);
     top: 50px;
     left: 0;
@@ -708,4 +708,40 @@ body.full-screen {
     cursor: col-resize;
     top: 50px;
     left: calc(50% - 3px);
+}
+
+.code-editor-outer.edit-mode {
+    height: 100%;
+}
+
+.code-editor-outer.edit-mode pre {
+    height: calc(100% - 44px);
+}
+
+.code-editor-header {
+    background-color: #f2f6f7;
+    height: 44px;
+    border-bottom: 1px solid #ddd;
+}
+
+.code-editor-button {
+    margin: 8px 4px;
+    padding: 0 8px;
+    height: 28px;
+    color: #8395a1 !important;
+    display: inline-block;
+    font-size: 14px;
+}
+
+    .code-editor-button:hover {
+        background-color: #e3e7e8;
+    }
+
+    .code-editor-button.active {
+        background-color: #ed5f82;
+        color: #fff !important;
+    }
+
+.float-right {
+    float: right;
 }

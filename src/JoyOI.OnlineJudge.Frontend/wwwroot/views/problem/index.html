@@ -95,6 +95,16 @@
 
     <div v-if="isInEditMode" class="problem-body-set-off"></div>
     <div class="code-editor-outer" v-bind:class="{ 'edit-mode': isInEditMode }">
+        <div class="code-editor-header">
+            <a class="code-editor-button active"><i class="fa fa-code"></i> 代码编辑</a>
+            <a class="code-editor-button"><i class="fa fa-database"></i> 自测数据</a>
+            <select class="code-editor-button">
+                <option v-for="language in languages">{{ language }}</option>
+            </select>
+            <a class="code-editor-button float-right"><i class="fa fa-caret-square-o-right"></i> 提交自测</a>
+            <a class="code-editor-button float-right"><i class="fa fa-play"></i> 标准评测</a>
+            <a class="code-editor-button float-right" v-on:click="backToViewMode()"><i class="fa fa-mail-reply"></i> 返回题目</a>
+        </div>
         <pre id="code-editor">using System;</pre>
     </div>
 
