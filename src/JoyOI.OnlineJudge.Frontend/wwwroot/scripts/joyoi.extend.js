@@ -119,3 +119,30 @@ $(document).bind('DOMNodeInserted', function (e) {
         });
     }
 });
+
+var __split_down = false;
+$(window).mousedown(function (e) {
+    var dom = $(e.target);
+    if (dom.hasClass('problem-edit-split-line')) {
+        __split_down = true;
+    }
+});
+
+$(window).mousemove(function (e) {
+    if (__split_down) {
+        var x = e.pageX;
+        var width = $(window).width();
+        var left = (x / width * 100).toFixed(3);
+        var right = 100 - (x / width * 100).toFixed(3);
+        $('.problem-body').css('width', left + '%');
+        $('.code-editor-outer').css('width', right + '%');
+        $('.code-editor-outer').css('left', left + '%');
+        $('.problem-edit-split-line').css('left', 'calc(' + left + '% - 3px)');
+        $('.back-to-view-mode').css('left', left + '%');
+        $('.back-to-view-mode').css('margin-left', -$('.back-to-view-mode').outerWidth() - 30);
+    }
+});
+
+$(window).mouseup(function (e) {
+    __split_down = false;
+});

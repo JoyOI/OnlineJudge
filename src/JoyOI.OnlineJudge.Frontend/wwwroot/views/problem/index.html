@@ -1,7 +1,7 @@
 ﻿<div class="container" id="problem">
     <div class="row">
         <div class="col-md-9">
-            <div class="area-outer problem-body">
+            <div class="area-outer problem-body" v-bind:class="{ 'edit-mode': isInEditMode }">
                 <div class="area-item">
                     <div class="area-title">Limitations</div>
                     <div>
@@ -53,7 +53,7 @@
 
         <div class="col-md-3 title-align">
             <div class="sidebar-section all-buttons">
-                <a class="sidebar-section-button highlight">
+                <a class="sidebar-section-button highlight" v-on:click="goToEditMode()">
                     <i class="fa fa-code"></i>
                     <span>进入编程模式</span>
                 </a>
@@ -93,7 +93,16 @@
         </div>
     </div>
 
-    <div class="code-editor-outer">
+    <div v-if="isInEditMode" class="problem-body-set-off"></div>
+    <div class="code-editor-outer" v-bind:class="{ 'edit-mode': isInEditMode }">
         <pre id="code-editor">using System;</pre>
     </div>
+
+    <a v-if="isInEditMode"
+       v-on:click="backToViewMode()"
+       class="back-to-view-mode">
+        <i class="fa fa-close"></i> 退出编程模式
+    </a>
+
+    <div class="split-line problem-edit-split-line" v-if="isInEditMode"></div>
 </div>

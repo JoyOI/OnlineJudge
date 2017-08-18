@@ -632,16 +632,80 @@
 }
 
 .code-editor-outer {
-    width: 700px;
-    height: 500px;
-    position: fixed;
-    left: 200px;
-    top: 400px;
+    visibility: hidden;
     background: #fff;
-    padding: 20px;
 }
 
-    .code-editor-outer pre {
-        width: 700px;
-        height: 500px;
+.code-editor-outer.edit-mode {
+    visibility: visible;
+    position: fixed;
+    width: 50%;
+    height: calc(100% - 50px);
+    top: 50px;
+    left: 50%;
+    border-top: 1px solid #ddd;
+    z-index: 9999;
+}
+
+.problem-body.edit-mode {
+    position: fixed;
+    width: 50%;
+    height: calc(100% - 50px);
+    border-top: 1px solid #ddd;
+    top: 50px;
+    left: 0;
+    overflow-y: auto;
+    z-index: 9999;
+}
+
+    .problem-body.edit-mode .area-item {
+        box-shadow: none;
     }
+
+.problem-body-set-off {
+    position: fixed;
+    width: 50%;
+    height: calc(100% - 50px);
+    top: 50px;
+    left: 0;
+    overflow-y: auto;
+    border-top: 1px solid #ddd;
+    z-index: 9998;
+    background-color: #fff;
+}
+
+body.full-screen {
+    height: 0px;
+    overflow: hidden;
+}
+
+.container.full-screen {
+    width: 100%;
+}
+
+.back-to-view-mode {
+    padding: 5px 15px;
+    color: #999;
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    margin-left: -174px;
+    width: 144px;
+    display: block;
+    z-index: 10000;
+}
+
+    .back-to-view-mode:hover {
+        background-color: #fff4db;
+    }
+
+.split-line {
+    z-index: 10000;
+    width: 6px;
+    height: calc(100% - 50px);
+    position: fixed;
+    background: none;
+    cursor: col-resize;
+    top: 50px;
+    left: calc(50% - 3px);
+}

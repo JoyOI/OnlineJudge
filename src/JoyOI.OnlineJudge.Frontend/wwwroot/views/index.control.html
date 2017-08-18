@@ -4,11 +4,19 @@
         data: {
             links:[],
             title: '',
-            showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home'
+            showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
+            fullScreen: false
         }, 
         watch: {
             title: function (val) {
                 $('title').text(val + ' - JoyOI Online Judge');
+            },
+            fullScreen: function (val) {
+                if (val) {
+                    $('body').addClass('full-screen');
+                } else {
+                    $('body').removeClass('full-screen');
+                }
             }
         }
     });

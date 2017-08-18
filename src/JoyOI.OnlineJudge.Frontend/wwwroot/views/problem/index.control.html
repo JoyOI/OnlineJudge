@@ -14,7 +14,8 @@
             timelimit: null,
             memorylimit: null,
             isSpecialJudge: null,
-            source: null
+            source: null,
+            isInEditMode: false
         };
     };
 
@@ -33,6 +34,18 @@
     component.watch = {
         title: function () {
             app.title = this.title;
+        }
+    };
+
+    component.methods = {
+        goToEditMode: function () {
+            this.isInEditMode = true;
+            app.fullScreen = true;
+        },
+        backToViewMode: function () {
+            this.isInEditMode = false;
+            app.fullScreen = false;
+            $('.problem-body').attr('style', '');
         }
     };
 </route-script>
