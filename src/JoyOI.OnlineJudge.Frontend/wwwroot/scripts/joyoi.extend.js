@@ -1,41 +1,4 @@
-﻿function changeAvatarSource()
-{
-    $('.avatar-section').hide();
-    var src = $('#lstAvatarResources').val();
-    if (src === 'LocalStorage') {
-        $('#uploadAvatar').show();
-    } else if (src === 'WeChatPolling') {
-        $('#wechatAvatar').show();
-    } else {
-        $('#gravatar').show();
-    }
-}
-
-$(document).ready(function () {
-    changeAvatarSource();
-    $('#lstAvatarResources').change(function () {
-        changeAvatarSource();
-    });
-});
-
-function accountChangeApplicationAuthorization(openId, disabled)
-{
-    if (confirm(SR("Are you sure you want to forbid this application to access your account?")))
-    {
-        $('#hidOpenId').val(openId);
-        $('#hidDisabled').val(disabled)
-        $('#frmAuthorization').submit();
-    }
-}
-
-function removeApplicationManager(uid)
-{
-    if (confirm(SR("Are you sure you want to remove this manager?")))
-    {
-        $('#hidUserId').val(uid);
-        $('#frmApplicationManagerRemove').submit();
-    }
-}
+﻿var langTools = ace.require('ace/ext/language_tools');
 
 $(window).on('mousemove', function (e) {
     if ($(e.target).hasClass('tag-item') || $(e.target).parents().hasClass('tag-item')) {
@@ -140,8 +103,19 @@ $(window).click(function (e) {
 });
 
 $(document).bind('DOMNodeInserted', function (e) {
-    var dom = $(e.target).find('.datetime')
-    if (dom.length) {
-        dom.datetimepicker();
+    var dom = $(e.target);
+    if (dom.find('.datetime').length) {
+        dom.find('.datetime').datetimepicker();
+    }
+
+    if (dom.find('#code-editor').length) {
+        var editor = ace.edit("code-editor");
+        dom.find('#code-editor')[0].editor = editor;
+        editor.setTheme("ace/theme/textmate");
+        editor.session.setMode("ace/mode/csharp");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true
+        });
     }
 });

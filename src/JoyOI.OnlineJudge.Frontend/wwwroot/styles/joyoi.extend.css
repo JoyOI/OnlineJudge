@@ -630,3 +630,18 @@
         margin-right: 0 !important;
     }
 }
+
+.code-editor-outer {
+    width: 700px;
+    height: 500px;
+    position: fixed;
+    left: 200px;
+    top: 400px;
+    background: #fff;
+    padding: 20px;
+}
+
+    .code-editor-outer pre {
+        width: 700px;
+        height: 500px;
+    }

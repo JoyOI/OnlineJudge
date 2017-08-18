@@ -103,20 +103,20 @@ LazyRouting._getHtmlAsync =function(url, unsafe) {
 
         /* For Mobile */
         var id = "vue-" + parseInt(Math.random() * 1000000);
-        var frm = document.createElement('iframe');
-        frm.setAttribute('id', id);
-        frm.setAttribute('style', 'display:none');
-        frm.src = url;
-        frm.onload = function () {
+        var frame = document.createElement('iframe');
+        frame.setAttribute('id', id);
+        frame.setAttribute('style', 'display:none');
+        frame.src = url;
+        frame.onload = function () {
             try {
-                if ($(frm).contents().find('head')[0].innerHTML) {
+                if ($(frame).contents().find('head')[0].innerHTML) {
                     throw url + " invalid";
                 }
-                var html = $(frm).contents().find('body').html();
-                frm.parentNode.removeChild(frm);
+                var html = $(frame).contents().find('body').html();
+                frame.parentNode.removeChild(frame);
                 resolve(html);
             } catch (ex) {
-                frm.parentNode.removeChild(frm);
+                frame.parentNode.removeChild(frame);
                 reject(ex);
             }
         };
@@ -124,7 +124,7 @@ LazyRouting._getHtmlAsync =function(url, unsafe) {
         {
             await LazyRouting._documentReadyPromise;
         }
-        document.body.appendChild(frm);
+        document.body.appendChild(frame);
     });
 }
 
