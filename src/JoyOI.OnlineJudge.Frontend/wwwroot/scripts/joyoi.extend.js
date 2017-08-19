@@ -108,7 +108,7 @@ $(document).bind('DOMNodeInserted', function (e) {
         dom.find('.datetime').datetimepicker();
     }
 
-    if (dom.find('#code-editor').length) {
+    if (dom.find('#code-editor').length && !dom.find('#code-editor')[0].editor) {
         var editor = ace.edit("code-editor");
         dom.find('#code-editor')[0].editor = editor;
         editor.setTheme("ace/theme/textmate");

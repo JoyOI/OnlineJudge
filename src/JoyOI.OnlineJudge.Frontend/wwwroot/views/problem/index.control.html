@@ -16,7 +16,9 @@
             isSpecialJudge: null,
             source: null,
             isInEditMode: false,
-            languages: languages
+            languages: languages,
+            editorActiveTag: 'code',
+            editorContent: ''
         };
     };
 
@@ -39,11 +41,13 @@
     };
 
     component.methods = {
-        goToEditMode: function () {
+    goToEditMode: function () {
+            $('#code-editor')[0].editor.setValue(this.editorContent);
             this.isInEditMode = true;
             app.fullScreen = true;
         },
         backToViewMode: function () {
+            this.editorContent = $('#code-editor')[0].editor.getValue();
             this.isInEditMode = false;
             app.fullScreen = false;
             $('.problem-body').attr('style', '');

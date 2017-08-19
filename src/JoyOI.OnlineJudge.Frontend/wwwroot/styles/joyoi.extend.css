@@ -745,3 +745,11 @@ body.full-screen {
 .float-right {
     float: right;
 }
+
+#code-editor {
+    display: none;
+}
+
+#code-editor.active {
+    display: block;
+}
