@@ -1,4 +1,6 @@
 ﻿<route-script>
+    var __ace_style;
+
     app.title = '题目';
     app.links = [{ text: '题目列表', to: '/problem' }];
 
@@ -15,10 +17,16 @@
             memorylimit: null,
             isSpecialJudge: null,
             source: null,
-            isInEditMode: false,
-            languages: languages,
-            editorActiveTag: 'code',
-            editorContent: ''
+            control: {
+                editorActiveTag: 'code',
+                isInEditMode: false,
+                languages: languages,
+            },
+            form: {
+                code: '',
+                language: null,
+                data: []
+            }
         };
     };
 
@@ -32,25 +40,49 @@
         this.memorylimit = 128 * 1024 * 1024;
         this.isSpecialJudge = false;
         this.source = '本地';
+        this.form.language = app.preferences.language;
     };
 
     component.watch = {
+        deep: true,
         title: function () {
             app.title = this.title;
+        },
+        'form.language': function (val) {
+            if (val) {
+                $('#code-editor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[val]);
+            }
         }
     };
 
     component.methods = {
-    goToEditMode: function () {
-            $('#code-editor')[0].editor.setValue(this.editorContent);
-            this.isInEditMode = true;
+        goToEditMode: function () {
+            $('#code-editor')[0].editor.setValue(this.form.code);
+            this.control.isInEditMode = true;
             app.fullScreen = true;
         },
         backToViewMode: function () {
-            this.editorContent = $('#code-editor')[0].editor.getValue();
-            this.isInEditMode = false;
+            this.form.code = $('#code-editor')[0].editor.getValue();
+            this.control.isInEditMode = false;
             app.fullScreen = false;
             $('.problem-body').attr('style', '');
+        },
+        addData: function () {
+            this.form.data.push({ input: '', output: '' });
+        },
+        removeData: function (index) {
+            if (index < this.form.data.length)
+                this.form.data.splice(index, 1);
+        },
+        changeEditorMode: function (mode) {
+            if (mode != 'code') {
+                __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
+                $('#code-editor').attr('class', __ace_style);
+            }
+            this.control.editorActiveTag = mode;
+            if (mode == 'code') {
+                $('#code-editor').attr('class', __ace_style + ' active');
+            }
         }
     };
 </route-script>

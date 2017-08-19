@@ -5,7 +5,10 @@
             links:[],
             title: '',
             showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
-            fullScreen: false
+            fullScreen: false,
+            preferences: {
+                language: 'C++'
+            }
         }, 
         watch: {
             title: function (val) {
@@ -23,11 +26,12 @@
 
     router.beforeEach((to, from, next) => {
         $('.xdsoft_datetimepicker').remove();
+        app.fullScreen = false;
         next();
     });
 
     router.afterEach(() =>
-    {    
+    {
         app.showUrlCover = router.history.current.fullPath != '/' && router.history.current.fullPath != '/home';
     });
 </route-script>

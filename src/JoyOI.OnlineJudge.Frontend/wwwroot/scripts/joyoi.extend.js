@@ -1,4 +1,5 @@
 ﻿var langTools = ace.require('ace/ext/language_tools');
+var githubTheme = ace.require('ace/theme/github');
 
 $(window).on('mousemove', function (e) {
     if ($(e.target).hasClass('tag-item') || $(e.target).parents().hasClass('tag-item')) {
@@ -40,6 +41,16 @@ var languages = [
     'Ruby',
     'JavaScript'
 ];
+
+var syntaxHighlighter = {
+    'C': 'c_cpp',
+    'C++': 'c_cpp',
+    'C#': 'csharp',
+    'Pascal': 'pascal',
+    'Ruby': 'ruby',
+    'Python': 'python',
+    'JavaScript': 'javascript'
+};
 
 $(window).click(function (e) {
     var dom = $(e.target);
@@ -111,8 +122,8 @@ $(document).bind('DOMNodeInserted', function (e) {
     if (dom.find('#code-editor').length && !dom.find('#code-editor')[0].editor) {
         var editor = ace.edit("code-editor");
         dom.find('#code-editor')[0].editor = editor;
-        editor.setTheme("ace/theme/textmate");
-        editor.session.setMode("ace/mode/csharp");
+        editor.setTheme("ace/theme/twilight");
+        $('#code-editor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[app.preferences.language]);
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true
