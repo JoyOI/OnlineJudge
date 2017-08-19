@@ -103,12 +103,11 @@
             <a 
                class="code-editor-button" 
                v-bind:class="{ 'active': control.editorActiveTag == 'data' }"
-               v-on:click="changeEditorMode('data')"><i class="fa fa-database"></i> 自测数据</a>
+               v-on:click="changeEditorMode('data')"><i class="fa fa-database"></i> 自测数据{{ form.data.length ? ' (' + form.data.length + ')' : '' }}</a>
             <select class="code-editor-button" v-model="form.language">
                 <option v-for="language in control.languages">{{ language }}</option>
             </select>
-            <a class="code-editor-button float-right"><i class="fa fa-caret-square-o-right"></i> 提交自测</a>
-            <a class="code-editor-button float-right"><i class="fa fa-play"></i> 标准评测</a>
+            <a class="code-editor-button float-right"><i class="fa fa-play"></i> {{ form.data.length ? '提交自测' : '提交评测' }}</a>
             <a class="code-editor-button float-right" v-on:click="backToViewMode()"><i class="fa fa-mail-reply"></i> 返回题目</a>
         </div>
         <pre id="code-editor" class="active">{{ form.code }}</pre>
