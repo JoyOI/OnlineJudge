@@ -107,10 +107,18 @@
             <select class="code-editor-button" v-model="form.language">
                 <option v-for="language in control.languages">{{ language }}</option>
             </select>
-            <a class="code-editor-button float-right"><i class="fa fa-play"></i> {{ form.data.length ? '提交自测' : '提交评测' }}</a>
-            <a class="code-editor-button float-right" v-on:click="backToViewMode()"><i class="fa fa-mail-reply"></i> 返回题目</a>
+            <a 
+               class="code-editor-button float-right" 
+               v-on:click="changeEditorMode('judge')"><i class="fa fa-play"></i> {{ form.data.length ? '提交自测' : '提交评测' }}</a>
+            <a 
+               class="code-editor-button float-right" 
+               v-on:click="backToViewMode()"><i class="fa fa-mail-reply"></i> 返回题目</a>
         </div>
+
+        <!-- Code editor -->
         <pre id="code-editor" class="active">{{ form.code }}</pre>
+
+        <!-- Data editor -->
         <div class="data-editor" v-bind:class="{ 'active': control.editorActiveTag == 'data' }">
             <div v-for="(data, index) in form.data">
                 <div>
@@ -130,6 +138,42 @@
                 </div>
             </div>
             <a class="data-add-data-button" v-on:click="addData()"><i class="fa fa-plus-square"></i> 添加数据</a>
+        </div>
+
+        <!-- Result panel -->
+        <div class="judge-panel" v-bind:class="{ 'active': control.editorActiveTag == 'judge' }">
+            <div class="judge-panel-status" 
+                 v-if="control.statuses.filter(x => x.display === judgeResult).length"
+                 v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === judgeResult)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === judgeResult)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === judgeResult)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === judgeResult)[0].color === 'green' }">{{ judgeResult }}</div>
+            <div class="judge-panel-table-outer">
+                <table class="judge-panel-table">
+                    <colgroup>
+                        <col style="width: 70px" />
+                        <col />
+                        <col style="width: 120px" />
+                        <col style="width: 120px" />
+                    </colgroup>
+                    <template v-for="(sub, index) in result.substatuses">
+                        <tr>
+                            <td 
+                                v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">#{{ index + 1 }}</td>
+                            <td 
+                                v-on:click="toggleStatusHint(index)"
+                                v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">{{ sub.status }}</td>
+                            <td>{{ sub.time }}ms</td>
+                            <td>{{ (sub.memory / 1024 / 1024).toFixed(2) }}MiB</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" 
+                                v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                <div class="judge-panel-hint">
+                                    {{ sub.hint }}
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </table>
+            </div>
         </div>
     </div>
 

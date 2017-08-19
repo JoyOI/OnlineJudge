@@ -754,7 +754,7 @@ body.full-screen {
     display: block;
 }
 
-.data-editor {
+.data-editor, .judge-panel {
     display: none;
     background: #333;
     padding: 20px;
@@ -765,7 +765,7 @@ body.full-screen {
         color #aaa!important;
     }
 
-    .data-editor.active {
+    .data-editor.active, .judge-panel.active {
         height: calc(100% - 94px);
         overflow-y: auto;
         display: block;
@@ -832,4 +832,82 @@ select.code-editor-button {
     background-color: #333;
     border: 1px solid #666;
     border-radius: none;
+}
+
+.judge-panel-table {
+    width: 100%;
+    color: #ccc;
+}
+
+    .judge-panel-table tr {
+        border-bottom: 1px solid #666;
+    }
+
+.judge-panel-table tr:nth-child(4n) {
+    background: #444;
+}
+    .judge-panel-table tr:nth-child(4n+1) {
+        background: #444;
+    }
+
+    .judge-panel-table tr:nth-child(2n+1) {
+        display: none;
+    }
+
+.judge-panel-table-outer {
+    margin: 0 -20px -20px -20px;
+    border-top: 1px solid #666;
+}
+
+.judge-panel-table td {
+    font-size: 12px;
+    padding: 5px 7px;
+}
+
+.judge-panel-status {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.judge-panel-table tr:nth-child(2n) td:nth-child(2) {
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+    cursor: pointer;
+    transition: color 0.2s linear;
+}
+
+    .judge-panel-table tr:nth-child(2n) td:nth-child(2):hover {
+        color: #c6e9fa!important;
+    }
+
+.judge-panel-border-blue {
+    border-left: 3px solid #7baefa;
+}
+
+.judge-panel-border-red {
+    border-left: 3px solid #fb6666;
+}
+
+.judge-panel-border-orange {
+    border-left: 3px solid #f39800;
+}
+
+.judge-panel-border-green {
+    border-left: 3px solid #16b368;
+}
+
+.judge-panel-color-blue {
+    color: #7baefa;
+}
+
+.judge-panel-color-red {
+    color: #fb6666;
+}
+
+.judge-panel-color-orange {
+    color: #f39800;
+}
+
+.judge-panel-color-green {
+    color: #16b368;
 }

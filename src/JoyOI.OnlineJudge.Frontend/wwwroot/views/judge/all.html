@@ -146,7 +146,7 @@
                         <td colspan="7" class="tfoot-paging">
                             <div class="tfoot-paging-outer">
                                 <a class="tfoot-paging-item" v-on:click="toPage(1)">首页</a>
-                                <div class="tfoot-paging-item" v-on:click="toPage(Math.max(page - 1, 1))">上一页</div>
+                                <a class="tfoot-paging-item" v-on:click="toPage(Math.max(page - 1, 1))">上一页</a>
                                 <div class="tfoot-paging-item" v-if="page > 3">...</div>
                                 <a class="tfoot-paging-item" 
                                    v-for="p in 5" 
@@ -156,7 +156,7 @@
                                    {{ page + p - 3 }}
                                 </a>
                                 <div class="tfoot-paging-item" v-if="page < pageCount - 2">...</div>
-                                <div class="tfoot-paging-item" v-on:click="toPage(Math.min(page + 1, pageCount))">下一页</div>
+                                <a class="tfoot-paging-item" v-on:click="toPage(Math.min(page + 1, pageCount))">下一页</a>
                                 <a class="tfoot-paging-item" v-on:click="toPage(pageCount)">尾页</a>
                             </div>
                         </td>

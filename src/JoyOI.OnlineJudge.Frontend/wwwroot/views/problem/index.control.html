@@ -21,13 +21,37 @@
                 editorActiveTag: 'code',
                 isInEditMode: false,
                 languages: languages,
+                statuses: statuses
             },
             form: {
                 code: '',
                 language: null,
                 data: []
+            },
+            result: {
+                id: null,
+                substatuses: []
             }
         };
+    };
+
+    component.computed = {
+        judgeResult: function () {
+            if (this.result.substatuses.length) {
+                var mapping = this.control.statuses.map(y => y.display);
+                var indexes = this.result.substatuses.map(x => mapping.indexOf(x.status));
+                var maxIndex = -1;
+                for (var i = 0; i < indexes.length; i ++) {
+                    maxIndex = Math.max(maxIndex, indexes[i]);
+                }
+                if (maxIndex >= 0 && maxIndex < this.control.statuses.length)
+                    return this.control.statuses[maxIndex].display;
+                else
+                    return 'Unkown Result';
+            } else {
+                return 'Unknown Result';
+            }
+        }
     };
 
     component.created = function () {
@@ -82,6 +106,23 @@
             this.control.editorActiveTag = mode;
             if (mode == 'code') {
                 $('#code-editor').attr('class', __ace_style + ' active');
+            }
+            if (mode == 'judge') {
+                var self = this;
+                setTimeout(function () {
+                    self.result.substatuses = [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }];
+                        setTimeout(function () {
+                            self.result.substatuses[0].status = 'Accepted';
+                            self.result.substatuses[1].status = 'Wrong Answer';
+                            self.result.substatuses[1].hint = '选手输出2，答案期望3';
+                        }, 500);
+                }, 100);
+            }
+        },
+        toggleStatusHint: function (index) {
+            var tr = $('.judge-panel-table tr');
+            if (2 * index + 1 < tr.length) {
+                $(tr[2 * index + 1]).toggle();
             }
         }
     };
