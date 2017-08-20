@@ -14965,9 +14965,10 @@ pre {
 
 .sidebar-avatar {
     border-radius: 50%;
-    width: 100%;
-    max-width: 180px;
-    box-shadow: 0 0 15px rgba(0,0,0,.2)
+    width: 80px;
+    height: 80px;
+    display: inline-block;
+    vertical-align: initial;
 }
 
 .detail-table.no-border td {

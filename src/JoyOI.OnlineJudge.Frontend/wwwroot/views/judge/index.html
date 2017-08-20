@@ -40,13 +40,21 @@
                 </div>
 
                 <div class="area-item dark" v-if="code">
-                    <div class="area-title">代码</div>
+                    <div class="area-title">选手代码 ({{ language }})</div>
                     <div class="code-box-outer">
-                        <pre class="code-box" data-mode="c_cpp">{{ code }}</pre>
+                        <pre class="code-box">{{ code }}</pre>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3"></div>
+        <div class="col-md-3 title-align">
+            <div class="sidebar-section">
+                <div v-bind:style="{ 'background-image': 'url(/images/' + parseInt(Math.random() * 20 + 1) + '.jpg)' }" class="sidebar-avatar-set-off"></div>
+                <div class="sidebar-avatar-outer">
+                    <img src="/images/non-avatar.png" class="sidebar-avatar" />
+                    <div class="sidebar-username">Yuko</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

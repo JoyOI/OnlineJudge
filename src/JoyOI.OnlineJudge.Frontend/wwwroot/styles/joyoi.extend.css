@@ -1012,3 +1012,24 @@ select.code-editor-button {
 .code-box-outer {
     margin: 0 -25px -25px -25px;
 }
+
+.sidebar-avatar-set-off {
+    height: 60px;
+    background-size: cover;
+    background-position: 50%;
+}
+
+.sidebar-avatar-outer {
+    margin-top: -20px;
+    padding: 0 20px 20px 20px;
+}
+
+.sidebar-username {
+    display: inline-block;
+    height: 80px;
+    width: calc(100% - 90px);
+    padding: 40px 15px 20px 15px;
+    line-height: 20px;
+    font-size: 20px;
+    vertical-align: top;
+}
