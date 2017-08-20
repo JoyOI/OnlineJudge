@@ -5,13 +5,20 @@
     component.data = function () {
         return {
             control: { 
-                statuses: statuses
+                statuses: statuses,
+                languages: languages,
+                highlighters: syntaxHighlighter
             },
             id: '8c1185b7-4a35-499b-9344-3cd44bc732e4',
+            language: null,
             hint: 'Main.cpp: In function \'int main()\': Main.cpp:58:17: error: \'putchar\' was not declared in this scope putchar(\'\\n\'); ^',
             code: '#include&lt;iostream&gt;\r\nusing namespace std;\r\nint main() \r\n {\r\n',
             substatuses: [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }]
         };
+    };
+
+    component.created = function () {
+        this.language = 'C++';
     };
 
     component.computed = {
@@ -30,6 +37,15 @@
             } else {
                 return 'Unknown Result';
             }
+        }
+    };
+
+    component.watch = {
+        language: function (val) {
+            var mode = this.control.highlighters[val];
+            var dom = $('.code-box-outer .code-box');
+            if (!dom.length || !dom[0].editor) return;
+            dom[0].editor.session.setMode('ace/mode/' + mode);
         }
     };
 

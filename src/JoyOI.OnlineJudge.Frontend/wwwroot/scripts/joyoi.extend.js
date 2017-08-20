@@ -135,12 +135,11 @@ $(document).bind('DOMNodeInserted', function (e) {
         for (var i = 0; i < boxes.length; i ++) {
             if (boxes[i].editor)
                 continue;
-            var id = "ace" + parseInt(Math.random() * 1000000);
+            var id = "ace-" + parseInt(Math.random() * 1000000);
             boxes[i].id = id;
             var editor = ace.edit(id);
             boxes[i].editor = editor;
             editor.setTheme("ace/theme/twilight");
-            editor.session.setMode('ace/mode/' + $(boxes[i]).attr('data-mode'));
             editor.setReadOnly(true);
             editor.setAutoScrollEditorIntoView(true);
             editor.setOption("maxLines", 100);
