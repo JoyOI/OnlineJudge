@@ -1019,7 +1019,7 @@ select.code-editor-button {
     background-position: 50%;
 }
 
-.sidebar-avatar-outer {
+.sidebar-padding-outer {
     margin-top: -20px;
     padding: 0 20px 20px 20px;
 }
@@ -1032,4 +1032,39 @@ select.code-editor-button {
     line-height: 20px;
     font-size: 20px;
     vertical-align: top;
+}
+
+dt {
+    display: inline-block;
+    width: 80px;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+dd {
+    display: inline-block;
+    width: calc(100% - 135px);
+    margin-left: 15px;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+@media (max-width: 1219px) and (min-width: 992px) {
+    dd {
+        display: block;
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+
+    dt {
+        display: block;
+        width: 100%;
+    }
 }

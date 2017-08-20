@@ -13,7 +13,8 @@
             language: null,
             hint: 'Main.cpp: In function \'int main()\': Main.cpp:58:17: error: \'putchar\' was not declared in this scope putchar(\'\\n\'); ^',
             code: '#include&lt;iostream&gt;\r\nusing namespace std;\r\nint main() \r\n {\r\n',
-            substatuses: [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }]
+            substatuses: [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }],
+            time: new Date()
         };
     };
 
@@ -37,6 +38,20 @@
             } else {
                 return 'Unknown Result';
             }
+        },
+        totalTime: function () {
+            var time = 0;
+            for (var i = 0; i < this.substatuses.length; i ++) {
+                time += this.substatuses[i].time;
+            }
+            return time;
+        },
+        peakMemory: function () {
+            var mem = 0;
+            for (var i = 0; i < this.substatuses.length; i ++) {
+                mem = Math.max(this.substatuses[i].memory, mem);
+            }
+            return mem;
         }
     };
 
