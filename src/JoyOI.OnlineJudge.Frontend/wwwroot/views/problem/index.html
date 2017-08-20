@@ -57,6 +57,10 @@
                     <i class="fa fa-code"></i>
                     <span>进入编程模式</span>
                 </a>
+                <a class="sidebar-section-button trigger-submit-mode" v-on:click="goToSubmitMode()">
+                    <i class="fa fa-terminal"></i>
+                    <span>提交评测</span>
+                </a>
                 <a class="sidebar-section-button">
                     <i class="fa fa-database"></i>
                     <span>查看测试数据</span>
@@ -94,7 +98,7 @@
     </div>
 
     <div v-if="control.isInEditMode" class="problem-body-set-off"></div>
-    <div class="code-editor-outer" v-bind:class="{ 'edit-mode': control.isInEditMode }">
+    <div class="code-editor-outer" v-bind:class="{ 'edit-mode': control.isInEditMode, 'submit-mode': control.isInSubmitMode }">
         <div class="code-editor-header">
             <a 
                class="code-editor-button" 

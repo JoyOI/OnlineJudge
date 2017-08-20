@@ -216,8 +216,8 @@ $(window).click(async function (e) {
 });
 
 LazyRouting.GetCurrentComponent = function () {
-    if (router.history.current.matches.length)
-        return router.history.current.matches[0].instances.default;
+    if (router.history.current.matched.length)
+        return router.history.current.matched[0].instances.default;
     else
         return null;
 }

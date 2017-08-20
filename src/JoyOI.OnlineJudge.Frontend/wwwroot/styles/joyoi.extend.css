@@ -633,19 +633,24 @@
 
 .code-editor-outer {
     visibility: hidden;
+    opacity: 0;
     background: #fff;
+    transform: scale(0.4);
+    transition: all 0.2s linear;
 }
 
-.code-editor-outer.edit-mode {
-    visibility: visible;
-    position: fixed;
-    width: 50%;
-    height: calc(100% - 50px);
-    top: 50px;
-    left: 50%;
-    border-top: 1px solid #ddd;
-    z-index: 9999;
-}
+    .code-editor-outer.edit-mode {
+        visibility: visible;
+        position: fixed;
+        width: 50%;
+        height: calc(100% - 50px);
+        top: 50px;
+        left: 50%;
+        border-top: 1px solid #ddd;
+        z-index: 9999;
+        opacity: 1;
+        transform: scale(1);
+    }
 
 .problem-body.edit-mode {
     position: fixed;
@@ -911,3 +916,25 @@ select.code-editor-button {
 .judge-panel-color-green {
     color: #16b368;
 }
+
+.code-editor-outer.submit-mode {
+    visibility: visible;
+    width: 800px;
+    max-width: 94%;
+    height: 609px;
+    max-height: calc(100% - 220px);
+    overflow-y: auto;
+    position: fixed;
+    background-color: #333;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+    top: 220px;
+    left: 50%;
+    margin-left: -400px;
+    z-index: 9999;
+    opacity: 1;
+    transform: scale(1);
+}
+
+    .code-editor-outer.submit-mode pre {
+        height: 555px;
+    }

@@ -157,3 +157,12 @@ $(window).mousemove(function (e) {
 $(window).mouseup(function (e) {
     __split_down = false;
 });
+
+$(window).click(function (e) {
+    if ($('.submit-mode').length) {
+        var dom = $(e.target);
+        if (!dom.hasClass('submit-mode') && !dom.parents('.submit-mode').length && !dom.hasClass('trigger-submit-mode') && !dom.parents('.trigger-submit-mode').length) {
+            LazyRouting.GetCurrentComponent().backToViewMode();
+        }
+    }
+});
