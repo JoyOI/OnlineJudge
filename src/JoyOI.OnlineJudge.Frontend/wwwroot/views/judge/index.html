@@ -39,9 +39,11 @@
                     </div>
                 </div>
 
-                <div class="area-item" v-if="code">
+                <div class="area-item dark" v-if="code">
                     <div class="area-title">代码</div>
-                    <pre>{{ code }}</pre>
+                    <div class="code-box-outer">
+                        <pre class="code-box" data-mode="c_cpp">{{ code }}</pre>
+                    </div>
                 </div>
             </div>
         </div>
