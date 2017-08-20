@@ -938,3 +938,10 @@ select.code-editor-button {
     .code-editor-outer.submit-mode pre {
         height: 555px;
     }
+
+.judge-panel-summary-hint {
+    font-size: 12px;
+    line-height: 16px;
+    color: #aaa;
+    margin-bottom: 15px;
+}

@@ -31,6 +31,7 @@
             },
             result: {
                 id: null,
+                hint: null,
                 substatuses: []
             }
         };
@@ -86,11 +87,13 @@
             this.control.isInSubmitMode = false;
             this.control.isInEditMode = true;
             app.fullScreen = true;
+            __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
         },
         goToSubmitMode: function () {
             this.control.isInSubmitMode = true;
             $('#code-editor')[0].editor.setValue(this.form.code);
             setTimeout(function () { $('#code-editor')[0].editor.resize(); }, 250);
+            __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
         },
         backToViewMode: function () {
             this.form.code = $('#code-editor')[0].editor.getValue();
@@ -119,6 +122,7 @@
                 this.result.substatuses = [];
                 var self = this;
                 setTimeout(function () {
+                    self.result.hint = 'JoyOI.ManagementService.Core.ActorExecuteException: JoyOI.ManagementService.Core.ActorExecuteException: Unhandled Exception: System.NotSupportedException: Your source code does not support to compile. at JoyOI.ManagementService.Playground.TyvjCompileActor.Main(String[] args) /actor/run-actor.sh: line 10: 15 Aborted (core dumped) dotnet /actor/bin/Debug/netcoreapp2.0/actor.dll at JoyOI.ManagementService.Services.Impl.StateMachineInstanceStore.';
                     self.result.substatuses = [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }];
                         setTimeout(function () {
                             self.result.substatuses[0].status = 'Accepted';

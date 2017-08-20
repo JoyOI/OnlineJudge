@@ -116,11 +116,11 @@
                v-on:click="changeEditorMode('judge')"><i class="fa fa-play"></i> {{ form.data.length ? '提交自测' : '提交评测' }}</a>
             <a 
                class="code-editor-button float-right" 
-               v-on:click="backToViewMode()"><i class="fa fa-mail-reply"></i> 返回题目</a>
+               v-on:click="backToViewMode()"><i class="fa" v-bind:class="{ 'fa-mail-reply': control.isInEditMode, 'fa-close': control.isInSubmitMode }"></i> {{ control.isInEditMode ? '返回题目' : '关闭' }}</a>
         </div>
 
         <!-- Code editor -->
-        <pre id="code-editor" class="active">{{ form.code }}</pre>
+        <pre id="code-editor" class="ace_editor ace-twilight ace_dark" v-bind:class="{ 'active': control.editorActiveTag == 'code' }">{{ form.code }}</pre>
 
         <!-- Data editor -->
         <div class="data-editor" v-bind:class="{ 'active': control.editorActiveTag == 'data' }">
@@ -149,6 +149,7 @@
             <div class="judge-panel-status" 
                  v-if="control.statuses.filter(x => x.display === judgeResult).length"
                  v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === judgeResult)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === judgeResult)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === judgeResult)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === judgeResult)[0].color === 'green' }">{{ judgeResult }}</div>
+            <div class="judge-panel-summary-hint" v-if="result.hint">{{ result.hint }}}</div>
             <div class="judge-panel-table-outer">
                 <table class="judge-panel-table">
                     <colgroup>
