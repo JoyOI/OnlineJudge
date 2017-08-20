@@ -1,0 +1,50 @@
+﻿<div class="container" id="status">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="area-outer">
+                <div class="area-item">
+                    <div class="area-title"
+                         v-bind:class="{ 'judge-panel-color-green': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'green', 'judge-panel-color-blue': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'blue', 'judge-panel-color-orange': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'orange', 'judge-panel-color-red': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'red' }">{{ status }}</div>
+                    <div class="judge-panel-info" v-if="hint">{{ hint }}</div>
+                    <div class="judge-panel-table-outer-light">
+                        <table class="judge-panel-table">
+                            <colgroup>
+                                <col style="width: 70px" />
+                                <col />
+                                <col style="width: 120px" />
+                                <col style="width: 120px" />
+                            </colgroup>
+                            <template v-for="(sub, index) in substatuses">
+                                <tr>
+                                    <td v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                        #{{ index + 1 }}
+                                    </td>
+                                    <td v-on:click="toggleStatusHint(index)"
+                                        v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                        {{ sub.status }}
+                                    </td>
+                                    <td>{{ sub.time }}ms</td>
+                                    <td>{{ (sub.memory / 1024 / 1024).toFixed(2) }}MiB</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4"
+                                        v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                        <div class="judge-panel-hint">
+                                            {{ sub.hint }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="area-item" v-if="code">
+                    <div class="area-title">代码</div>
+                    <pre>{{ code }}</pre>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>

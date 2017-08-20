@@ -5,8 +5,7 @@
     '/contest/all': null,
     '/contest/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/judge/all': null,
-    '/foo/:id': { id: '[0-9a-zA-Z-]{3,16}' },
-    '/bar': null,
+    '/judge/:id': { id: '[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}' },
     '/404': null
 });
 

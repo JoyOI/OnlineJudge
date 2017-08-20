@@ -330,31 +330,51 @@
     color: #2ac649;
 }
 
+    .judge-green a {
+        color: #2ac649;
+    }
+
 .judge-red {
     border-left: 3px solid #fb6666!important;
     color: #fb6666;
 }
+
+    .judge-red a {
+        color: #fb6666;
+    }
 
 .judge-orange {
     border-left: 3px solid #f39800 !important;
     color: #f39800;
 }
 
+    .judge-orange a {
+        color: #f39800;
+    }
+
 .judge-purple {
     border-left: 3px solid #be3fe2 !important;
     color: #be3fe2;
 }
+
+    .judge-purple a {
+        color: #be3fe2;
+    }
 
 .judge-blue {
     border-left: 3px solid #0074d9 !important;
     color: #0074d9;
 }
 
+    .judge-blue a {
+        color: #0074d9;
+    }
+
 .judge-list td i, .filter-item i {
-    width: 16px!important;
-    height: 12px!important;
-    font-size: 12px!important;
-    display: inline-block!important;
+    width: 16px !important;
+    height: 12px !important;
+    font-size: 12px !important;
+    display: inline-block !important;
     text-align: center;
     margin-right: 6px;
 }
@@ -944,4 +964,43 @@ select.code-editor-button {
     line-height: 16px;
     color: #aaa;
     margin-bottom: 15px;
+}
+
+.judge-panel-table-outer-light {
+    margin: 0 -25px -25px -25px;
+    border-top: 1px solid #ddd;
+}
+
+    .judge-panel-table-outer-light .judge-panel-table tr:nth-child(4n) {
+        background: #f4f4f4;
+    }
+
+    .judge-panel-table-outer-light .judge-panel-table tr:nth-child(4n+1) {
+        background: #f4f4f4;
+    }
+
+    .judge-panel-table-outer-light tr:nth-child(2n) td:nth-child(2) {
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        cursor: pointer;
+        transition: color 0.2s linear;
+    }
+
+    .judge-panel-table-outer-light .judge-panel-table tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .judge-panel-table-outer-light .judge-panel-table {
+        color: #666;
+    }
+
+.judge-panel-info {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 25px;
+}
+
+.judge-panel-table-outer-light .judge-panel-table tr:nth-child(2n) td:nth-child(2):hover {
+    color: #888 !important;
+    text-decoration: underline;
 }
