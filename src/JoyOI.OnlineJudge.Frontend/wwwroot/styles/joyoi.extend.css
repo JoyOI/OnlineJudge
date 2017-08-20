@@ -1036,7 +1036,7 @@ select.code-editor-button {
 
 dt {
     display: inline-block;
-    width: 80px;
+    width: 60px;
     text-overflow: ellipsis;
     font-size: 12px;
     word-break: keep-all;
@@ -1046,7 +1046,7 @@ dt {
 
 dd {
     display: inline-block;
-    width: calc(100% - 135px);
+    width: calc(100% - 81px);
     margin-left: 15px;
     text-overflow: ellipsis;
     font-size: 12px;
