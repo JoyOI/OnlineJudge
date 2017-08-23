@@ -22,7 +22,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         #region Problem
         [HttpGet("all")]
-        [HttpGet("all/page/{page:int?}")]
         public async Task<ApiResult<PagedResult<IEnumerable<Problem>>>> Get(string title, int? difficulty, string tag, int? page, CancellationToken token)
         {
             IQueryable<Problem> ret = DB.Problems;

@@ -16,7 +16,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         #region Contest
         [HttpGet("all")]
-        [HttpGet("all/page/{page:int}")]
         public Task<ApiResult<PagedResult<IEnumerable<Contest>>>> Get(
             string title, 
             ContestType? type, 
