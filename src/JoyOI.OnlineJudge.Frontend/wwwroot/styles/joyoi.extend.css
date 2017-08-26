@@ -84,7 +84,7 @@
 .sidebar-section-button {
     font-weight: 200;
     font-size: 14px;
-}.
+}
 
 .sidebar-section-button.nested {
     padding-left: 35px;
@@ -1067,4 +1067,59 @@ dd {
         display: block;
         width: 100%;
     }
+}
+
+.login-box-bg {
+    top: 0;
+    left: 0;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background: rgba(255,255,255,0.7);
+    visibility: hidden;
+    opacity: 0;
+    z-index: 15000;
+    transition: all 0.2s linear;
+}
+
+.login-box-bg.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.login-box-outer {
+    width: 670px;
+    height: 450px;
+    left: 50%;
+    top: 50%;
+    position: fixed;
+    margin-left: -335px;
+    margin-top: -225px;
+    transform: scale(0.4);
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
+}
+
+.login-box-outer.active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.login-box-main {
+        width: 320px;
+        height: 450px;
+        background: #fff;
+        box-shadow: 0 0 30px rgba(0,0,0,.6);
+        padding: 50px;
+        margin-top: -400px;
+        margin-left: 25px;
+    }
+
+.login-box-set {
+    width: 670px;
+    height: 350px;
+    background: rgba(0,0,0,.8);
+    box-shadow: 0 3px 10px rgba(0,0,0,.3);
+    margin-top: 50px;
+    margin-left: -25px;
 }

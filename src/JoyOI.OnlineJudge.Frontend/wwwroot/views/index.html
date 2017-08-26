@@ -41,7 +41,6 @@
                         <!-- end logo -->
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
-
                         <ul class="nav navbar-nav navbar-left">
                             <li class="home"><router-link to="/">首页</router-link></li>
                             <li class="home"><router-link to="/problem">题目</router-link></li>
@@ -51,10 +50,9 @@
                             <li class="home"><router-link to="/hack">Hack</router-link></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="logout"><a href="javascript:$('#frmLogout').submit()">Logout</a></li>
-                            <li class="login"><a asp-action="Login" asp-controller="Account">Login</a></li>
-                            <li class="register"><a asp-action="Register" asp-controller="Account">Register</a></li>
-                            <li class="register"><router-link to="/bar">Go to Bar</router-link></li>
+                            <li class="logout" v-if="user.isSignedIn"><a href="javascript:$('#frmLogout').submit()">注销</a></li>
+                            <li class="login"><a v-if="!user.isSignedIn" v-on:click="toggleLoginBox()" class="login">登录</a></li>
+                            <li class="register" v-if="!user.isSignedIn"><a href="http://uc.joyoi.net" target="_blank">注册</a></li>
                         </ul>
                     </div>
 
@@ -174,6 +172,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- start login -->
+        <div class="login-box-bg" v-bind:class="{ 'active': layout.loginBoxOpened }">
+            <div class="login-box-outer" v-bind:class="{ 'active': layout.loginBoxOpened }">
+                <div class="login-box-set">
+
+                </div>
+                <div class="login-box-main">
+
+                </div>
+            </div>
+        </div>
+        <!-- end login -->
     </div>
 </body>
 </html>

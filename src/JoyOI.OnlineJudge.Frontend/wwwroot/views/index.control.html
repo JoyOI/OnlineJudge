@@ -7,10 +7,31 @@
             host: 'http://localhost:5000',
             showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
             fullScreen: false,
+            layout: {
+                loginBoxOpened: false
+            },
+            user: {
+                isSignedIn: false,
+                profile: {
+                    username: null,
+                    avatarUrl: null,
+                    role: null
+                }
+            },
             preferences: {
                 language: 'C++'
             }
         }, 
+        created: function () {
+            if (document.cookie.indexOf("AspNetCore") >= 0)
+            {
+                this.user.isSignedIn = true;
+            }
+            else 
+            {
+                this.user.isSignedIn = false;
+            }
+        },
         watch: {
             title: function (val) {
                 $('title').text(val + ' - JoyOI Online Judge');
@@ -22,6 +43,15 @@
                     $('body').removeClass('full-screen');
                 }
             }
+        },
+        methods: {
+            toggleLoginBox: function () {
+                if (this.layout.loginBoxOpened) {
+                    this.layout.loginBoxOpened = false;
+                } else {
+                    this.layout.loginBoxOpened = true;
+                }
+            }    
         }
     });
 
