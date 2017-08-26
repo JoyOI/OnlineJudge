@@ -791,7 +791,7 @@ body.full-screen {
     }
 
     .data-editor.active, .judge-panel.active {
-        height: calc(100% - 94px);
+        height: calc(100% - 44px);
         overflow-y: auto;
         display: block;
     }
