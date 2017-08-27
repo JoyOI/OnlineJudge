@@ -1123,16 +1123,32 @@ dd {
     box-shadow: 0 3px 10px rgba(0,0,0,.3);
     margin-top: 50px;
     margin-left: -25px;
+    padding: 50px 50px 50px 410px;
+    color: #fff;
 }
 
-.login-box-main h1 {
-    line-height: 35px;
-    color: #5590ae;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    font-weight: normal;
-}
+    .login-box-set h1 {
+        color: #fff;
+        line-height: 35px;
+        font-size: 30px;
+        font-weight: normal;
+    }
+
+    .login-box-set p {
+        line-height: 22px;
+        font-size: 16px;
+        color: #e0e0e0;
+    } 
+        
+    .login-box-main h1 {
+        line-height: 35px;
+        font-size: 30px;
+        color: #5590ae;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        font-weight: normal;
+    }
 
 .login-box-note {
     margin-top: 4.2px;
@@ -1242,6 +1258,23 @@ dd {
         border-color: #35a2ff;
         box-shadow: 0 4px 15px rgba(53,162,255,.3);
     }
+
+    .login-register {
+        display: inline-block;
+        font-size: 14px;
+        line-height: 35px;
+        border-radius: 35px;
+        padding: 0 25px;
+        text-align: center;
+        border: 2px solid #fff;
+        color: #fff;
+        transition: all 0.2s linear;
+    }
+
+        .login-register:hover {
+            border-color: #ffef87;
+            color: #ffef87;
+        }
 
 .clear {
     clear: both;
