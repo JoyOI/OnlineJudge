@@ -23,6 +23,7 @@
     <script src="/scripts/ace/mode-python.js"></script>
     <script src="/scripts/ace/mode-ruby.js"></script>
     <script src="/scripts/ace/mode-csharp.js"></script>
+    <script src="/scripts/joyoi.queryview.js"></script>
     <script src="/scripts/joyoi.extend.js"></script>
 </head>
 <body class="home-template fixed-navbar">
@@ -179,7 +180,7 @@
                 <div class="login-box-set">
                     <h1>还没有账号？</h1>
                     <p>注册一个 Joy OI 通行证，您就可以畅游我们的在线评测、论坛、个人空间、在线课程等多项服务。</p>
-                    <a class="login-register">现在注册</a>
+                    <a class="login-register" href="http://uc.joyoi.net/Register" target="_blank">现在注册</a>
                 </div>
                 <div class="login-box-main">
                     <h1>登录</h1>
@@ -207,7 +208,7 @@
                         <span>记住我</span>
                     </label>
                     <div class="clear"></div>
-                    <a class="login-btn">登录</a>
+                    <a class="login-btn" v-on:click="login()">登录</a>
                 </div>
             </div>
         </div>

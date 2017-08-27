@@ -57,6 +57,18 @@
             },
             loginFocusOut: function (selector) {
                 $(selector).parent('label').removeClass('login-focus-label');
+            },
+            login: function () {
+                var self;
+                qv.put('/api/user/session', { username: $('#username').val(), password: $('#password').val() })
+                    .then(function (result) {    
+                        document.cookie = result.data.cookie;
+                        self.user.isSignedIn = true;
+                        return qv.get('/api/user/session/info');
+                    })
+                    .then(function (result) {
+                        self.user.username = result.username;
+                    });
             }
         }
     });
