@@ -1113,6 +1113,7 @@ dd {
         padding: 50px;
         margin-top: -400px;
         margin-left: 25px;
+        color: #555;
     }
 
 .login-box-set {
@@ -1122,4 +1123,20 @@ dd {
     box-shadow: 0 3px 10px rgba(0,0,0,.3);
     margin-top: 50px;
     margin-left: -25px;
+}
+
+.login-box-main h1 {
+    line-height: 35px;
+    color: #5590ae;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-weight: normal;
+}
+
+.login-box-note {
+    margin-top: 4.2px;
+    margin-bottom: 28px;
+    text-align: center;
+    font-size: 14px;
 }
