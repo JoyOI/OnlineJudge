@@ -59,7 +59,7 @@
                 $(selector).parent('label').removeClass('login-focus-label');
             },
             login: function () {
-                var self;
+                var self = this;
                 qv.put('/api/user/session', { username: $('#username').val(), password: $('#password').val() })
                     .then(function (result) {    
                         document.cookie = result.data.cookie;
@@ -68,7 +68,12 @@
                     })
                     .then(function (result) {
                         self.user.username = result.username;
+                        self.toggleLoginBox();
                     });
+            },
+            logout: function () {
+                document.cookie += '; Expires=' + new Date(0).toUTCString();
+                this.user.isSignedIn = false;
             }
         }
     });
