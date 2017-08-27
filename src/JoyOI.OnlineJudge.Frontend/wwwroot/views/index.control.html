@@ -51,7 +51,13 @@
                 } else {
                     this.layout.loginBoxOpened = true;
                 }
-            }    
+            },
+            loginFocusIn: function (selector) {
+                $(selector).parent('label').addClass('login-focus-label');
+            },
+            loginFocusOut: function (selector) {
+                $(selector).parent('label').removeClass('login-focus-label');
+            }
         }
     });
 

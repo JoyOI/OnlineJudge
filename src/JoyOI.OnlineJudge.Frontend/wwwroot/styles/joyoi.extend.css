@@ -1140,3 +1140,36 @@ dd {
     text-align: center;
     font-size: 14px;
 }
+
+.login-column {
+   font-size: 14px;
+   color: #555;
+   font-weight: normal;
+   display: block;
+   transition: all 0.2s linear;
+}
+  
+    .login-column input {
+        display: block;
+        width: 100%;
+        font-size: 14px;
+        margin: 0 0 30px;
+        line-height: 30px;
+        border: 1px solid #ddd;
+        border: 0;
+        background: none;
+        outline: 0;
+        padding-left: 0;
+        padding-right: 0;
+        color: #555;
+        border-bottom: 2px solid rgba(85,85,85,.4);
+        transition: all 0.2s linear;
+    }
+
+.login-focus-label {
+    color: #5590ae;
+}
+
+.login-textbox:focus {
+    border-color: #5590ae;
+}

@@ -181,6 +181,24 @@
                 <div class="login-box-main">
                     <h1>登录</h1>
                     <p class="login-box-note">使用Joy OI通行证登录</p>
+                    <label class="login-column">
+                        用户名/电子邮箱
+                        <input 
+                               id="username" 
+                               type="text" 
+                               v-on:focusin="loginFocusIn('#username')" 
+                               v-on:focusout="loginFocusOut('#username')" 
+                               class="login-textbox" />
+                    </label>
+                    <label class="login-column">
+                        密码
+                        <input 
+                               id="password" 
+                               type="password" 
+                               v-on:focusin="loginFocusIn('#password')" 
+                               v-on:focusout="loginFocusOut('#password')" 
+                               class="login-textbox" />
+                    </label>
                 </div>
             </div>
         </div>

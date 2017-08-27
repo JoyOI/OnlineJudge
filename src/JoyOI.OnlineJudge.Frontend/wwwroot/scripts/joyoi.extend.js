@@ -188,3 +188,12 @@ $(window).click(function (e) {
         app.toggleLoginBox();
     }
 });
+
+$(document).ready(function () {
+    $('.login-textbox').focusin(function () {
+        $(this).parent('.login-column').addClass('login-focus-label');
+    });
+    $('.login-textbox').focusout(function () {
+        $(this).parent('.login-column').removeClass('login-focus-label');
+    });
+});
