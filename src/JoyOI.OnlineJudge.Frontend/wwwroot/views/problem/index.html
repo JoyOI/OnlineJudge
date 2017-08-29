@@ -53,13 +53,17 @@
 
         <div class="col-md-3 title-align">
             <div class="sidebar-section all-buttons">
-                <a class="sidebar-section-button highlight" v-on:click="goToEditMode()">
+                <a v-if="$root.user.isSignedIn" class="sidebar-section-button highlight" v-on:click="goToEditMode()">
                     <i class="fa fa-code"></i>
                     <span>进入编程模式</span>
                 </a>
-                <a class="sidebar-section-button trigger-submit-mode" v-on:click="goToSubmitMode()">
+                <a v-if="$root.user.isSignedIn" class="sidebar-section-button trigger-submit-mode" v-on:click="goToSubmitMode()">
                     <i class="fa fa-terminal"></i>
                     <span>提交评测</span>
+                </a>
+                <a v-if="!$root.user.isSignedIn" class="sidebar-section-button highlight login" v-on:click="$root.toggleLoginBox()">
+                    <i class="fa fa-key login"></i>
+                    <span class="login">登录后提交</span>
                 </a>
                 <a class="sidebar-section-button">
                     <i class="fa fa-database"></i>
@@ -69,7 +73,7 @@
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </a>
-                <hr class="sidebar-hr"></hr>
+                <hr class="sidebar-hr" />
                 <a class="sidebar-section-button">
                     <i class="fa fa-commenting-o"></i>
                     <span>跳转至讨论</span>

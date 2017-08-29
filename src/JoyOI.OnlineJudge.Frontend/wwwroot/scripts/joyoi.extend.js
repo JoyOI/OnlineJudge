@@ -182,3 +182,9 @@ $(window).click(function (e) {
         }
     }
 });
+
+$(window).click(function (e) {
+    if (app.layout.loginBoxOpened && !$(e.target).hasClass('login') && !$(e.target).parents('.login-box-outer').length) {
+        app.toggleLoginBox();
+    }
+});

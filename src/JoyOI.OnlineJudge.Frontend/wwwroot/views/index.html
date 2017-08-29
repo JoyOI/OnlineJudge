@@ -23,6 +23,7 @@
     <script src="/scripts/ace/mode-python.js"></script>
     <script src="/scripts/ace/mode-ruby.js"></script>
     <script src="/scripts/ace/mode-csharp.js"></script>
+    <script src="/scripts/joyoi.queryview.js"></script>
     <script src="/scripts/joyoi.extend.js"></script>
 </head>
 <body class="home-template fixed-navbar">
@@ -41,7 +42,6 @@
                         <!-- end logo -->
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
-
                         <ul class="nav navbar-nav navbar-left">
                             <li class="home"><router-link to="/">首页</router-link></li>
                             <li class="home"><router-link to="/problem">题目</router-link></li>
@@ -51,10 +51,9 @@
                             <li class="home"><router-link to="/hack">Hack</router-link></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="logout"><a href="javascript:$('#frmLogout').submit()">Logout</a></li>
-                            <li class="login"><a asp-action="Login" asp-controller="Account">Login</a></li>
-                            <li class="register"><a asp-action="Register" asp-controller="Account">Register</a></li>
-                            <li class="register"><router-link to="/bar">Go to Bar</router-link></li>
+                            <li class="logout" v-if="user.isSignedIn"><a v-on:click="logout()">注销</a></li>
+                            <li class="login"><a v-if="!user.isSignedIn" v-on:click="toggleLoginBox()" class="login">登录</a></li>
+                            <li class="register" v-if="!user.isSignedIn"><a href="http://uc.joyoi.net" target="_blank">注册</a></li>
                         </ul>
                     </div>
 
@@ -174,6 +173,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- start login -->
+        <div class="login-box-bg" v-bind:class="{ 'active': layout.loginBoxOpened }">
+            <div class="login-box-outer" v-bind:class="{ 'active': layout.loginBoxOpened }">
+                <div class="login-box-set">
+                    <h1>还没有账号？</h1>
+                    <p>注册一个 Joy OI 通行证，您就可以畅游我们的在线评测、论坛、个人空间、在线课程等多项服务。</p>
+                    <a class="login-register" href="http://uc.joyoi.net/Register" target="_blank">现在注册</a>
+                </div>
+                <div class="login-box-main">
+                    <h1>登录</h1>
+                    <p class="login-box-note">使用Joy OI通行证登录</p>
+                    <label class="login-column">
+                        用户名/电子邮箱
+                        <input 
+                               id="username" 
+                               type="text" 
+                               v-on:focusin="loginFocusIn('#username')" 
+                               v-on:focusout="loginFocusOut('#username')" 
+                               class="login-textbox" />
+                    </label>
+                    <label class="login-column">
+                        密码
+                        <input 
+                               id="password" 
+                               type="password" 
+                               v-on:focusin="loginFocusIn('#password')" 
+                               v-on:focusout="loginFocusOut('#password')" 
+                               class="login-textbox" />
+                    </label>
+                    <label class="login-column">
+                        <input type="checkbox" id="rememberme" />
+                        <span>记住我</span>
+                    </label>
+                    <div class="clear"></div>
+                    <a class="login-btn" v-on:click="login()">登录</a>
+                </div>
+            </div>
+        </div>
+        <!-- end login -->
     </div>
 </body>
 </html>

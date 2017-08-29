@@ -42,7 +42,7 @@
                 type: method,
                 dataType: 'json',
                 contentType: 'application/json',
-                data: params,
+                data: JSON.stringify(params),
                 beforeSend: function(request) {
                     request.setRequestHeader("joyoi_cookie", document.cookie);
                 },
@@ -131,13 +131,13 @@
                     break;
                 case 'PATCH': 
                     if (!isPaged) {
-                        pos = pos < 0 ? this.__cache[cacheKey].length;
+                        pos = pos < 0 ? this.__cache[cacheKey].length : pos;
                         this.__cache[cacheKey].splice(pos, 1);
                         this.__cache[cacheKey].splice(pos, 0, item);
                             reactToChanges = true;
                     } else {
                         if (pos[0] >= 0) {
-                            pos[1] = pos[1] < 0 ? this.__cache[cacheKey].length;
+                            pos[1] = pos[1] < 0 ? this.__cache[cacheKey].length : pos[1];
                             this.__cache[cacheKey][pos[0]].splice(pos[1], 1);
                             this.__cache[cacheKey][pos[0]].splice(pos[1], 0, item);
                             reactToChanges = true;
