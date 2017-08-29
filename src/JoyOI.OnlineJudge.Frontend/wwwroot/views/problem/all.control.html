@@ -14,7 +14,12 @@
                 },
                 { text: '按年份', data: [ '2017', '2016', '2015', '2014' ]  }
             ],
-            selected: []
+            selected: [],
+            paging: {
+                current: 1,
+                count: 0
+            },
+            result: []
         };
     }
 
@@ -41,5 +46,13 @@
                 $('[data-value="' + tag + '"]').addClass('active');
             }
         }
+    };
+
+    component.created = function () {
+        qv.createView('/api/problem/all', { }).fetch(x => {
+            this.paging.count = x.data.count;
+            this.paging.current = x.data.current;
+            this.result = x.data.result;
+        });
     };
 </route-script>

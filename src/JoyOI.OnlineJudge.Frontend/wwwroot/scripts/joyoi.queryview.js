@@ -42,7 +42,7 @@
                 type: method,
                 dataType: 'json',
                 contentType: 'application/json',
-                data: JSON.stringify(params),
+                data: method == 'GET' ? params : JSON.stringify(params),
                 beforeSend: function(request) {
                     request.setRequestHeader("joyoi_cookie", document.cookie);
                 },
@@ -205,5 +205,7 @@
                 ret.fetch();
             });
         }
+
+        return ret;
     }
 };
