@@ -162,8 +162,14 @@
                 var functions = this.__cacheSubscribe[cacheKey];
                 if (functions && functions.length) {
                     for (var i = 0; i < functions.length; i ++) {
-                        functions[i](isPaged ? this.__cache[cacheKey][pos[0]] : this.__cache[cacheKey]);
+                        try {
+                            functions[i](isPaged ? this.__cache[cacheKey][pos[0]] : this.__cache[cacheKey]);
+                        } catch (ex) {
+                            functions[i] = null;
+                        }
                     }
+
+                    this.__cacheSubscribe[cacheKey] = this.__cacheSubscribe[cacheKey].filter(x => x);
                 }
             }
         }
@@ -177,5 +183,27 @@
         if (this.__cacheSubscribe[key] === undefined)
             this.__cacheSubscribe[key] = [];
         this.__cacheSubscribe[key].push(func);
-    }
+    },
+    createView: function (endpoint, params, interval) {
+        var self = this;
+        var ret = {
+            bindings: [],
+            fetch: function (func) {
+                return self.get(endpoint, params)
+                    .then((result) => {
+                        func(result);
+                    });
+            },
+            subscribe: function (func) {
+                return self.subscribe(self._generateCacheKey(endpoint, params), func);
+            }
+        };
+
+
+        if (interval) {
+            setTimeout(function () {
+                ret.fetch();
+            });
+        }
+    };
 };
