@@ -17,41 +17,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><router-link :to="{ name: '/problem/:id', path: '/problem/a-plus-b-problem', params: { 'id': 'a-plus-b-problem' } }">A+B Problem</router-link> <div class="problem-tag">NOIP</div><div class="problem-tag">2017</div></td>
-                        <td>1</td>
-                        <td>100%</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>A+B Problem <div class="problem-tag">NOIP</div><div class="problem-tag">2017</div></td>
-                        <td>1</td>
-                        <td>100%</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>A+B Problem</td>
-                        <td>1</td>
-                        <td>100%</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>A+B Problem</td>
-                        <td>1</td>
-                        <td>100%</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>A+B Problem</td>
-                        <td>1</td>
-                        <td>100%</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>A+B Problem</td>
-                        <td>1</td>
-                        <td>100%</td>
-                        <td>0</td>
+                    <tr v-for="problem in result">
+                        <td>
+                            <router-link :to="{ name: '/problem/:id', path: '/problem/' + problem.id, params: { 'id': problem.id } }">A+B Problem</router-link>
+                            <div 
+                                 class="problem-tag"
+                                 v-on:click="triggerTag(tag)"
+                                 v-for="tag in problem.tags ? problem.tags.split(',').map(x => x.trim()).sort() : []">{{ tag.split(':').slice(-1).pop() }}</div>
+                        </td>
+                        <td>{{ problem.cachedAcceptedCount }}</td>
+                        <td>{{ problem.cachedSubmitCount ? (problem.cachedAcceptedCount / problem.cachedSubmitCount).toFixed(0) : '0' }}%</td>
+                        <td>{{ problem.difficulty }}</td>
                     </tr>
                 </tbody>
                 <tfoot>

@@ -1279,3 +1279,12 @@ dd {
 .clear {
     clear: both;
 }
+
+.problem-list a {
+    color: #666;
+}
+
+.problem-list a:hover {
+    color: #666;
+    text-decoration: underline;
+}
