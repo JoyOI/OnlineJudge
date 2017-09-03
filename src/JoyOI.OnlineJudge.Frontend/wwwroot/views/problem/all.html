@@ -81,8 +81,8 @@
                     <h1>搜索题目</h1>
                 </div>
                 <div class="sidebar-section-body">
-                    <p><input type="text" class="form-control" placeholder="题目名称或ID" /></p>
-                    <p><a class="sidebar-button"><i class="fa fa-search"></i> 搜索</a></p>
+                    <p><input type="text" class="form-control" id="txtSearchProblemTitle" placeholder="题目名称或ID" /></p>
+                    <p><a class="sidebar-button" v-on:click="setSearchTitle()"><i class="fa fa-search"></i> 搜索</a></p>
                 </div>
             </div>
 

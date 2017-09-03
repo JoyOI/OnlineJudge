@@ -19,9 +19,32 @@
                 current: 1,
                 count: 0
             },
+            request: {
+                tag: null,
+                title: null,
+                page: 1
+            },
             result: []
         };
     }
+
+    component.watch = {
+        selected: function (value) {
+            this.request.tag = value.join(', ');
+        },
+        request: { 
+            handler:  function (value) {
+                console.log(value);
+                var self = this;
+                qv.createView('/api/problem/all', this.request).fetch(x => {
+                    self.paging.count = x.data.count;
+                    self.paging.current = x.data.current;
+                    self.result = x.data.result;
+                });
+            },
+            deep: true
+        }
+    };
 
     component.methods = {
         triggerTag: function (tag) {
@@ -45,11 +68,18 @@
                 }
                 $('[data-value="' + tag + '"]').addClass('active');
             }
+        },
+        setSearchTitle: function () {
+            this.request.title = $('#txtSearchProblemTitle').val();
+        },
+        toPage: function (p) {
+            this.paging.current = p;
+            this.request.page = p;
         }
     };
 
     component.created = function () {
-        qv.createView('/api/problem/all', { }).fetch(x => {
+        qv.createView('/api/problem/all', this.request).fetch(x => {
             this.paging.count = x.data.count;
             this.paging.current = x.data.current;
             this.result = x.data.result;
