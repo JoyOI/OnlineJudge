@@ -76,7 +76,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 var cookie = HttpContext.Response.Headers["Set-Cookie"].ToString();
                 var expire = DateTime.Parse(CookieExpireRegex.Match(cookie).Value).ToTimeStamp();
-                cookie = cookie.Substring(0, cookie.IndexOf("; path="));
 
                 return Result<dynamic>(new { Cookie = cookie, Expire = expire });
             }
