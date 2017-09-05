@@ -9,7 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\views\problem\" />
     <Folder Include="wwwroot\views\judge\" />
     <Folder Include="wwwroot\views\login\" />
   </ItemGroup>

@@ -66,6 +66,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<ApiResult<Problem>> Get(string id, CancellationToken token)
         {
+            this.HasOwnership = await HasPermissionToProblemAsync(id, token);
             var ret = await DB.Problems.SingleOrDefaultAsync(x => x.Id == id, token);
             if (ret == null)
             {

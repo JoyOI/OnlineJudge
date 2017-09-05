@@ -7,16 +7,11 @@
     component.data = function () {
         return { 
             title: null,
-            background: null,
-            description: null,
-            inputFormat: null,
-            outputFormat: null,
+            body: null,
             sampleData: [],
-            hint: null,
             timelimit: null,
             memorylimit: null,
             isSpecialJudge: null,
-            source: null,
             control: {
                 editorActiveTag: 'code',
                 isInEditMode: false,
@@ -38,6 +33,9 @@
     };
 
     component.computed = {
+        renderedBody: function () {
+            return filterXSS(marked(this.body));
+        },
         judgeResult: function () {
             if (this.result.substatuses.length) {
                 var mapping = this.control.statuses.map(y => y.display);
@@ -58,9 +56,7 @@
 
     component.created = function () {
         this.title = 'A+B Problem';
-        this.description = 'Input 2 integers, output the sum result.';
-        this.inputFormat = 'One line, contains two integer which splited by a space.';
-        this.outputFormat = 'One line, the sum result.';
+        this.body = '# 题目背景\r\n为了广大用户熟悉Joy OI环境而设置本题\r\n # 题目描述\r\n输入包括一行，两个整数用空格分隔';
         this.sampleData = [{ input: '1 1', output: '2' }, { input: '2 5', output: '7' }];
         this.timelimit = 1000;
         this.memorylimit = 128 * 1024 * 1024;

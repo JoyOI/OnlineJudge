@@ -3,7 +3,7 @@
         <div class="col-md-9">
             <div class="area-outer problem-body" v-bind:class="{ 'edit-mode': control.isInEditMode }">
                 <div class="area-item">
-                    <div class="area-title">Limitations</div>
+                    <h1 class="area-title">题目限制</h1>
                     <div>
                         <table class="limitation-table">
                             <tr>
@@ -20,15 +20,8 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="area-title" v-if="background">Background</div>
-                    <div v-if="background">{{ background }}</div>
-                    <div class="area-title" v-if="description">Description</div>
-                    <div v-if="description">{{ description }}</div>
-                    <div class="area-title" v-if="inputFormat">Input Format</div>
-                    <div v-if="inputFormat">{{ inputFormat }}</div>
-                    <div class="area-title" v-if="outputFormat">Output Format</div>
-                    <div v-if="outputFormat">{{ outputFormat }}</div>
-                    <div class="area-title" v-if="sampleData.length">Sample Data</div>
+                    <div v-html="renderedBody" class="problem-render"></div>
+                    <h1>样例数据</h1>
                     <div v-for="(data,index) in sampleData" v-bind:class="{ 'sample-data-outer': index > 0 }">
                         <table class="sample-data-table">
                             <thead>

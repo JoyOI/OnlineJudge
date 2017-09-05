@@ -1,6 +1,7 @@
 ﻿LazyRouting.SetRoute({
     '/home': null,
     '/problem/all': null,
+    '/problem/:id/edit': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/problem/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/contest/all': null,
     '/contest/:id': { id: '[a-zA-Z0-9-_]{4,128}' },

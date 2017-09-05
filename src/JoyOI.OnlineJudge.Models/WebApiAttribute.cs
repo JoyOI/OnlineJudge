@@ -9,7 +9,8 @@ namespace JoyOI.OnlineJudge.Models
         GetSingleDisabled = 2,
         GetNeedRoot = 4,
         PutDisabled = 8,
-        PatchDisabled = 16
+        PatchDisabled = 16,
+        GetNeedOwner = 32
     }
 
     public class WebApiAttribute : Attribute

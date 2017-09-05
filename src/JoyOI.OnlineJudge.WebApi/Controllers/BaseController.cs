@@ -12,7 +12,6 @@ using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers
 {
@@ -40,6 +39,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         
         // [Inject]
         public IcM IcM { get; set; }
+
+        public virtual bool HasOwnership { get; set; }
 
         private bool? _isRoot;
 
@@ -82,6 +83,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                         y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
                     }
                     else if (level.HasFlag(FilterLevel.GetNeedRoot) && !IsRoot)
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                    else if (level.HasFlag(FilterLevel.GetNeedOwner) && !HasOwnership)
                     {
                         y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
                     }
@@ -198,6 +203,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                     x.SetValue(entity, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }
                 else if (level.HasFlag(FilterLevel.GetNeedRoot) && !IsRoot)
+                {
+                    x.SetValue(entity, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
+                }
+                else if (level.HasFlag(FilterLevel.GetNeedOwner) && !HasOwnership)
                 {
                     x.SetValue(entity, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }

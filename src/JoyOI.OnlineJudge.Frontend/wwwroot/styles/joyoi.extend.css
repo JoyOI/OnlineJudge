@@ -109,7 +109,7 @@
     padding: 0 0 0 25px;
 }
 
-.area-title {
+.area-title, .problem-body h1 {
     margin-left: -50px;
     margin-top: -10px;
     padding: 15px 30px 15px 30px;
@@ -552,12 +552,8 @@
         background-color: #5590ae;
     }
 
-.problem-body .area-title {
+.problem-body .area-title, .problem-body h1 {
     margin-bottom: 20px;
-}
-
-.problem-body .area-title:not(:first-child) {
-    margin-top: 35px;
 }
 
 .sample-data-table, .limitation-table {
@@ -1287,4 +1283,13 @@ dd {
 .problem-list a:hover {
     color: #666;
     text-decoration: underline;
+}
+
+.problem-render {
+    margin-top: 25px;
+    padding-bottom: 10px;
+}
+
+.problem-render h1, problem-render .area-title {
+    margin-top: 0;
 }

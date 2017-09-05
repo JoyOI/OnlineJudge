@@ -26,6 +26,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the body(markdown formatted).
         /// </summary>
         /// <value>The body.</value>
+        [WebApi(FilterLevel.GetListDisabled)]
         public string Body { get; set; }
 
         /// <summary>
@@ -52,18 +53,21 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the validator BLOB identifier.
         /// </summary>
         /// <value>The validator BLOB identifier.</value>
+        [WebApi(FilterLevel.GetNeedRoot)]
         public Guid? ValidatorBlobId { get; set; }
 
         /// <summary>
         /// Gets or sets the validator error
         /// </summary>
         /// <value>The validator error</value>
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string ValidatorError { get; set; }
 
         /// <summary>
         /// Gets or sets the standard code.
         /// </summary>
         /// <value>The standard code.</value>
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string StandardCode { get; set; }
 
 		/// <summary>
@@ -71,24 +75,28 @@ namespace JoyOI.OnlineJudge.Models
 		/// </summary>
 		/// <value>The standard language.</value>
 		[MaxLength(16)]
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string StandardLanguage { get; set; }
 
         /// <summary>
         /// Gets or sets the standard program error
         /// </summary>
         /// <value>The standard program error</value>
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string StandardError { get; set; }
 
         /// <summary>
         /// Gets or sets the standard BLOB identifier.
         /// </summary>
         /// <value>The standard BLOB identifier.</value>
+        [WebApi(FilterLevel.GetNeedRoot)]
         public Guid? StandardBlobId { get; set; }
 
         /// <summary>
         /// Gets or sets the range code.
         /// </summary>
         /// <value>The range code.</value>
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string RangeCode { get; set; }
 
         /// <summary>
@@ -96,18 +104,21 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The range language.</value>
         [MaxLength(16)]
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string RangeLanguage { get; set; }
 
         /// <summary>
         /// Gets or sets the range BLOB identifier.
         /// </summary>
         /// <value>The range BLOB identifier.</value>
+        [WebApi(FilterLevel.GetNeedRoot)]
         public Guid? RangeBlobId { get; set; }
 
         /// <summary>
         /// Gets or sets the range validator error
         /// </summary>
         /// <value>The range validator error</value>
+        [WebApi(FilterLevel.GetNeedOwner)]
         public string RangeError { get; set; }
 
         /// <summary>
