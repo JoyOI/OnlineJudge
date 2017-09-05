@@ -30,6 +30,8 @@
 
     component.watch = {
         selected: function (value) {
+            console.log(value);
+            value = value.filter(x => !value.some(y => x != y && y.indexOf(x) >= 0));
             this.request.tag = value.join(', ');
         },
         request: { 
@@ -52,8 +54,7 @@
             {
                 var subs = this.selected.filter(x => x.indexOf(tag) >= 0);
                 for (var i = 0; i < subs.length; i ++) {    
-                    this.selected.pop(subs[i]);
-                    $('[data-value="' + subs[i] + '"]').removeClass('active');
+                    this.selected.remove(subs[i]);
                 }
             }
             else
@@ -63,10 +64,8 @@
                     var parent = tag.substr(0, tag.lastIndexOf(':'));
                     if (!this.selected.some(x => x == parent)) {
                         this.selected.push(parent);    
-                        $('[data-value="' + parent + '"]').addClass('active');
                     }
                 }
-                $('[data-value="' + tag + '"]').addClass('active');
             }
         },
         setSearchTitle: function () {

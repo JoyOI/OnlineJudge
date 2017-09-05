@@ -1,4 +1,40 @@
-﻿var langTools = ace.require('ace/ext/language_tools');
+﻿Array.prototype.remove = function (item, all) {
+    var result, isType = Object.prototype.toString, i, len, start, hasLast = arguments[2];
+    start = 0, len = this.length;
+    for (i = start; i < len;) {
+        var isPass = true, inx;
+        if (!hasLast) {
+            inx = i;
+        } else {
+            inx = len - 1;
+        }
+        if (isType.call(item) == '[object Array]') {
+            for (var ii = 0, iimax = item.length; ii < iimax; ii++) {
+                if (this[inx] === item[ii]) {
+                    isPass = false;
+                    break;
+                }
+            }
+        } else if (this[inx] === item) {
+            isPass = false;
+        }
+        if (!isPass) {
+            result = true;
+            this.splice(inx, 1);
+            if (all) {
+                break;
+            }
+        } else if (!hasLast) {
+            len = this.length;
+            i++;
+        } else {
+            len--;
+        }
+    }
+    return result ? this : void 0;
+}
+
+var langTools = ace.require('ace/ext/language_tools');
 var githubTheme = ace.require('ace/theme/github');
 
 $(window).on('mousemove', function (e) {
