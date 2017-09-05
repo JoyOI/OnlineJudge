@@ -26,11 +26,12 @@
         }
         return ret;
     },
-    _generateCacheKey: function (endpoint, params) {
+    _generateCacheKey: function (endpoint, params, isPaged) {
+        if (isPaged && params.page) delete params.page;
         return endpoint + this._toUrlString(params);
     },
     _isPagedResult: function (result) {
-        if (result.current === undefined || result.size === undefined || result.total === undefined || result.count === undefined)
+        if (result.data == undefined || result.data.current === undefined || result.data.size === undefined || result.data.total === undefined || result.data.count === undefined)
             return false;
         else
             return true;
@@ -78,7 +79,7 @@
         } else {
             key = this._generateCacheKey(endpoint, params, true);
             if (!this.__cache[key]) this.__cache[key] = { isPaged: true };
-            this.__cache[key][result.current] = result.result;
+            this.__cache[key][result.data.current] = result;
         }
         this.__cacheDictionary[endpoint].push(key);
 
@@ -189,17 +190,29 @@
         var ret = {
             bindings: [],
             fetch: function (func) {
-                return self.get(endpoint, params)
-                    .then((result) => {
-                        func(result);
-                    });
+                var page = params.page;
+                var key = self._generateCacheKey(endpoint, params, true);
+                if (!self.__cache[key]) {
+                    return self.get(endpoint, params)
+                        .then((result) => {
+                            self.cache(endpoint, params, result, interval);
+                            func(result);
+                        });
+                } else {
+                    if (self.__cache[key].isPaged) {
+                        func(self.__cache[key][page || 1]);
+                        return Promise.resolve(self.__cache[key][page || 1]);
+                    } else {
+                        func(self.__cache[key]);
+                        return Promise.resolve(self.__cache[key]);
+                    }
+                }
             },
             subscribe: function (func) {
                 return self.subscribe(self._generateCacheKey(endpoint, params), func);
             }
         };
-
-
+        
         if (interval) {
             setTimeout(function () {
                 ret.fetch();

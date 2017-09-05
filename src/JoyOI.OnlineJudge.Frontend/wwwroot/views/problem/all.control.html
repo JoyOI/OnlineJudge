@@ -79,7 +79,7 @@
     };
 
     component.created = function () {
-        qv.createView('/api/problem/all', this.request).fetch(x => {
+        qv.createView('/api/problem/all', this.request).fetch(x => {    
             this.paging.count = x.data.count;
             this.paging.current = x.data.current;
             this.result = x.data.result;
