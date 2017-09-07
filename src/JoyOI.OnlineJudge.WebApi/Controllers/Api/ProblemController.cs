@@ -26,14 +26,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             IQueryable<Problem> ret = DB.Problems;
 
-            if (User.Current == null || !await User.Manager.IsInAnyRolesAsync(User.Current, "Root, Master"))
+            if (User.Current != null && !await User.Manager.IsInAnyRolesAsync(User.Current, "Root, Master"))
             {
-                var editableProblemIds = await DB.UserClaims
-                    .Where(x => x.UserId == User.Current.Id && x.ClaimType == Constants.ProblemEditPermission)
-                    .Select(x => x.ClaimValue)
-                    .ToListAsync(token);
+                if (!await User.Manager.IsInAnyRolesAsync(User.Current, "Root, Master"))
+                {
+                    var editableProblemIds = await DB.UserClaims
+                        .Where(x => x.UserId == User.Current.Id && x.ClaimType == Constants.ProblemEditPermission)
+                        .Select(x => x.ClaimValue)
+                        .ToListAsync(token);
 
-                ret = ret.Where(x => x.IsVisiable || editableProblemIds.Contains(x.Id));
+                    ret = ret.Where(x => x.IsVisiable || editableProblemIds.Contains(x.Id));
+                }
+            }
+            else
+            {
+                ret = ret.Where(x => x.IsVisiable);
             }
 
             if (!string.IsNullOrWhiteSpace(title))

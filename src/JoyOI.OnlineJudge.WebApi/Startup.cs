@@ -57,6 +57,7 @@ namespace JoyOI.OnlineJudge.WebApi
             app.UseCookieMiddleware();
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
+            app.UseErrorHandlingMiddleware();
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             using (var db = serviceScope.ServiceProvider.GetService<OnlineJudgeContext>())

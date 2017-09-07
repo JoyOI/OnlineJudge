@@ -46,12 +46,10 @@ LazyRouting.SetMirror = function (map) {
     }
 };
 
-LazyRouting._documentReadyPromise = new Promise(function (resolve) {
+LazyRouting._documentReadyPromise = new Promise(function (resolve, reject) {
     $(document).ready(function () {
-        LazyRouting._getHtmlAsync("/views/index.control.html", true).then(function (js) {
-            js = js.replace('<route-script>', '').replace('</route-script>', '');
+        LazyRouting._getHtmlAsync("/views/index.js", true).then(function (js) {
             try {
-                js = $('<div/>').html(js).text();
                 eval(js);
             } catch (ex) {
                 console.error(ex);
@@ -87,45 +85,13 @@ LazyRouting._documentReadyPromise = new Promise(function (resolve) {
     });
 });
 
-LazyRouting._getHtmlAsync =function(url, unsafe) {
-    return new Promise(async function (resolve, reject) {
-        /* For Web Hosting */
-        //$.get(url, {}, function (result) {
-        //    if (result.indexOf('<head>') < 0)
-        //    {
-        //        resolve(result);
-        //    }
-        //    else
-        //    {
-        //        reject(url + "Invalid");
-        //    }
-        //});
-
-        /* For Mobile */
-        var id = "vue-" + parseInt(Math.random() * 1000000);
-        var frame = document.createElement('iframe');
-        frame.setAttribute('id', id);
-        frame.setAttribute('style', 'display:none');
-        frame.src = url;
-        frame.onload = function () {
-            try {
-                if ($(frame).contents().find('head')[0].innerHTML) {
-                    throw url + " invalid";
-                }
-                var html = $(frame).contents().find('body').html();
-                frame.parentNode.removeChild(frame);
-                resolve(html);
-            } catch (ex) {
-                frame.parentNode.removeChild(frame);
-                reject(ex);
-            }
-        };
-        if (!unsafe)
-        {
-            await LazyRouting._documentReadyPromise;
-        }
-        document.body.appendChild(frame);
-    });
+LazyRouting._getHtmlAsync = async function (url) {
+    /* For Web Hosting */
+    var result = await fetch(url);
+    var text = await result.text();
+    if (text.indexOf('<head>') >= 0)
+        throw "Invalid content";
+    return text;
 }
 
 LazyRouting._loadComponentAsync = function (rule, map) {
@@ -137,9 +103,7 @@ LazyRouting._loadComponentAsync = function (rule, map) {
     return LazyRouting._getHtmlAsync("/views" + path + ".html")
         .then(async (result) => {
             try {
-                var js = await LazyRouting._getHtmlAsync("/views" + path + ".control.html");
-                js = js.replace('<route-script>', '').replace('</route-script>', '')
-                js = $('<div/>').html(js).text();
+                var js = await LazyRouting._getHtmlAsync("/views" + path + ".js");
                 LazyRouting._controlJs[rule] = js;
             }
             catch (ex) {
@@ -150,9 +114,7 @@ LazyRouting._loadComponentAsync = function (rule, map) {
         })
         .then(async (result) => {
             try {
-                var js = await LazyRouting._getHtmlAsync("/views" + path + "/index.control.html");
-                js = js.replace('<route-script>', '').replace('</route-script>', '')
-                js = $('<div/>').html(js).text();
+                var js = await LazyRouting._getHtmlAsync("/views" + path + "/index.js");
                 LazyRouting._controlJs[rule] = js;
             }
             catch (ex) {
