@@ -17,15 +17,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         private static Regex CookieExpireRegex = new Regex("(?<=; expires=)[0-9a-zA-Z: -/]{1,}(?=; path=)");
 
         [HttpGet("session/info")]
-        public ApiResult<dynamic> GetSessionInfo()
+        public async Task<ApiResult<dynamic>> GetSessionInfo(CancellationToken token)
         {
             var ret = new Dictionary<string, object>();
             ret.Add("isSignedIn", User.Current != null);
             if (User.Current != null)
             {
+                var roles = await User.Manager.GetRolesAsync(User.Current);
+                ret.Add("id", User.Current.Id);
                 ret.Add("username", User.Current.UserName);
                 ret.Add("email", User.Current.Email);
-                ret.Add("nickname", User.Current.Nickname);
+                ret.Add("role", roles.Count > 0 ? roles.First() : "Member");
             }
             return Result<dynamic>(ret);
         }
@@ -77,7 +79,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var cookie = HttpContext.Response.Headers["Set-Cookie"].ToString();
                 var expire = DateTime.Parse(CookieExpireRegex.Match(cookie).Value).ToTimeStamp();
 
-                return Result<dynamic>(new { Cookie = cookie, Expire = expire });
+                return Result<dynamic>(new { Cookie = cookie.Replace(" httponly", ""), Expire = expire });
             }
             else
             {

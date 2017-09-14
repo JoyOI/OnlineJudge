@@ -186,10 +186,13 @@
         this.__cacheSubscribe[key].push(func);
     },
     createView: function (endpoint, params, interval) {
+        if (!params) params = {};
         var self = this;
         var ret = {
             bindings: [],
+            _fetchFunc: null,
             fetch: function (func) {
+                this._fetchFunc = func;
                 var page = params.page;
                 var key = self._generateCacheKey(endpoint, params, true);
                 if (!self.__cache[key]) {
@@ -215,7 +218,7 @@
         
         if (interval) {
             setTimeout(function () {
-                ret.fetch();
+                ret.fetch(ret._fetchFunc);
             });
         }
 

@@ -8,9 +8,11 @@ component.data = function () {
         title: null,
         body: null,
         sampleData: [],
+        source: null,
         timelimit: null,
         memorylimit: null,
         isSpecialJudge: null,
+        claims: [],
         control: {
             editorActiveTag: 'code',
             isInEditMode: false,
@@ -33,7 +35,7 @@ component.data = function () {
 
 component.computed = {
     renderedBody: function () {
-        return filterXSS(marked(this.body));
+        return filterXSS(marked(this.body || ""));
     },
     judgeResult: function () {
         if (this.result.substatuses.length) {
@@ -50,15 +52,31 @@ component.computed = {
         } else {
             return 'Unknown Result';
         }
+    },
+    hasPermissionToEdit: function () {
+        return this.$root.user.profile.role == 'Root'
+            || this.$root.user.profile.root === 'Master'
+            || this.claims.some(x => x.toLowerCase() === this.$root.user.profile.id.toLowerCase());
     }
 };
 
 component.created = function () {
-    this.title = 'A+B Problem';
-    this.body = '# 题目背景\r\n为了广大用户熟悉Joy OI环境而设置本题\r\n # 题目描述\r\n输入包括一行，两个整数用空格分隔';
-    this.sampleData = [{ input: '1 1', output: '2' }, { input: '2 5', output: '7' }];
-    this.timelimit = 1000;
-    this.memorylimit = 128 * 1024 * 1024;
+    var self = this;
+    qv.createView('/api/problem/' + router.history.current.params.id)
+        .fetch(x => {
+            self.title = x.data.title;
+            self.timelimit = x.data.timeLimitationPerCaseInMs;
+            self.memory = x.data.memoryLimitationPerCaseInByte;
+            self.body = x.data.body;
+        });
+    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample' })
+        .fetch(x => {
+            self.sampleData = x.data.map(x => { return { input: x.input, output: x.output } });
+        });
+    qv.get('/api/problem/' + router.history.current.params.id + '/claim/all')
+        .then((x) => {
+            self.claims = x.data.map(x => x.userId);
+        });
     this.isSpecialJudge = false;
     this.source = '本地';
     this.form.language = app.preferences.language;

@@ -12,6 +12,7 @@
         user: {
             isSignedIn: false,
             profile: {
+                id: null,
                 username: null,
                 avatarUrl: null,
                 role: null
@@ -63,8 +64,10 @@
                     self.user.isSignedIn = true;
                     return qv.get('/api/user/session/info');
                 })
-                .then(function (result) {
-                    self.user.username = result.username;
+                .then(x => {
+                    self.user.profile.username = x.data.username;
+                    self.user.profile.role = x.data.role;
+                    self.user.profile.id = x.data.id;
                     self.toggleLoginBox();
                 });
         },

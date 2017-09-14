@@ -159,5 +159,19 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The created time</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public DateTime CreatedTime { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// Gets or sets the time limitation per case in ms
+        /// </summary>
+        /// <value>Time limitation per case in ms</value>
+        [WebApi(FilterLevel.GetListDisabled)]
+        public int TimeLimitationPerCaseInMs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the memory limitation per case in byte
+        /// </summary>
+        /// <value>Memory limitation per case in byte</value>
+        [WebApi(FilterLevel.GetListDisabled)]
+        public int MemoryLimitationPerCaseInByte { get; set; }
     }
 }

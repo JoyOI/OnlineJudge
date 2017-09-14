@@ -183,34 +183,91 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Test Case
         [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/all")]
-        public async Task<ApiResult<List<TestCase>>> GetTestCase(string problemId, TestCaseType? type, CancellationToken token)
+        public async Task<ApiResult<List<TestCaseWithContent>>> GetTestCase(
+            [FromServices] ManagementServiceClient MgmtSvc,
+            string problemId, 
+            TestCaseType? type, 
+            bool? showContent,
+            CancellationToken token)
         {
-            IQueryable<TestCase> ret = DB.TestCases
+            IQueryable<TestCase> testCases = DB.TestCases
                 .Where(x => x.ProblemId == problemId);
 
             if (type.HasValue)
             {
-                ret = ret.Where(x => x.Type == type.Value);
+                testCases = testCases.Where(x => x.Type == type.Value);
             }
 
-            return Result(await ret.ToListAsync(token));
+            var ret = await testCases.Select(x => new TestCaseWithContent
+            {
+                Id = x.Id,
+                ContestId = x.ContestId,
+                InputBlobId = x.InputBlobId,
+                InputSizeInByte = x.InputSizeInByte,
+                OutputBlobId = x.OutputBlobId,
+                OutputSizeInByte = x.OutputSizeInByte,
+                ProblemId = x.ProblemId,
+                Type = x.Type
+            })
+            .ToListAsync(token);
+
+            if (showContent.HasValue && showContent.Value)
+            {
+                foreach (var x in ret)
+                {
+                    if (await IsAbleToAccessTestCaseContentAsync(x.Id, token))
+                    {
+                        x.Input = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(x.InputBlobId, token)).Body);
+                        x.Output = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(x.OutputBlobId, token)).Body);
+                    }
+                }
+            }
+            
+            return Result(ret);
         }
 
         [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
-        public async Task<ApiResult<TestCase>> GetTestCase(string problemId, Guid id, CancellationToken token)
+        public async Task<ApiResult<TestCaseWithContent>> GetTestCase(
+            [FromServices] ManagementServiceClient MgmtSvc,
+            string problemId, 
+            Guid id,
+            bool? showContent,
+            CancellationToken token)
         {
-            var ret = await DB.TestCases.SingleOrDefaultAsync(x => x.ProblemId == problemId && x.Id == id, token);
+            var ret = await DB.TestCases
+                .Select(x => new TestCaseWithContent
+                {
+                    Id = x.Id,
+                    ContestId = x.ContestId,
+                    InputBlobId = x.InputBlobId,
+                    InputSizeInByte = x.InputSizeInByte,
+                    OutputBlobId = x.OutputBlobId,
+                    OutputSizeInByte = x.OutputSizeInByte,
+                    ProblemId = x.ProblemId,
+                    Type = x.Type
+                })
+                .SingleOrDefaultAsync(x => x.ProblemId == problemId && x.Id == id, token);
+
             if (ret == null)
             {
-                return Result<TestCase>(404, "Not Found");
+                return Result<TestCaseWithContent>(404, "Not Found");
             }
             else if (!await HasPermissionToProblemAsync(problemId, token)
                 || !await DB.TestCasePurchases.AnyAsync(x => x.TestCaseId == id && x.UserId == User.Current.Id, token))
             {
-                return Result<TestCase>(401, "No Permission");
+                return Result<TestCaseWithContent>(401, "No Permission");
             }
             else
             {
+                if (showContent.HasValue && showContent.Value)
+                {
+                    if (await IsAbleToAccessTestCaseContentAsync(ret.Id, token))
+                    {
+                        ret.Input = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(ret.InputBlobId, token)).Body);
+                        ret.Output = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(ret.OutputBlobId, token)).Body);
+                    }
+                }
+
                 return Result(ret);
             }
         }
@@ -427,6 +484,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ContestEditPermission
                    && x.ClaimValue == contestId));
+
+        private async Task<bool> IsAbleToAccessTestCaseContentAsync(Guid testCaseId, CancellationToken token)
+            => await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles) || await DB.TestCasePurchases.AnyAsync(x => x.UserId == User.Current.Id && x.TestCaseId == testCaseId);
 
         private async Task CompileAsync(string id, string code, string language, CancellationToken token)
         {
