@@ -1,3 +1,67 @@
 ﻿<div class="container" id="problem-edit">
-    <div>{{ $route.params.id }}</div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="area-outer">
+                <div class="area-item">
+                    <div class="area-title">基本信息</div>
+                    <div>
+                        <p>
+                            <label>标题</label>
+                            <input type="text" class="form-control" v-model="title" />
+                        </p>
+                        <p>
+                            <label>时间限制 (ms)</label>
+                            <input type="text" class="form-control" v-model="timeLimitationPerCaseInMs" />
+                        </p>
+                        <p>
+                            <label>空间限制 (bytes)</label>
+                            <input type="text" class="form-control" v-model="memoryLimitationPerCaseInByte" />
+                        </p>
+                        <p>
+                            <label>题面内容 (markdown)</label>
+                            <textarea class="markdown-textbox" v-model="body" />
+                        </p>
+                        <p>
+                            <a class="btn btn-default" v-on:click="saveBasic()"><i class="fa fa-save"></i> 保存</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 title-align">
+            <div class="sidebar-section all-buttons">
+                <a class="sidebar-section-button">
+                    <i class="fa fa-edit"></i>
+                    <span>基本信息</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-tag"></i>
+                    <span>标签管理</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-database"></i>
+                    <span>测试用例</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-file-code-o"></i>
+                    <span>特殊比较器</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-file-code-o"></i>
+                    <span>标准程序</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-file-code-o"></i>
+                    <span>数据范围校验器</span>
+                </a>
+                <hr class="sidebar-hr" />
+                <router-link :to="{ name: '/problem/:id', path: '/problem/' + id, params: { 'id': id } }"
+                             class="sidebar-section-button">
+                    <i class="fa fa-mail-reply"></i>
+                    <span>返回题目</span>
+                </router-link>
+            </div>
+        </div>
+    </div>
 </div>

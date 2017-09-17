@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         public IcM IcM { get; set; }
 
         public virtual bool HasOwnership { get; set; }
+
+        protected string RequestBody
+        {
+            get
+            {
+                using (var sr = new StreamReader(Request.Body))
+                {
+                    return sr.ReadToEndAsync().Result;
+                }
+            }
+        }
 
         private bool? _isRoot;
 

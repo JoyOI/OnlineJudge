@@ -79,7 +79,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var cookie = HttpContext.Response.Headers["Set-Cookie"].ToString();
                 var expire = DateTime.Parse(CookieExpireRegex.Match(cookie).Value).ToTimeStamp();
 
-                return Result<dynamic>(new { Cookie = cookie.Replace(" httponly", ""), Expire = expire });
+                return Result<dynamic>(new
+                {
+                    Cookie = cookie
+                        .Replace(" httponly", "")
+                        .Replace("samesite=lax", "")
+                        .Replace("path=/;", ""),
+                    Expire = expire
+                });
             }
             else
             {

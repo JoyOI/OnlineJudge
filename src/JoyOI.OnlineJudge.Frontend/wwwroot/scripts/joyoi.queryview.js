@@ -1,4 +1,5 @@
-﻿var qv = {
+﻿var host = 'http://localhost:5000';
+var qv = {
     __cache: {},
     __cacheDictionary: {},
     __cacheExpire: {},
@@ -39,7 +40,7 @@
     request: function (endpoint, method, params) {
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: app.host + endpoint,
+                url: host + endpoint,
                 type: method,
                 dataType: 'json',
                 contentType: 'application/json',

@@ -74,10 +74,13 @@
                     <span>跳转至题解</span>
                 </a>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
-                <a class="sidebar-section-button" v-if="hasPermissionToEdit">
+                <router-link 
+                        :to="{ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } }" 
+                        v-if="hasPermissionToEdit"
+                        class="sidebar-section-button">
                     <i class="fa fa-cog"></i>
                     <span>管理题目</span>
-                </a>
+                </router-link>
             </div>
 
             <div class="sidebar-section">

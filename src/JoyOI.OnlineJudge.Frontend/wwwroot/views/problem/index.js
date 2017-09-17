@@ -5,6 +5,7 @@ app.links = [{ text: '题目列表', to: '/problem' }];
 
 component.data = function () {
     return {
+        id: router.history.current.params.id,
         title: null,
         body: null,
         sampleData: [],
@@ -64,6 +65,7 @@ component.created = function () {
     var self = this;
     qv.createView('/api/problem/' + router.history.current.params.id)
         .fetch(x => {
+            app.title = x.data.title;
             self.title = x.data.title;
             self.timelimit = x.data.timeLimitationPerCaseInMs;
             self.memory = x.data.memoryLimitationPerCaseInByte;

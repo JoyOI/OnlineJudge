@@ -12,9 +12,4 @@
     <Folder Include="wwwroot\views\judge\" />
     <Folder Include="wwwroot\views\login\" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Remove="wwwroot\styles\prompt.css" />
-    <Content Remove="wwwroot\styles\register.css" />
-    <Content Remove="wwwroot\styles\sign-in-style.css" />
-  </ItemGroup>
 </Project>

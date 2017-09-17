@@ -24,7 +24,14 @@
     },
     created: function () {
         if (document.cookie.indexOf("AspNetCore") >= 0) {
-            this.user.isSignedIn = true;
+            var self = this;
+            self.user.isSignedIn = true;
+            qv.get('/api/user/session/info')
+                .then((x) => {
+                    self.user.profile.username = x.data.username;
+                    self.user.profile.role = x.data.role;
+                    self.user.profile.id = x.data.id;
+                });
         }
         else {
             this.user.isSignedIn = false;

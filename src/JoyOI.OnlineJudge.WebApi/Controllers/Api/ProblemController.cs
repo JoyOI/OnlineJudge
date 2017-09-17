@@ -87,7 +87,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Patch(string id, [FromBody]string value, CancellationToken token)
+        public async Task<ApiResult> Patch(string id, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(id, token))
             {
@@ -101,21 +101,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchEntity(problem, value);
+                PatchEntity(problem, RequestBody);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }
         }
         
         [HttpPut("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
+        public async Task<ApiResult> Put(string id, CancellationToken token)
         {
             if (await DB.Problems.AnyAsync(x => x.Id == id, token))
             {
                 return Result(400, "The problem id is already exists.");
             }
 
-            var problem = PutEntity<Problem>(value).Entity;
+            var problem = PutEntity<Problem>(RequestBody).Entity;
             problem.Id = id;
 
             // 处理比较器

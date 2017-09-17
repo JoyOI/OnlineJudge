@@ -166,6 +166,32 @@ $(document).bind('DOMNodeInserted', function (e) {
         });
     }
 
+    if (dom.find('.markdown-textbox').length) {
+        dom.find('.markdown-textbox').unbind().each(function () {
+            var editor = $(this);
+            if (editor[0].smde == undefined) {
+                var smde = new SimpleMDE({
+                    element: editor[0],
+                    spellChecker: false,
+                    status: false
+                });
+                editor[0].smde = smde;
+                var begin_pos, end_pos;
+                $(this).parent().children().unbind().dragDropOrPaste(function () {
+                    begin_pos = smde.codemirror.getCursor();
+                    smde.codemirror.setSelection(begin_pos, begin_pos);
+                    smde.codemirror.replaceSelection(replaceText);
+                    begin_pos.line++;
+                    end_pos = { line: begin_pos.line, ch: begin_pos.ch + replaceInnerText.length };
+                },
+                    function (result) {
+                        smde.codemirror.setSelection(begin_pos, end_pos);
+                        smde.codemirror.replaceSelection('![' + result.FileName + '](/file/download/' + result.Id + ')');
+                    });
+            }
+        });
+    }
+
     if (dom.find('.code-box').length) {
         var boxes = dom.find('.code-box');
         for (var i = 0; i < boxes.length; i ++) {

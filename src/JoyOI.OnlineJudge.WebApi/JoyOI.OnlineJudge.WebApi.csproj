@@ -24,4 +24,6 @@
     <ProjectReference Include="..\JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties config_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>

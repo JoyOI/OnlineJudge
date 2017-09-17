@@ -76,7 +76,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         
         [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Patch(string id, [FromBody]string value, CancellationToken token)
+        public async Task<ApiResult> Patch(string id, CancellationToken token)
         {
             if (!await HasPermissionToContestAsync(id, token))
             {
@@ -92,7 +92,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Contest not found");
                 }
                
-                var fields = PatchEntity(contest, value);
+                var fields = PatchEntity(contest, RequestBody);
                 if (fields.Contains(nameof(Contest.Begin)))
                 {
                     if (contest.Begin < DateTime.Now)
@@ -113,7 +113,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Put(string id, [FromBody]string value, CancellationToken token)
+        public async Task<ApiResult> Put(string id, CancellationToken token)
         {
             if (await DB.Contests.AnyAsync(x => x.Id == id, token))
             {
@@ -121,7 +121,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                var contest = PutEntity<Contest>(value).Entity;
+                var contest = PutEntity<Contest>(RequestBody).Entity;
                 if (contest.Begin < DateTime.Now)
                 {
                     return Result(400, "The begin time is invalid.");
