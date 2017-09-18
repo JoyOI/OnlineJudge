@@ -3,16 +3,7 @@ app.links = [];
 
 component.data = function () {
     return {
-        tags: [
-            {
-                text: '按解法',
-                data: [
-                    { text: '搜索', data: ['暴力', '二分法', 'DFS', 'BFS', '双向BFS', '剪枝'] },
-                    { text: '动态规划', data: ['线性', '树形', '背包问题'] }
-                ]
-            },
-            { text: '按年份', data: ['2017', '2016', '2015', '2014'] }
-        ],
+        tags: [],
         selected: [],
         paging: {
             current: 1,
@@ -79,5 +70,9 @@ component.created = function () {
         this.paging.count = x.data.count;
         this.paging.current = x.data.current;
         this.result = x.data.result;
+    });
+
+    qv.createView('/api/configuration/problemtags').fetch(x => {
+        this.tags = JSON.parse(x.data.value);
     });
 };
