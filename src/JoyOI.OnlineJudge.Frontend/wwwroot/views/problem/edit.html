@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-9">
             <div class="area-outer">
-                <div class="area-item">
+                <div class="area-item" v-if="active === 'basic'">
                     <div class="area-title">基本信息</div>
                     <div>
                         <p>
@@ -31,27 +31,39 @@
 
         <div class="col-md-3 title-align">
             <div class="sidebar-section all-buttons">
-                <a class="sidebar-section-button" v-bind:class="{ active: active === 'basic' }">
+                <a class="sidebar-section-button" 
+                   v-on:click="active = 'basic'" 
+                   v-bind:class="{ active: active === 'basic' }">
                     <i class="fa fa-edit"></i>
                     <span>基本信息</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button" 
+                   v-on:click="active = 'tag'" 
+                   v-bind:class="{ active: active === 'tag' }">
                     <i class="fa fa-tag"></i>
                     <span>标签管理</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button"
+                   v-on:click="active = 'testcase'"
+                   v-bind:class="{ active: active === 'testcase' }">
                     <i class="fa fa-database"></i>
                     <span>测试用例</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button"
+                   v-on:click="active = 'spj'"
+                   v-bind:class="{ active: active === 'spj' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>特殊比较器</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button"
+                   v-on:click="active = 'std'"
+                   v-bind:class="{ active: active === 'std' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>标准程序</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button"
+                   v-on:click="active = 'range'"
+                   v-bind:class="{ active: active === 'range' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>数据范围校验器</span>
                 </a>
