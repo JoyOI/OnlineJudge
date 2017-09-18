@@ -12,12 +12,15 @@ component.data = function () {
         memoryLimitationPerCaseInByte: null,
         isSpecialJudge: null,
         claims: [],
-        active: 'basic'
+        active: 'basic',
+        tags: [],
+        selected: []
     }
 };
 
 component.created = function () {
     var self = this;
+
     qv.createView('/api/problem/' + router.history.current.params.id)
         .fetch(x => {
             self.title = x.data.title;
@@ -28,6 +31,10 @@ component.created = function () {
             self.body = x.data.body;
             $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
         });
+
+    qv.createView('/api/configuration/problemtags').fetch(x => {
+        self.tags = JSON.parse(x.data.value);
+    });
 };
 
 component.methods = {
