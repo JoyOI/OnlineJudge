@@ -32,6 +32,12 @@ namespace JoyOI.OnlineJudge.Models
         public DbSet<Attendee> Attendees { get; set; }
 
         /// <summary>
+        /// Gets or sets the configurations
+        /// </summary>
+        /// <value>The configurations</value>
+        public DbSet<Configuration> Configurations { get; set; }
+
+        /// <summary>
         /// Gets or sets the contests.
         /// </summary>
         /// <value>The contests.</value>

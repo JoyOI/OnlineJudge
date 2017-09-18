@@ -11,7 +11,8 @@ component.data = function () {
         timeLimitationPerCaseInMs: null,
         memoryLimitationPerCaseInByte: null,
         isSpecialJudge: null,
-        claims: []
+        claims: [],
+        active: 'basic'
     }
 };
 
