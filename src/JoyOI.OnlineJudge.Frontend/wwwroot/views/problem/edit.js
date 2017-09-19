@@ -29,6 +29,7 @@ component.created = function () {
             self.timeLimitationPerCaseInMs = x.data.timeLimitationPerCaseInMs;
             self.memoryLimitationPerCaseInByte = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
+            self.selected = x.data.tags.split(',').map(x => x.trim());
             $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
         });
 
@@ -49,5 +50,27 @@ component.methods = {
             .then((x) => {
                 popResult(x.msg);
             });
-    }
+    },
+    saveTags: function () {
+        qv.patch('/api/problem/' + this.id, {
+            tags: this.selected.toString()
+        });
+    },
+    triggerTag: function (tag) {
+        if (this.selected.some(x => x == tag)) {
+            var subs = this.selected.filter(x => x.indexOf(tag) >= 0);
+            for (var i = 0; i < subs.length; i++) {
+                this.selected.remove(subs[i]);
+            }
+        }
+        else {
+            this.selected.push(tag);
+            if (tag.indexOf(':') >= 0 && tag.lastIndexOf(':') >= 0 && tag.indexOf(':') != tag.lastIndexOf(':')) {
+                var parent = tag.substr(0, tag.lastIndexOf(':'));
+                if (!this.selected.some(x => x == parent)) {
+                    this.selected.push(parent);
+                }
+            }
+        }
+    },
 };

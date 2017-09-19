@@ -1293,3 +1293,7 @@ dd {
 .problem-render h1, problem-render .area-title {
     margin-top: 0;
 }
+
+.tag-list.wide > li {
+    width: 25%;
+}

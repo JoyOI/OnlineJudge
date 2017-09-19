@@ -40,10 +40,15 @@ var githubTheme = ace.require('ace/theme/github');
 $(window).on('mousemove', function (e) {
     if ($(e.target).hasClass('tag-item') || $(e.target).parents().hasClass('tag-item')) {
         var val = $(e.target).attr('data-value');
+        var isEditPage = $(e.target).parents('.tag-list.wide').length > 0;
         $('[data-parent="' + val + '"]').addClass('active');
         $('[data-parent="' + val + '"]').outerWidth($('.col-md-3').outerWidth());
         $('[data-parent="' + val + '"]').css('margin-top', -$('[data-value="' + val + '"]').outerHeight());
-        $('[data-parent="' + val + '"]').css('margin-left', -$('.col-md-3').outerWidth() - 5);
+        if (isEditPage) {
+            $('[data-parent="' + val + '"]').css('margin-left', $('[data-value="' + val + '"]').outerWidth() + 5);
+        } else {
+            $('[data-parent="' + val + '"]').css('margin-left', -$('.col-md-3').outerWidth() - 5);
+        }
     }
 
     if (!$(e.target).parents().hasClass('tag-item') && !$(e.target).hasClass('tag-item') && !$(e.target).parents().hasClass('tag-extend-outer') && !$(e.target).hasClass('tag-extend-outer'))

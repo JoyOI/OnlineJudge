@@ -33,7 +33,7 @@
                             <h1>{{ tag.text }}</h1>
                         </div>
                         <div class="sidebar-section-body">
-                            <ul class="tag-list">
+                            <ul class="tag-list wide">
                                 <li v-for="sub in tag.data">
                                     <a v-if="typeof sub == 'string'" v-bind:data-value="tag.text + ':' + sub" v-on:click="triggerTag(tag.text + ':' + sub)" v-bind:class="{ active: selected.some(x => x == tag.text + ':' + sub) }" class="tag-item">{{ sub }}</a>
                                     <a v-if="typeof sub == 'object'" v-bind:data-value="tag.text + ':' + sub.text" v-on:click="triggerTag(tag.text + ':' + sub.text)" v-bind:class="{ active: selected.some(x => x == tag.text + ':' + sub.text) }" class="tag-item">{{ sub.text }}</a>
@@ -46,6 +46,7 @@
                             </ul>
                         </div>
                     </div>
+                    <p><a class="btn btn-default" v-on:click="saveTags()">保存</a></p>
                 </div>
             </div>
         </div>
