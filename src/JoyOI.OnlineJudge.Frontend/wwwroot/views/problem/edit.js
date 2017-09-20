@@ -13,6 +13,12 @@ component.data = function () {
         isSpecialJudge: null,
         claims: [],
         active: 'basic',
+        validator: {
+            code: null,
+            language: null,
+            error: null,
+            blob: null
+        },
         tags: [],
         selected: []
     }
@@ -29,6 +35,10 @@ component.created = function () {
             self.timeLimitationPerCaseInMs = x.data.timeLimitationPerCaseInMs;
             self.memoryLimitationPerCaseInByte = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
+            self.validator.code = x.data.validatorCode;
+            self.validator.language = x.data.validatorLanguage;
+            self.validator.error = x.data.validatorError;
+            self.validator.blob = x.data.validatorBlobId;
             self.selected = x.data.tags.split(',').map(x => x.trim());
             $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
         });

@@ -207,7 +207,9 @@ $(document).bind('DOMNodeInserted', function (e) {
             var editor = ace.edit(id);
             boxes[i].editor = editor;
             editor.setTheme("ace/theme/twilight");
-            editor.setReadOnly(true);
+            if (!dom.find('.code-box.editable').length) {
+                editor.setReadOnly(true);
+            } 
             editor.setAutoScrollEditorIntoView(true);
             editor.setOption("maxLines", 100);
         }

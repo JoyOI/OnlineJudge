@@ -48,6 +48,12 @@
                     </div>
                     <p><a class="btn btn-default" v-on:click="saveTags()">保存</a></p>
                 </div>
+                <div class="area-item dark" v-if="active === 'spj'">
+                    <div class="area-title">特殊比较器</div>
+                    <div class="code-box-outer">
+                        <pre class="code-box editable">{{ validator.code }}</pre>
+                    </div>
+                </div>
             </div>
         </div>
 

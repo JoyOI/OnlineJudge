@@ -123,7 +123,7 @@
         </div>
 
         <!-- Code editor -->
-        <pre id="code-editor" class="ace_editor ace-twilight ace_dark" v-bind:class="{ 'active': control.editorActiveTag == 'code' }">{{ form.code }}</pre>
+        <pre id="code-editor" class="ace_editor ace-twilight ace_dark" v-bind:class="{ 'active': control.editorActiveTag === 'code' }">{{ form.code }}</pre>
 
         <!-- Data editor -->
         <div class="data-editor" v-bind:class="{ 'active': control.editorActiveTag == 'data' }">
