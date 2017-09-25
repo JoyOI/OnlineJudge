@@ -5,6 +5,10 @@
     <UserSecretsId>aspnet-JoyOI.OnlineJudge.WebApi-94D22F80-B2B0-4E38-BC63-A7A45D6516A9</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;4014</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>

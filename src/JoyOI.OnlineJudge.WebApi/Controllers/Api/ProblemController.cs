@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
@@ -87,7 +88,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Patch(string id, CancellationToken token)
+        public async Task<ApiResult> Patch(
+            string id, 
+            [FromServices] ManagementServiceClient MgmtSvc,
+            CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(id, token))
             {
@@ -101,7 +105,61 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchEntity(problem, RequestBody);
+                var fields = PatchEntity(problem, RequestBody);
+
+                // Update validator
+                if (fields.Any(x => x == nameof(Problem.ValidatorCode)) || fields.Any(x => x == nameof(Problem.ValidatorLanguage)))
+                {
+                    var validatorCodeId = await MgmtSvc.PutBlobAsync("validator-" + problem.Id, Encoding.UTF8.GetBytes(problem.ValidatorCode), token);
+                    var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(validatorCodeId, "Main" + Constants.GetExtension(problem.ValidatorLanguage)) });
+                    var result = await StateMachineAwaiter.GetStateMachineResultAsync(stateMachineId, token);
+                    if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))
+                    {
+                        problem.ValidatorBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name == "Main.out").Id;
+                        problem.ValidatorError = null;
+                    }
+                    else
+                    {
+                        problem.ValidatorBlobId = null;
+                        problem.ValidatorError = JsonConvert.DeserializeObject<dynamic>(Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(result.StartedActors.Last().Outputs.Single(x => x.Name == "runner.txt").Id, token)).Body)).Error;
+                    }
+                }
+
+                // Update standard
+                if (fields.Any(x => x == nameof(Problem.StandardCode)) || fields.Any(x => x == nameof(Problem.StandardLanguage)))
+                {
+                    var standardCodeId = await MgmtSvc.PutBlobAsync("standard-" + problem.Id, Encoding.UTF8.GetBytes(problem.ValidatorCode), token);
+                    var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(standardCodeId, "Main" + Constants.GetExtension(problem.StandardLanguage)) });
+                    var result = await StateMachineAwaiter.GetStateMachineResultAsync(stateMachineId, token);
+                    if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))
+                    {
+                        problem.StandardBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name == "Main.out").Id;
+                        problem.StandardError = null;
+                    }
+                    else
+                    {
+                        problem.StandardBlobId = null;
+                        problem.StandardError = JsonConvert.DeserializeObject<dynamic>(Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(result.StartedActors.Last().Outputs.Single(x => x.Name == "runner.txt").Id, token)).Body)).Error;
+                    }
+                }
+
+                // Update range
+                if (fields.Any(x => x == nameof(Problem.StandardCode)) || fields.Any(x => x == nameof(Problem.StandardLanguage)))
+                {
+                    var rangeCodeId = await MgmtSvc.PutBlobAsync("range-" + problem.Id, Encoding.UTF8.GetBytes(problem.RangeCode), token);
+                    var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(rangeCodeId, "Main" + Constants.GetExtension(problem.RangeLanguage)) });
+                    var result = await StateMachineAwaiter.GetStateMachineResultAsync(stateMachineId, token);
+                    if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))
+                    {
+                        problem.RangeBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name == "Main.out").Id;
+                        problem.RangeError = null;
+                    }
+                    else
+                    {
+                        problem.RangeBlobId = null;
+                        problem.RangeError = JsonConvert.DeserializeObject<dynamic>(Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(result.StartedActors.Last().Outputs.Single(x => x.Name == "runner.txt").Id, token)).Body)).Error;
+                    }
+                }
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }

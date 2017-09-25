@@ -1297,3 +1297,8 @@ dd {
 .tag-list.wide > li {
     width: 25%;
 }
+
+.problem-edit-buttons-outer {
+    padding: 0 5px;
+    border-top: 1px solid #777;
+}

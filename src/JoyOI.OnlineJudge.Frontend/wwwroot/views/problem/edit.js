@@ -20,7 +20,8 @@ component.data = function () {
             blob: null
         },
         tags: [],
-        selected: []
+        selected: [],
+        languages: languages
     }
 };
 
@@ -36,7 +37,7 @@ component.created = function () {
             self.memoryLimitationPerCaseInByte = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
             self.validator.code = x.data.validatorCode;
-            self.validator.language = x.data.validatorLanguage;
+            self.validator.language = x.data.validatorLanguage || app.preferences.language;
             self.validator.error = x.data.validatorError;
             self.validator.blob = x.data.validatorBlobId;
             self.selected = x.data.tags.split(',').map(x => x.trim());
@@ -65,6 +66,16 @@ component.methods = {
         qv.patch('/api/problem/' + this.id, {
             tags: this.selected.toString()
         });
+    },
+    saveSpj: function () {
+        this.validator.code = $('.spjEditor')[0].editor.session.getValue();
+        qv.patch('/api/problem/' + this.id, {
+            validatorCode: this.validator.code,
+            validatorLanguage: this.validator.language
+        })
+            .then((x) => {
+                console.error(x);
+            });
     },
     triggerTag: function (tag) {
         if (this.selected.some(x => x == tag)) {

@@ -51,7 +51,13 @@
                 <div class="area-item dark" v-if="active === 'spj'">
                     <div class="area-title">特殊比较器</div>
                     <div class="code-box-outer">
-                        <pre class="code-box editable">{{ validator.code }}</pre>
+                        <pre class="code-box editable spjEditor">{{ validator.code }}</pre>
+                        <div class="problem-edit-buttons-outer">
+                            <a class="code-editor-button" v-on:click="saveSpj()"><i class="fa fa-save"></i> 保存比较器</a>
+                            <select class="code-editor-button" v-model="validator.language">
+                                <option v-for="language in languages">{{ language }}</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
