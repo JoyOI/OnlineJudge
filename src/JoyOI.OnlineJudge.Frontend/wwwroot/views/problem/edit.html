@@ -60,6 +60,31 @@
                         </div>
                     </div>
                 </div>
+                <div class="area-item dark" v-if="active === 'std'">
+                    <div class="area-title">标准程序</div>
+                    <div class="code-box-outer">
+                        <pre class="code-box editable stdEditor">{{ standard.code }}</pre>
+                        <div class="problem-edit-buttons-outer">
+                            <a class="code-editor-button" v-on:click="saveStd()"><i class="fa fa-save"></i> 保存标准程序</a>
+                            <select class="code-editor-button" v-model="standard.language">
+                                <option v-for="language in languages">{{ language }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="area-item dark" v-if="active === 'range'">
+                    <div class="area-title">数据校验器</div>
+                    <div class="code-box-outer">
+                        <pre class="code-box editable rangeEditor">{{ range.code }}</pre>
+                        <div class="problem-edit-buttons-outer">
+                            <a class="code-editor-button" v-on:click="saveRange()"><i class="fa fa-save"></i> 保存数据校验器</a>
+                            <select class="code-editor-button" v-model="range.language">
+                                <option v-for="language in languages">{{ language }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -99,7 +124,7 @@
                    v-on:click="active = 'range'"
                    v-bind:class="{ active: active === 'range' }">
                     <i class="fa fa-file-code-o"></i>
-                    <span>数据范围校验器</span>
+                    <span>数据校验器</span>
                 </a>
                 <hr class="sidebar-hr" />
                 <router-link :to="{ name: '/problem/:id', path: '/problem/' + id, params: { 'id': id } }"

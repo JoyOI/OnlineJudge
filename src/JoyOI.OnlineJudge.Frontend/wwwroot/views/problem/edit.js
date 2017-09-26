@@ -19,6 +19,18 @@ component.data = function () {
             error: null,
             blob: null
         },
+        standard: {
+            code: null,
+            language: null,
+            error: null,
+            blob: null
+        },
+        range: {
+            code: null,
+            language: null,
+            error: null,
+            blob: null
+        },
         tags: [],
         selected: [],
         languages: languages
@@ -40,12 +52,28 @@ component.created = function () {
             self.validator.language = x.data.validatorLanguage || app.preferences.language;
             self.validator.error = x.data.validatorError;
             self.validator.blob = x.data.validatorBlobId;
+            self.standard.code = x.data.standardCode;
+            self.standard.language = x.data.standardLanguage || app.preferences.language;
+            self.standard.error = x.data.standardError;
+            self.standard.blob = x.data.standardBlobId;
+            self.range.code = x.data.RangeCode;
+            self.range.langauge = x.data.rangeLanguage || app.preferences.language;
+            self.range.error = x.data.rangeError;
+            self.range.blob = x.data.rangeBlobId;
             self.selected = x.data.tags.split(',').map(x => x.trim());
             $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
             
             if ($('.spjEditor').length) {
                 var editor = $('.spjEditor')[0].editor;
                 editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.validatorLanguage]);
+            }
+            if ($('.stdEditor').length) {
+                var editor = $('.stdEditor')[0].editor;
+                editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.standardLanguage]);
+            }
+            if ($('.rangeEditor').length) {
+                var editor = $('.rangeEditor')[0].editor;
+                editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.rangeLanguage]);
             }
         });
 
@@ -79,6 +107,29 @@ component.methods = {
             validatorLanguage: this.validator.language
         })
             .then((x) => {
+                // TODO: Pop Result & Refresh Cache
+                console.error(x);
+            });
+    },
+    saveStd: function () {
+        this.validator.code = $('.stdEditor')[0].editor.session.getValue();
+        qv.patch('/api/problem/' + this.id, {
+            standardCode: this.validator.code,
+            standardLanguage: this.validator.language
+        })
+            .then((x) => {
+                // TODO: Pop Result & Refresh Cache
+                console.error(x);
+            });
+    },
+    saveRange: function () {
+        this.validator.code = $('.rangeEditor')[0].editor.session.getValue();
+        qv.patch('/api/problem/' + this.id, {
+            rangeCode: this.validator.code,
+            rangeLanguage: this.validator.language
+        })
+            .then((x) => {
+                // TODO: Pop Result & Refresh Cache
                 console.error(x);
             });
     },
