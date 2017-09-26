@@ -42,6 +42,11 @@ component.created = function () {
             self.validator.blob = x.data.validatorBlobId;
             self.selected = x.data.tags.split(',').map(x => x.trim());
             $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
+            
+            if ($('.spjEditor').length) {
+                var editor = $('.spjEditor')[0].editor;
+                editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.validatorLanguage]);
+            }
         });
 
     qv.createView('/api/configuration/problemtags').fetch(x => {
@@ -94,4 +99,14 @@ component.methods = {
             }
         }
     },
+};
+
+component.watch = {
+    deep: true,
+    'validator.language': function (val) {
+        if ($('.spjEditor').length && val) {
+            var editor = $('.spjEditor')[0].editor;
+            editor.session.setMode('ace/mode/' + syntaxHighlighter[val]);
+        }
+    }
 };
