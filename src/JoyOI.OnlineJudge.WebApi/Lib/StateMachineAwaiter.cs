@@ -2,27 +2,60 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using JoyOI.ManagementService.Model.Dtos;
+using JoyOI.ManagementService.SDK;
 
 namespace JoyOI.OnlineJudge.WebApi.Lib
 {
-    public static class StateMachineAwaiter
+    public class StateMachineAwaiter
     {
-        public static ConcurrentDictionary<Guid, TaskCompletionSource<StateMachineInstanceOutputDto>> Semaphores { get; set; } = new ConcurrentDictionary<Guid, TaskCompletionSource<StateMachineInstanceOutputDto>>();
+        private IConfiguration _configuration;
 
-        public static Task<StateMachineInstanceOutputDto> GetStateMachineResultAsync(Guid statemachineId, CancellationToken token)
+        private ManagementServiceClient _managementServiceClient;
+
+        public StateMachineAwaiter(IConfiguration configuration, ManagementServiceClient managementServiceClient)
         {
-            var taskCompletionSource = new TaskCompletionSource<StateMachineInstanceOutputDto>();
-            token.Register(() =>
+            _configuration = configuration;
+            _managementServiceClient = managementServiceClient;
+        }
+
+        public ConcurrentDictionary<Guid, TaskCompletionSource<StateMachineInstanceOutputDto>> Semaphores { get; set; } = new ConcurrentDictionary<Guid, TaskCompletionSource<StateMachineInstanceOutputDto>>();
+
+        public async Task<StateMachineInstanceOutputDto> GetStateMachineResultAsync(Guid statemachineId, CancellationToken token)
+        {
+            if (_configuration["ManagementService:Mode"] == "Polling")
             {
-                TaskCompletionSource<StateMachineInstanceOutputDto> semaphore;
-                if (Semaphores.TryRemove(statemachineId, out semaphore))
+                var retryCount = 30;
+                while(--retryCount >= 0)
                 {
-                    semaphore.TrySetCanceled();
+                    var result = await _managementServiceClient.GetStateMachineInstanceAsync(statemachineId, token);
+                    if (result.Status != ManagementService.Model.Enums.StateMachineStatus.Running)
+                    {
+                        return result;
+                    }
                 }
-            });
-            Semaphores.AddOrUpdate(statemachineId, taskCompletionSource, (a, b) => taskCompletionSource);
-            return taskCompletionSource.Task;
+                throw new Exception("Polling State Machine Failed, ID=" + statemachineId);
+            }
+            else if (_configuration["ManagementService:Mode"] == "Callback")
+            {
+                var taskCompletionSource = new TaskCompletionSource<StateMachineInstanceOutputDto>();
+                token.Register(() =>
+                {
+                    TaskCompletionSource<StateMachineInstanceOutputDto> semaphore;
+                    if (Semaphores.TryRemove(statemachineId, out semaphore))
+                    {
+                        semaphore.TrySetCanceled();
+                    }
+                });
+                Semaphores.AddOrUpdate(statemachineId, taskCompletionSource, (a, b) => taskCompletionSource);
+                return await taskCompletionSource.Task;
+            }
+            else
+            {
+                throw new InvalidOperationException(_configuration["ManagementService:Mode"] + " is invalid");
+            }
         }
     }
 }
