@@ -28,7 +28,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             if (_configuration["ManagementService:Mode"] == "Polling")
             {
                 var retryCount = 30;
-                while(--retryCount >= 0)
+                while (--retryCount >= 0)
                 {
                     var result = await _managementServiceClient.GetStateMachineInstanceAsync(statemachineId, token);
                     if (result.Status != ManagementService.Model.Enums.StateMachineStatus.Running)
@@ -56,6 +56,17 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             {
                 throw new InvalidOperationException(_configuration["ManagementService:Mode"] + " is invalid");
             }
+        }
+    }
+}
+
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class StateMachineAwaiterExtensions
+    {
+        public static IServiceCollection AddStateMachineAwaiter(this IServiceCollection self)
+        {
+            return self.AddSingleton<JoyOI.OnlineJudge.WebApi.Lib.StateMachineAwaiter>();
         }
     }
 }

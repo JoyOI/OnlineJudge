@@ -23,7 +23,8 @@ namespace JoyOI.OnlineJudge.WebApi
                     x.UseMySqlLolita();
                 });
 
-            services.AddJoyOIManagementService();
+			services.AddJoyOIManagementService();
+			services.AddStateMachineAwaiter();
             services.AddJoyOIUserCenter();
 
             services.AddIdentity<User, IdentityRole<Guid>>(x =>
