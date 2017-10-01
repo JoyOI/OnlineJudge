@@ -535,14 +535,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
-                   && x.ClaimValue == problemId));
+                   && x.ClaimValue == problemId, token));
 
         private async Task<bool> HasPermissionToContestAsync(string contestId, CancellationToken token = default(CancellationToken))
             => !(User.Current == null
                || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ContestEditPermission
-                   && x.ClaimValue == contestId));
+                   && x.ClaimValue == contestId, token));
 
         private async Task<bool> IsAbleToAccessTestCaseContentAsync(Guid testCaseId, CancellationToken token)
             => await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles) || await DB.TestCasePurchases.AnyAsync(x => x.UserId == User.Current.Id && x.TestCaseId == testCaseId);

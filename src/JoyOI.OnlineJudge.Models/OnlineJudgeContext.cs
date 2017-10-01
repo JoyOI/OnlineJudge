@@ -9,7 +9,7 @@ namespace JoyOI.OnlineJudge.Models
     /// <summary>
     /// Online judge context.
     /// </summary>
-    public class OnlineJudgeContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class OnlineJudgeContext : IdentityDbContext<User, Role, Guid>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:JoyOI.OnlineJudge.Models.OnlineJudgeContext"/> class.

@@ -1,6 +1,6 @@
 ﻿{
   "Data": {
-    "MySQL": "server=localhost;database=joyoi_oj;uid=root;pwd=123456",
+    "MySQL": "Server=yiszheng.mysqldb.chinacloudapi.cn;Port=3306;Database=joyoi_oj;Uid=yiszheng%yuko;Pwd=Yuuko19931101;Connection Reset=False;",
     "Redis": "localhost"
   },
   "JoyOI": {
@@ -10,7 +10,7 @@
     "RegisterUrl": "http://uc.joyoi.net/register"
   },
   "ManagementService": {
-    "Certification": "C:\\Users\\Yuko\\Documents\\webapi-client.pfx",
+    "Certification": "/users/yuko/documents/webapi-client.pfx",
     "Password": "123456",
     "Url": "https://mgmtsvc.1234.sh",
     "Mode": "Polling"

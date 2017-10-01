@@ -27,7 +27,7 @@ namespace JoyOI.OnlineJudge.WebApi
 			services.AddStateMachineAwaiter();
             services.AddJoyOIUserCenter();
 
-            services.AddIdentity<User, IdentityRole<Guid>>(x =>
+            services.AddIdentity<User, Role>(x =>
             {
                 x.Password.RequireDigit = false;
                 x.Password.RequiredLength = 0;
