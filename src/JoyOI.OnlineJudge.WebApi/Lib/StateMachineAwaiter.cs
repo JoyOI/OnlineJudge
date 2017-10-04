@@ -30,6 +30,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 var retryCount = 30;
                 while (--retryCount >= 0)
                 {
+                    await Task.Delay(1000);
                     var result = await _managementServiceClient.GetStateMachineInstanceAsync(statemachineId, token);
                     if (result.Status != ManagementService.Model.Enums.StateMachineStatus.Running)
                     {

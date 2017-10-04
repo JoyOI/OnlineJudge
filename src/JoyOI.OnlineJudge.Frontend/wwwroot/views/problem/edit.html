@@ -50,6 +50,10 @@
                 </div>
                 <div class="area-item dark" v-if="active === 'spj'">
                     <div class="area-title">特殊比较器</div>
+                    <div class="problem-edit-compile-error-message" v-if="validator.error">
+                        <div class="problem-edit-compile-error-message-title"><i class="fa fa-times-circle"></i> Error</div>
+                        <div v-html="$root.marked(validator.error)"></div>
+                    </div>
                     <div class="code-box-outer">
                         <pre class="code-box editable spjEditor">{{ validator.code }}</pre>
                         <div class="problem-edit-buttons-outer">

@@ -1302,3 +1302,24 @@ dd {
     padding: 0 5px;
     border-top: 1px solid #777;
 }
+
+.problem-edit-compile-error-message {
+    background-color: #481111;
+    color: #fb5555;
+    padding: 8px 15px;
+    margin-bottom: 15px;
+}
+
+    .problem-edit-compile-error-message p {
+        font-size: 12px;
+        font-family: 'Courier New';
+    }
+    
+    .problem-edit-compile-error-message p:last-child {
+        margin-bottom: 0;
+    }
+
+.problem-edit-compile-error-message-title {
+    font-size: 16px;
+    color: #fb5555;
+}

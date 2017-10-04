@@ -35,9 +35,6 @@ component.data = function () {
 };
 
 component.computed = {
-    renderedBody: function () {
-        return filterXSS(marked(this.body || ""));
-    },
     judgeResult: function () {
         if (this.result.substatuses.length) {
             var mapping = this.control.statuses.map(y => y.display);

@@ -81,6 +81,9 @@
         logout: function () {
             document.cookie += '; Expires=' + new Date(0).toUTCString();
             this.user.isSignedIn = false;
+        },
+        marked: function (str) {
+            return filterXSS(marked(str || ""))
         }
     }
 });
