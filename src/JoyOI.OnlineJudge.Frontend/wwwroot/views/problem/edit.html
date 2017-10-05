@@ -122,7 +122,7 @@
                         <div class="tag-item" v-bind:class="{ 'primary': uploadMode === 'input' }" v-on:click="uploadMode = uploadMode === 'input' ? null : 'input'"><i class="fa fa-pencil-square-o"></i> 输入上传数据</div>
                     </div>
                 </div>
-                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'zip'">
+                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'zip' || !testCases.length">
                     <div class="area-title">上传测试数据</div>
                     <div class="upload-button-outer" v-on:click="selectZipFile">
                         <i class="fa fa-cloud-upload upload-button"></i>
@@ -139,7 +139,7 @@
                     </div>
                     <input type="file" id="fileUpload" class="upload-button-hidden" />
                 </div>
-                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'input'">
+                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'input' || !testCases.length">
                     <div class="area-title">输入测试数据</div>
                     <table class="sample-data-table">
                         <thead>
