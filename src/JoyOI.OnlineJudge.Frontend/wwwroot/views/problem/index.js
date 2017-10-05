@@ -71,7 +71,7 @@ component.created = function () {
             self.memory = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
         });
-    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample' })
+    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
         .fetch(x => {
             self.sampleData = x.data.map(x => { return { input: x.input, output: x.output } });
         });

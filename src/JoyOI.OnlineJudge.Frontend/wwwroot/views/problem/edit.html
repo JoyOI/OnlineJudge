@@ -156,7 +156,7 @@
                         </tbody>
                     </table>
                     <div class="test-case-type-outer text-left">
-                        <div class="tag-item primary"><i class="fa fa-cloud-upload"></i> 上传测试用例</div>
+                        <div class="tag-item primary" v-on:click="uploadInputTestCase()"><i class="fa fa-cloud-upload"></i> 上传测试用例</div>
                         <div class="tag-item"
                              v-for="(x,y) in testCaseType"
                              v-on:click="inputSelectedTestCaseType = y"

@@ -176,6 +176,14 @@ component.methods = {
                 reader.readAsDataURL(file);
             });
         $('#fileUpload').click();
+    },
+    uploadInputTestCase: function () {
+        var self = this;
+        qv.put('/api/problem/' + self.id + '/testcase', {
+            input: $('#txtInput').val(),
+            output: $('#txtOutput').val(),
+            type: self.inputSelectedTestCaseType
+        });
     }
 };
 
