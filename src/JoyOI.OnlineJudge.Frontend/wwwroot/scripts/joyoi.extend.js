@@ -93,6 +93,13 @@ var syntaxHighlighter = {
     'JavaScript': 'javascript'
 };
 
+var testCaseType = {
+    Sample: '样例数据',
+    Small: '小规模数据',
+    Large: '大规模数据',
+    Hack: 'Hack数据'
+};
+
 $(window).click(function (e) {
     var dom = $(e.target);
     if (!dom.parents('#app').length) {

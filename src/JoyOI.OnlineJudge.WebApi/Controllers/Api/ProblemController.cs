@@ -367,6 +367,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<ApiResult> PutTestCaseZip(string problemId, CancellationToken token)
         {
             var value = JsonConvert.DeserializeObject<TestCaseZipUpload>(RequestBody);
+            if (value.Zip.IndexOf("application/x-zip") < 0)
+            {
+                return Result(400, "Invalid file.");
+            }
+
+            value.Zip = value.Zip.Substring(value.Zip.IndexOf("base64,") + "base64,".Length);
+
             var zip = new MemoryStream(Convert.FromBase64String(value.Zip));
             using (var zipArchive = new ZipArchive(zip))
             {

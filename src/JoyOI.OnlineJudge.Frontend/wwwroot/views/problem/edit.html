@@ -96,7 +96,44 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="area-item" v-if="active === 'testcase' && testCases.length">
+                    <div class="area-title">测试数据</div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>输入文件</th>
+                                <th>输出文件</th>
+                                <th>类型</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(x,index) in testCases">
+                                <td>input{{ index + 1 }}.txt ({{ (x.inputSizeInByte / 1024.0).toFixed(1) }} KiB)</td>
+                                <td>output{{ index + 1 }}.txt ({{ (x.outputSizeInByte / 1024.0).toFixed(1) }} KiB)</td>
+                                <td>{{ x.type }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="area-item" v-if="active === 'testcase'">
+                    <div class="area-title">上传测试数据</div>
+                    <div class="upload-button-outer" v-on:click="selectZipFile">
+                        <i class="fa fa-cloud-upload upload-button"></i>
+                        <br />
+                        <span>点击此处上传打包测试数据</span>
+                    </div>
+                    <div class="test-case-type-outer">
+                        <div 
+                             class="tag-item"
+                             v-for="(x,y) in testCaseType" 
+                             v-on:click="zipSelectedTestCaseType = y"
+                             v-bind:data-value="y" 
+                             v-bind:class="{ 'active': zipSelectedTestCaseType === y }">{{ x }}</div>
+                    </div>
+                    <input type="file" id="fileUpload" class="upload-button-hidden" />
+                </div>
             </div>
         </div>
 

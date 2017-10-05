@@ -1323,3 +1323,48 @@ dd {
     font-size: 16px;
     color: #fb5555;
 }
+
+.upload-button {
+    font-size: 128px!important;
+    color: #ccc;
+    text-shadow: 5px 5px 0px #eee;
+}
+
+.upload-button-outer {
+    text-align: center;
+}
+
+    .upload-button-outer * {
+        cursor: pointer;
+        color: #ccc;
+        transition: color 0.2s linear;
+    }
+
+    .upload-button-outer span {
+        font-size: 30px;
+    }
+
+    .upload-button-outer:hover * {
+        color: #ed5f82 !important;
+    }
+
+    .upload-button-hidden {
+        display: none;
+        visibility: hidden;
+    }
+
+.test-case-type-outer {
+    text-align: center;
+    margin-top: 15px;
+}
+
+    .test-case-type-outer .tag-item {
+        cursor: pointer;
+        display: inline-block;
+        margin: inherit 5px!important;
+    }
+
+.area-item .table {
+    box-shadow: none;
+    border-right: 1px solid #ddd;
+}

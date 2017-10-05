@@ -13,6 +13,9 @@ component.data = function () {
         isSpecialJudge: null,
         claims: [],
         active: 'basic',
+        testCases: [],
+        testCaseType: testCaseType,
+        zipSelectedTestCaseType: 'Sample',
         validator: {
             code: null,
             language: null,
@@ -40,8 +43,7 @@ component.data = function () {
 component.created = function () {
     var self = this;
 
-    qv.createView('/api/problem/' + router.history.current.params.id)
-        .fetch(x => {
+    qv.createView('/api/problem/' + router.history.current.params.id).fetch(x => {
             self.title = x.data.title;
             app.links[1].text = x.data.title;
             app.links[1].to = { name: '/problem/:id', path: '/problem/' + router.history.current.params.id, params: { id: router.history.current.params.id } };
@@ -79,6 +81,10 @@ component.created = function () {
 
     qv.createView('/api/configuration/problemtags').fetch(x => {
         self.tags = JSON.parse(x.data.value);
+    });
+
+    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all').fetch(x => {
+        self.testCases = x.data;
     });
 };
 
@@ -150,6 +156,24 @@ component.methods = {
             }
         }
     },
+    selectZipFile: function () {
+        var self = this;
+        $('#fileUpload')
+            .unbind()
+            .change(function (e) {
+                var file = $('#fileUpload')[0].files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    alert(e.target.result);
+                    qv.put('/api/problem/' + self.id + '/testcase/zip', {
+                        zip: e.target.result,
+                        type: self.zipSelectedTestCaseType
+                    });
+                };  
+                reader.readAsDataURL(file);
+            });
+        $('#fileUpload').click();
+    }
 };
 
 component.watch = {
