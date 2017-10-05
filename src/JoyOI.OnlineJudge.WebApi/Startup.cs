@@ -17,7 +17,7 @@ namespace JoyOI.OnlineJudge.WebApi
         {
             services.AddConfiguration(out IConfiguration config);
             services.AddEntityFrameworkMySql()
-                .AddDbContextPool<OnlineJudgeContext>(x => 
+                .AddDbContext<OnlineJudgeContext>(x => 
                 {
                     x.UseMySql(config["Data:MySQL"]);
                     x.UseMySqlLolita();

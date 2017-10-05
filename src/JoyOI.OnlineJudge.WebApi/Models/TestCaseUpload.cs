@@ -12,4 +12,11 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
         public string ContestId { get; set; }
     }
+
+    public class TestCaseZipUpload
+    {
+        public string Zip { get; set; }
+
+        public TestCaseType Type { get; set; }
+    }
 }

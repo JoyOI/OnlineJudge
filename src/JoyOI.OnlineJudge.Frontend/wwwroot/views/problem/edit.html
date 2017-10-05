@@ -66,6 +66,10 @@
                 </div>
                 <div class="area-item dark" v-if="active === 'std'">
                     <div class="area-title">标准程序</div>
+                    <div class="problem-edit-compile-error-message" v-if="standard.error">
+                        <div class="problem-edit-compile-error-message-title"><i class="fa fa-times-circle"></i> Error</div>
+                        <div v-html="$root.marked(standard.error)"></div>
+                    </div>
                     <div class="code-box-outer">
                         <pre class="code-box editable stdEditor">{{ standard.code }}</pre>
                         <div class="problem-edit-buttons-outer">
@@ -78,6 +82,10 @@
                 </div>
                 <div class="area-item dark" v-if="active === 'range'">
                     <div class="area-title">数据校验器</div>
+                    <div class="problem-edit-compile-error-message" v-if="range.error">
+                        <div class="problem-edit-compile-error-message-title"><i class="fa fa-times-circle"></i> Error</div>
+                        <div v-html="$root.marked(range.error)"></div>
+                    </div>
                     <div class="code-box-outer">
                         <pre class="code-box editable rangeEditor">{{ range.code }}</pre>
                         <div class="problem-edit-buttons-outer">

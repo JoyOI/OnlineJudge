@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -332,7 +335,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase")]
-        public async Task<ApiResult<Guid>> PutTestCase(string problemId, [FromBody] TestCaseUpload value, CancellationToken token)
+        public async Task<ApiResult<Guid>> PutTestCase(string problemId, CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
             {
@@ -340,6 +343,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
+                var value = JsonConvert.DeserializeObject<TestCaseUpload>(RequestBody);
                 var testCase = new TestCase
                 {
                     ContestId = value.ContestId,
@@ -356,6 +360,55 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 await DB.SaveChangesAsync(token);
 
                 return Result(testCase.Id);
+            }
+        }
+
+        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/zip")]
+        public async Task<ApiResult> PutTestCaseZip(string problemId, CancellationToken token)
+        {
+            var value = JsonConvert.DeserializeObject<TestCaseZipUpload>(RequestBody);
+            var zip = new MemoryStream(Convert.FromBase64String(value.Zip));
+            using (var zipArchive = new ZipArchive(zip))
+            {
+                var inputs = zipArchive.Entries.Where(x => x.FullName.EndsWith(".in"));
+                var count = 0;
+
+                foreach (var input in inputs)
+                {
+                    var output = zipArchive.Entries.SingleOrDefault(x => x.FullName == input.FullName.Substring(0, input.FullName.Length - 3) + ".out");
+                    if (output == null)
+                    {
+                        continue;
+                    }
+
+                    var testCase = new TestCase
+                    {
+                        ProblemId = problemId,
+                        Type = value.Type
+                    };
+
+                    using (var stream = input.Open())
+                    {
+                        var bytes = new byte[stream.Length];
+                        stream.Read(bytes, 0, bytes.Length);
+                        testCase.InputSizeInByte = (int)stream.Length;
+                        testCase.InputBlobId = await ManagementService.PutBlobAsync("input.txt", bytes, token);
+                    }
+
+                    using (var stream = output.Open())
+                    {
+                        var bytes = new byte[stream.Length];
+                        stream.Read(bytes, 0, bytes.Length);
+                        testCase.OutputSizeInByte = (int)stream.Length;
+                        testCase.OutputBlobId = await ManagementService.PutBlobAsync("output.txt", bytes, token);
+                    }
+
+                    DB.TestCases.Add(testCase);
+                    ++count;
+                }
+
+                await DB.SaveChangesAsync(token);
+                return Result(200, count + " test cases uploaded.");
             }
         }
 

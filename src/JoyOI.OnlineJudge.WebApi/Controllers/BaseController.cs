@@ -18,6 +18,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
 {
     public class BaseController : BaseController<OnlineJudgeContext, User, Guid>
     {
+        public override void Prepare()
+        {
+            base.Prepare();
+            var touch = User.Current;
+        }
+
         public virtual bool IsRoot
         {
             get
