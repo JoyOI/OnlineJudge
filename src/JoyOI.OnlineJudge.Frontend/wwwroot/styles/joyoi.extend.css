@@ -1368,3 +1368,16 @@ dd {
     box-shadow: none;
     border-right: 1px solid #ddd;
 }
+
+.tag-item.primary {
+    background-color: #5590ae;
+    color: #fff;
+}
+
+    .tag-item.primary:hover {
+        background-color: #346984;
+    }
+
+.test-case-type-outer.text-left {
+    text-align: left;
+}

@@ -16,6 +16,8 @@ component.data = function () {
         testCases: [],
         testCaseType: testCaseType,
         zipSelectedTestCaseType: 'Sample',
+        inputSelectedTestCaseType: 'Sample',
+        uploadMode: null,
         validator: {
             code: null,
             language: null,

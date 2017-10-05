@@ -116,8 +116,13 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <div class="test-case-type-outer text-left">
+                        <div class="tag-item" v-bind:class="{ 'primary': uploadMode === 'zip' }" v-on:click="uploadMode = uploadMode === 'zip' ? null : 'zip'"><i class="fa fa-file-zip-o"></i> 打包上传数据</div>
+                        <div class="tag-item" v-bind:class="{ 'primary': uploadMode === 'input' }" v-on:click="uploadMode = uploadMode === 'input' ? null : 'input'"><i class="fa fa-pencil-square-o"></i> 输入上传数据</div>
+                    </div>
                 </div>
-                <div class="area-item" v-if="active === 'testcase'">
+                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'zip'">
                     <div class="area-title">上传测试数据</div>
                     <div class="upload-button-outer" v-on:click="selectZipFile">
                         <i class="fa fa-cloud-upload upload-button"></i>
@@ -133,6 +138,31 @@
                              v-bind:class="{ 'active': zipSelectedTestCaseType === y }">{{ x }}</div>
                     </div>
                     <input type="file" id="fileUpload" class="upload-button-hidden" />
+                </div>
+                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'input'">
+                    <div class="area-title">输入测试数据</div>
+                    <table class="sample-data-table">
+                        <thead>
+                            <tr>
+                                <th>input{{ testCases.length + 1 }}.txt</th>
+                                <th>output{{ testCases.length + 1 }}.txt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><textarea id="txtInput" class="form-control" style="height: 200px;"></textarea></td>
+                                <td><textarea id="txtOutput" class="form-control" style="height: 200px;"></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="test-case-type-outer text-left">
+                        <div class="tag-item primary"><i class="fa fa-cloud-upload"></i> 上传测试用例</div>
+                        <div class="tag-item"
+                             v-for="(x,y) in testCaseType"
+                             v-on:click="inputSelectedTestCaseType = y"
+                             v-bind:data-value="y"
+                             v-bind:class="{ 'active': inputSelectedTestCaseType === y }">{{ x }}</div>
+                    </div>
                 </div>
             </div>
         </div>
