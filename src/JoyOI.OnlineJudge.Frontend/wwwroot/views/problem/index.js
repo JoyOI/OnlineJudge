@@ -60,6 +60,9 @@ component.computed = {
 
 component.created = function () {
     var self = this;
+    qv.createView('/api/problem/' + router.history.current.params.id + '/testCase/all', { type: 'Sample' }).fetch(x => {
+        self.sampleData = x;
+    });
     qv.createView('/api/problem/' + router.history.current.params.id)
         .fetch(x => {
             app.title = x.data.title;
