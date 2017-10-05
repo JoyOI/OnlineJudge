@@ -200,7 +200,9 @@ var qv = {
                     return self.get(endpoint, params)
                         .then((result) => {
                             self.cache(endpoint, params, result, interval);
-                            func(result);
+                            try {
+                                func(result);
+                            } catch (err) { console.error(err); }
                         });
                 } else {
                     if (self.__cache[key].isPaged) {

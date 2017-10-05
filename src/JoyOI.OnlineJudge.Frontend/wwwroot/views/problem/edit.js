@@ -62,7 +62,7 @@ component.created = function () {
             self.range.langauge = x.data.rangeLanguage || app.preferences.language;
             self.range.error = x.data.rangeError;
             self.range.blob = x.data.rangeBlobId;
-            self.selected = x.data.tags.split(',').map(x => x.trim());
+            self.selected = x.data.tags ? x.data.tags.split(',').map(x => x.trim()) : [];
             $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
             
             if ($('.spjEditor').length) {
@@ -83,6 +83,7 @@ component.created = function () {
         self.tags = JSON.parse(x.data.value);
     });
 
+    console.log('fetching test cases');
     qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all').fetch(x => {
         self.testCases = x.data;
     });
@@ -164,11 +165,11 @@ component.methods = {
                 var file = $('#fileUpload')[0].files[0];
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    alert(e.target.result);
                     qv.put('/api/problem/' + self.id + '/testcase/zip', {
                         zip: e.target.result,
                         type: self.zipSelectedTestCaseType
                     });
+                    // TODO:
                 };  
                 reader.readAsDataURL(file);
             });
