@@ -10,7 +10,7 @@
     "RegisterUrl": "http://uc.joyoi.net/register"
   },
   "ManagementService": {
-    "Certification": "/users/yuko/documents/webapi-client.pfx",
+    "Certification": "C:\\Users\\Yuko\\Documents\\webapi-client.pfx",
     "Password": "123456",
     "Url": "https://mgmtsvc.1234.sh",
     "Mode": "Polling"

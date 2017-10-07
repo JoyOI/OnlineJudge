@@ -357,6 +357,14 @@
     color: #be3fe2;
 }
 
+.master, .root {
+    color: #be3fe2!important;
+}
+
+.vip {
+    color: #fb6666 !important;
+}
+
     .judge-purple a {
         color: #be3fe2;
     }

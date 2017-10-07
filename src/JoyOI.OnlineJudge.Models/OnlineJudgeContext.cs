@@ -263,7 +263,7 @@ namespace JoyOI.OnlineJudge.Models
             builder.Entity<User>(e =>
 			{
 				e.HasIndex(x => x.OpenId);
-				e.HasIndex(x => x.Nickname);
+				e.HasIndex(x => x.UserName).ForMySqlIsFullText();
 			});
 
             builder.Entity<VirtualJudgeUser>(e =>

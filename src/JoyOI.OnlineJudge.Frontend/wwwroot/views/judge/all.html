@@ -49,21 +49,11 @@
                         <th>
                             <a class="filter-button">{{ selectedSubmittor ? selectedSubmittor : '提交者' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer submit-filter">
-                                <p><input type="text" class="form-control" placeholder="用户名" /></p>
+                                <p><input type="text" class="form-control textbox-search-submittor" placeholder="用户名" v-on:keyup="searchSubmittor()" /></p>
                                 <div class="submit-filter-list">
-                                    <div class="submit-filter-list-item">
-                                        <img src="/images/non-avatar.png" class="submit-filter-list-item-avatar" />
-                                        <div class="submit-filter-list-item-username">Yuko</div>
-                                        <div class="clear"></div>
-                                    </div>
-                                    <div class="submit-filter-list-item">
-                                        <img src="/images/non-avatar.png" class="submit-filter-list-item-avatar" />
-                                        <div class="submit-filter-list-item-username">Yuko</div>
-                                        <div class="clear"></div>
-                                    </div>
-                                    <div class="submit-filter-list-item">
-                                        <img src="/images/non-avatar.png" class="submit-filter-list-item-avatar" />
-                                        <div class="submit-filter-list-item-username">Yuko</div>
+                                    <div class="submit-filter-list-item" v-for="x in submittorSearchResult" v-on:click="selectSubmittor(x.username)">
+                                        <img v-bind:src="x.avatarUrl" class="submit-filter-list-item-avatar" />
+                                        <div class="submit-filter-list-item-username" v-bind:class="{ vip: x.role === 'VIP', root: x.role === 'Root', master: x.role === 'Master' }">{{ x.username }}</div>
                                         <div class="clear"></div>
                                     </div>
                                 </div>

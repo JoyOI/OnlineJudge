@@ -17,26 +17,18 @@ namespace JoyOI.OnlineJudge.Models
         public DateTime RegisteryTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the nickname.
-        /// </summary>
-        /// <value>The nickname.</value>
-		[MaxLength(64)]
-        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public string Nickname { get; set; }
-
-        /// <summary>
         /// Gets or sets the access token.
         /// </summary>
         /// <value>The access token.</value>
 		[MaxLength(64)]
-        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled | FilterLevel.GetListDisabled | FilterLevel.GetSingleDisabled)]
         public string AccessToken { get; set; }
 
         /// <summary>
         /// Gets or sets the access token expire time.
         /// </summary>
         /// <value>The expire time.</value>
-        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled | FilterLevel.GetListDisabled | FilterLevel.GetSingleDisabled)]
         public DateTime ExpireTime { get; set; }
 
         /// <summary>

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using JoyOI.UserCenter.SDK;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
@@ -16,6 +20,59 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         private static Regex CookieExpireRegex = new Regex("(?<=; expires=)[0-9a-zA-Z: -/]{1,}(?=; path=)");
 
+        #region User
+        [HttpGet("all")]
+        public async Task<ApiResult<PagedResult<IEnumerable<User>>>> Get(
+            [FromServices] JoyOIUC UC,
+            int? page, 
+            string username, 
+            CancellationToken token)
+        {
+            IQueryable<User> ret = DB.Users;
+
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                ret = ret.Where(x => x.UserName.Contains(username) || username.Contains(x.UserName));
+            }
+
+            var result = await Paged(ret, page ?? 1, 50, token);
+            var type = typeof(IdentityUser<Guid>);
+            foreach (var x in result.data.result)
+                foreach (var y in type.GetProperties().Where(y => y.Name != nameof(IdentityUser.Id) && y.Name != nameof(IdentityUser.UserName)))
+                    y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+
+            return result;
+        }
+
+        [HttpGet("role")]
+        public async Task<ApiResult<ConcurrentDictionary<string, string>>> GetUserRoles(string usernames, CancellationToken token)
+        {
+            var dic = new ConcurrentDictionary<string, string>();
+            var users = usernames.Split(',').Select(x => x.Trim());
+            var tasks = new List<Task>();
+            var roles = await DB.Roles.ToDictionaryAsync(x => x.Id, x => x.Name, token);
+            foreach (var x in users)
+            {
+                tasks.Add(Task.Factory.StartNew(() => 
+                {
+                    var userId = DB.Users.SingleOrDefault(y => y.UserName == x).Id;
+                    var role = DB.UserRoles.FirstOrDefault(y => y.UserId == userId);
+                    if (role == null)
+                    {
+                        dic.TryAdd(x, null);
+                    }
+                    else
+                    {
+                        dic.TryAdd(x, roles[role.RoleId]);
+                    }
+                }));
+            }
+            await Task.WhenAll(tasks);
+            return Result(dic);
+        }
+        #endregion
+
+        #region Session
         [HttpGet("session/info")]
         public async Task<ApiResult<dynamic>> GetSessionInfo(CancellationToken token)
         {
@@ -93,5 +150,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, authorizeResult.msg);
             }
         }
+        #endregion
     }
 }

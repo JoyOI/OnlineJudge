@@ -43,7 +43,27 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 return _isRoot.Value;
             }
         }
-        
+
+        public virtual bool IsMasterOrHigher
+        {
+            get
+            {
+                if (!_isMasterOrHigher.HasValue)
+                {
+                    if (User.Current == null)
+                    {
+                        _isMasterOrHigher = false;
+                    }
+                    else
+                    {
+                        _isMasterOrHigher = User.Manager.IsInAnyRolesAsync(User.Current, "Root, Master").Result;
+                    }
+                }
+
+                return _isMasterOrHigher.Value;
+            }
+        }
+
         // [Inject]
         public IcM IcM { get; set; }
 
@@ -61,6 +81,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         }
 
         private bool? _isRoot;
+
+        private bool? _isMasterOrHigher;
 
         [Inject]
         public ManagementServiceClient ManagementService { get; set; }

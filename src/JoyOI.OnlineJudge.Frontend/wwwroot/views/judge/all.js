@@ -12,8 +12,13 @@ component.data = function () {
         selectedSubmittor: null,
         selectedLanguage: null,
         selectedContest: null,
-        selectedTime: null
+        selectedTime: null,
+        submittorSearchResult: []
     };
+};
+
+component.watch = {
+    deep: true
 };
 
 component.methods = {
@@ -50,5 +55,33 @@ component.methods = {
     },
     toPage: function (p) {
         this.page = p;
+    },
+    searchSubmittor: function () {
+        var val = $('.textbox-search-submittor').val();
+        var self = this;
+        if (!val) {
+            self.submittorSearchResult = [];
+            this.selectedSubmittor = null;
+        } else {
+            qv.createView('/api/user/all', { username: val }).fetch(x => {
+                self.submittorSearchResult = x.data.result.map(y => {
+                    return {
+                        id: y.id,
+                        username: y.userName,
+                        avatarUrl: y.avatarUrl,
+                        role: null
+                    }
+                }).slice(0,5);
+                qv.createView('/api/user/role', { usernames: self.submittorSearchResult.map(y => y.username).toString()}).fetch(y => {
+                    for (var i = 0; i < self.submittorSearchResult.length; i++) {
+                        self.submittorSearchResult[i].role = y.data[self.submittorSearchResult[i].username];
+                    }
+                });
+            });
+        }
+    },
+    selectSubmittor: function (username) {
+        this.selectedSubmittor = username;
+        $('.submit-filter').removeClass('active');
     }
 };

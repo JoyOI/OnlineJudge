@@ -66,13 +66,27 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the code.
         /// </summary>
         /// <value>The code.</value>
+        [WebApi(FilterLevel.GetNeedOwner | FilterLevel.GetListDisabled)]
         public string Code { get; set; }
 
         /// <summary>
         /// Gets or sets the compiled code BLOB identifier.
         /// </summary>
         /// <value>The binary BLOB identifier.</value>
+        [WebApi(FilterLevel.GetNeedOwner | FilterLevel.GetListDisabled)]
         public Guid? BinaryBlobId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the memory used (byte)
+        /// </summary>
+        /// <value>The memory used in byte</value>
+        public int MemoryUsedInByte { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time used (ms)
+        /// </summary>
+        /// <value>The time used in ms</value>
+        public int TimeUsedInMs { get; set; }
 
         /// <summary>
         /// Gets or sets the contest identifier.
