@@ -13,7 +13,8 @@ component.data = function () {
         selectedLanguage: null,
         selectedContest: null,
         selectedTime: null,
-        submittorSearchResult: []
+        submittorSearchResult: [],
+        problemSearchResult: []
     };
 };
 
@@ -83,5 +84,26 @@ component.methods = {
     selectSubmittor: function (username) {
         this.selectedSubmittor = username;
         $('.submit-filter').removeClass('active');
+    },
+    searchProblem: function () {
+        var val = $('.textbox-search-problem').val();
+        var self = this;
+        if (!val) {
+            self.problemSearchResult = [];
+            self.selectedProblem = null;
+        } else {
+            qv.createView('/api/problem/all', { title: val }).fetch(x => {
+                self.problemSearchResult = x.data.result.map(y => {
+                    return {
+                        id: y.id,
+                        title: y.title
+                    };
+                });
+            });
+        }
+    },
+    selectProblem: function (id, title) {
+        this.selectedProblem = { id: id, title: title };
+        $('.problem-filter').removeClass('active');
     }
 };

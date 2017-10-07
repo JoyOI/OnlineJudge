@@ -27,21 +27,17 @@
                             </div>
                         </th>
                         <th>
-                            <a class="filter-button">{{ selectedProblem ? selectedProblem.display : '题目' }} <i class="fa fa-filter"></i></a>
+                            <a class="filter-button">{{ selectedProblem ? selectedProblem.title : '题目' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer problem-filter">
-                                <p><input type="text" class="form-control" placeholder="题目ID或名称" /></p>
+                                <p><input 
+                                          v-on:keyup="searchProblem()"
+                                          type="text" 
+                                          class="form-control textbox-search-problem" 
+                                          placeholder="题目ID或名称" /></p>
                                 <div class="problem-filter-list">
-                                    <div class="problem-filter-list-item">
-                                        <div class="problem-filter-list-item-title">A+B Problem</div>
-                                        <div class="problem-filter-list-item-id">ID: a-plus-b-problem</div>
-                                    </div>
-                                    <div class="problem-filter-list-item">
-                                        <div class="problem-filter-list-item-title">A+B Problem</div>
-                                        <div class="problem-filter-list-item-id">ID: a-plus-b-problem</div>
-                                    </div>
-                                    <div class="problem-filter-list-item">
-                                        <div class="problem-filter-list-item-title">A+B Problem</div>
-                                        <div class="problem-filter-list-item-id">ID: a-plus-b-problem</div>
+                                    <div class="problem-filter-list-item" v-for="x in problemSearchResult" v-on:click="selectProblem(x.id, x.title)">
+                                        <div class="problem-filter-list-item-title">{{ x.title }}</div>
+                                        <div class="problem-filter-list-item-id">ID: {{ x.id }}</div>
                                     </div>
                                 </div>
                             </div>
