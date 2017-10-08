@@ -75,7 +75,7 @@ component.methods = {
                 }).slice(0,5);
                 qv.createView('/api/user/role', { usernames: self.submittorSearchResult.map(y => y.username).toString()}).fetch(y => {
                     for (var i = 0; i < self.submittorSearchResult.length; i++) {
-                        self.submittorSearchResult[i].role = y.data[self.submittorSearchResult[i].username];
+                        self.submittorSearchResult[i].role = y.data[self.submittorSearchResult[i].username].role;
                     }
                 });
             });

@@ -58,7 +58,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     tasks.Add(Task.Factory.StartNew(() =>
                     {
-                        var userId = DB.Users.SingleOrDefault(y => y.UserName == x).Id;
+                        var user = DB.Users.SingleOrDefault(y => y.UserName == x);
+                        var userId = user.Id;
                         var role = DB.UserRoles.FirstOrDefault(y => y.UserId == userId);
                         if (role == null)
                         {
@@ -66,7 +67,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         }
                         else
                         {
-                            dic.TryAdd(x, roles[role.RoleId]);
+                            dic.TryAdd(x, new { role = roles[role.RoleId], avatarUrl = user.AvatarUrl, username = user.UserName, id = user.Id });
                         }
                     }));
                 }
@@ -80,15 +81,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     tasks.Add(Task.Factory.StartNew(() =>
                     {
-                        var username = DB.Users.SingleOrDefault(y => y.Id == x).UserName;
+                        var user = DB.Users.SingleOrDefault(y => y.Id == x);
+                        var username = user.UserName;
                         var role = DB.UserRoles.FirstOrDefault(y => y.UserId == x);
                         if (role == null)
                         {
-                            dic.TryAdd(x.ToString(), new { username = username, role = (string)null });
+                            dic.TryAdd(x.ToString(), new { username = username, role = (string)null, id = user.Id, avatarUrl = user.AvatarUrl });
                         }
                         else
                         {
-                            dic.TryAdd(x.ToString(), new { username = username, role = roles[role.RoleId] });
+                            dic.TryAdd(x.ToString(), new { username = username, role = roles[role.RoleId], avatarUrl = user.AvatarUrl, id = user.Id });
                         }
                     }));
                 }
