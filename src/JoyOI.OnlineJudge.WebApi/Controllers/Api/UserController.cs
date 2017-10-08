@@ -45,29 +45,55 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("role")]
-        public async Task<ApiResult<ConcurrentDictionary<string, string>>> GetUserRoles(string usernames, CancellationToken token)
+        public async Task<ApiResult<ConcurrentDictionary<string, object>>> GetUserRoles(string usernames, string userids, CancellationToken token)
         {
-            var dic = new ConcurrentDictionary<string, string>();
-            var users = usernames.Split(',').Select(x => x.Trim());
-            var tasks = new List<Task>();
+            var dic = new ConcurrentDictionary<string, object>();
             var roles = await DB.Roles.ToDictionaryAsync(x => x.Id, x => x.Name, token);
-            foreach (var x in users)
+
+            if (!string.IsNullOrWhiteSpace(usernames))
             {
-                tasks.Add(Task.Factory.StartNew(() => 
+                var users = usernames.Split(',').Select(x => x.Trim());
+                var tasks = new List<Task>();
+                foreach (var x in users)
                 {
-                    var userId = DB.Users.SingleOrDefault(y => y.UserName == x).Id;
-                    var role = DB.UserRoles.FirstOrDefault(y => y.UserId == userId);
-                    if (role == null)
+                    tasks.Add(Task.Factory.StartNew(() =>
                     {
-                        dic.TryAdd(x, null);
-                    }
-                    else
-                    {
-                        dic.TryAdd(x, roles[role.RoleId]);
-                    }
-                }));
+                        var userId = DB.Users.SingleOrDefault(y => y.UserName == x).Id;
+                        var role = DB.UserRoles.FirstOrDefault(y => y.UserId == userId);
+                        if (role == null)
+                        {
+                            dic.TryAdd(x, null);
+                        }
+                        else
+                        {
+                            dic.TryAdd(x, roles[role.RoleId]);
+                        }
+                    }));
+                }
+                await Task.WhenAll(tasks);
             }
-            await Task.WhenAll(tasks);
+            else if (!string.IsNullOrWhiteSpace(userids))
+            {
+                var ids = userids.Split(',').Select(x => Guid.Parse(x.Trim()));
+                var tasks = new List<Task>();
+                foreach (var x in ids)
+                {
+                    tasks.Add(Task.Factory.StartNew(() =>
+                    {
+                        var username = DB.Users.SingleOrDefault(y => y.Id == x).UserName;
+                        var role = DB.UserRoles.FirstOrDefault(y => y.UserId == x);
+                        if (role == null)
+                        {
+                            dic.TryAdd(x.ToString(), new { username = username, role = (string)null });
+                        }
+                        else
+                        {
+                            dic.TryAdd(x.ToString(), new { username = username, role = roles[role.RoleId] });
+                        }
+                    }));
+                }
+            }
+
             return Result(dic);
         }
         #endregion
