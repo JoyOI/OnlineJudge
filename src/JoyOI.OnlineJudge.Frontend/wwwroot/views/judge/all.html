@@ -70,12 +70,12 @@
                             </div>
                         </th>
                         <th>
-                            <a class="filter-button">{{ selectedTime ? (( selectedTime.start ? selectedTime.start : '' ) + (  selectedTime.end ? selectedTime.end + ' ~ ' : '' )) : '提交时间' }} <i class="fa fa-filter"></i></a>
+                            <a class="filter-button">{{ selectedTime ? (( selectedTime.begin ? selectedTime.begin : '' ) + (  selectedTime.end ? selectedTime.end + ' ~ ' : '' )) : '提交时间' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer time-filter">
-                                <p><input type="text" class="form-control datetime" placeholder="起始时间" /></p>
-                                <p><input type="text" class="form-control datetime" placeholder="结束时间" /></p>
-                                <p><a class="sidebar-button"><i class="fa fa-filter"></i> 过滤</a></p>
-                                <p><a class="sidebar-button"><i class="fa fa-ban"></i> 清除</a></p>
+                                <p><input type="text" class="form-control datetime time-range-begin" placeholder="起始时间" /></p>
+                                <p><input type="text" class="form-control datetime time-range-end" placeholder="结束时间" /></p>
+                                <p><a class="sidebar-button" v-on:click="selectTimeRange()"><i class="fa fa-filter"></i> 过滤</a></p>
+                                <p><a class="sidebar-button" v-on:click="clearTimeRange()"><i class="fa fa-ban"></i> 清除</a></p>
                             </div>
                         </th>
                     </tr>

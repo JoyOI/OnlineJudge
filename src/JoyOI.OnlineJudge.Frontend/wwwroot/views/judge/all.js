@@ -105,5 +105,18 @@ component.methods = {
     selectProblem: function (id, title) {
         this.selectedProblem = { id: id, title: title };
         $('.problem-filter').removeClass('active');
+    },
+    selectTimeRange: function () {
+        this.selectedTime = {
+            begin: $('.time-range-begin').val(),
+            end: $('.time-range-end').val()
+        };
+        $('.time-filter').removeClass('active');
+    },
+    clearTimeRange: function () {
+        this.selectedTime = null;
+        $('.time-range-begin').val('')
+        $('.time-range-end').val('')
+        $('.time-filter').removeClass('active');
     }
 };
