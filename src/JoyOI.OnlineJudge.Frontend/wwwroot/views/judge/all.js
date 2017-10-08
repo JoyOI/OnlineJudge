@@ -6,6 +6,7 @@ component.data = function () {
         page: 1,
         pageCount: 10,
         statuses: statuses,
+        result: [],
         languages: languages,
         selectedStatus: null,
         selectedProblem: null,
@@ -19,7 +20,13 @@ component.data = function () {
 };
 
 component.watch = {
-    deep: true
+    selectedStatus: function () {
+
+    }
+};
+
+component.created = function () {
+
 };
 
 component.methods = {
@@ -118,5 +125,27 @@ component.methods = {
         $('.time-range-begin').val('')
         $('.time-range-end').val('')
         $('.time-filter').removeClass('active');
+    },
+    loadStatuses: function () {
+        var self = this;
+        qv.createView('/api/judge/all', {
+            problemid: self.selectedProblem.id,
+            status: self.selectedStatus ? self.selectedStatus.replace(/ /g, '') : null,
+            userId: self.selectedSubmittor,
+            language: self.selectedLanguage,
+            begin: self.selectedTime ? self.selectedTime.begin : null,
+            end: self.selectedTime ? self.selectedTime.end : null
+        }).fetch(x => {
+            self.paging.count = x.data.count;
+            self.paging.current = x.data.current;
+            self.result = x.data.result.map(y =>
+            {
+                y.result = formatJudgeResult(y.result);
+                y.class = y, result;
+                return y;
+            });
+
+            // TODO: Fetch problem title & username
+        });
     }
 };

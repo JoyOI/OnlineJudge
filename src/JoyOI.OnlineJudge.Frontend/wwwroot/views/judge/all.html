@@ -81,50 +81,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="judge-blue"><router-link :to="{ name: '/judge/:id', path: '/judge/8c1185b7-4a35-499b-9344-3cd44bc732e4', params: { 'id': '8c1185b7-4a35-499b-9344-3cd44bc732e4' } }"><i class="fa fa-question"></i>Pending</router-link></td>
-                        <td>A+B Problem</td>
-                        <td>Yuko</td>
-                        <td>0ms</td>
-                        <td>0KiB</td>
-                        <td>C</td>
-                        <td>2017-08-14 10:50</td>
-                    </tr>
-                    <tr>
-                        <td class="judge-purple"><i class="fa fa-eye-slash"></i>Hidden</td>
-                        <td>A+B Problem</td>
-                        <td>Yuko</td>
-                        <td>0ms</td>
-                        <td>0KiB</td>
-                        <td>C</td>
-                        <td>2017-08-14 10:50</td>
-                    </tr>
-                    <tr>
-                        <td class="judge-green"><i class="fa fa-check"></i>Accepted</td>
-                        <td>A+B Problem</td>
-                        <td>Yuko</td>
-                        <td>0ms</td>
-                        <td>0KiB</td>
-                        <td>C</td>
-                        <td>2017-08-14 10:50</td>
-                    </tr>
-                    <tr>
-                        <td class="judge-orange"><i class="fa fa-exclamation"></i>Compile Error</td>
-                        <td>A+B Problem</td>
-                        <td>Yuko</td>
-                        <td>0ms</td>
-                        <td>0KiB</td>
-                        <td>C</td>
-                        <td>2017-08-14 10:50</td>
-                    </tr>
-                    <tr>
-                        <td class="judge-red"><i class="fa fa-remove"></i>Memory Exceeded</td>
-                        <td>A+B Problem</td>
-                        <td>Yuko</td>
-                        <td>0ms</td>
-                        <td>0KiB</td>
-                        <td>C</td>
-                        <td>2017-08-14 10:50</td>
+                    <tr v-for="x in result">
+                        <td
+                            v-bind:class="x.class"><router-link :to="{ name: '/judge/:id', path: '/judge/' + x.id, params: { 'id': x.id } }"><i class="fa fa-question"></i>{{ x.result }}</router-link></td>
+                        <td>{{ x.problemTitle || x.problemId }}</td>
+                        <td>{{ x.userId || x.userName }}</td>
+                        <td>{{ x.timeUsedInMs }}ms</td>
+                        <td>{{ (x.memoryUsedInByte / 1024.0 / 1024.0).toFixed(1) }}MiB</td>
+                        <td>{{ x.language }}</td>
+                        <td>{{ x.createdTime }}</td>
                     </tr>
                 </tbody>
                 <tfoot>

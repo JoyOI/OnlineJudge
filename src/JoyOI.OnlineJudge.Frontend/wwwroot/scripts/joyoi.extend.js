@@ -264,3 +264,24 @@ $(window).click(function (e) {
         app.toggleLoginBox();
     }
 });
+
+function formatJudgeResult(str) {
+    for (var i = 65; i <= 90; i++) {
+        str = str.replace(new RegExp(String.fromCharCode(i), 'g'), ' ' + String.fromCharCode(i));
+    }
+    return str.trim();
+}
+
+function ConvertJudgeResultToCss(x)
+{
+    if (x === 'Pending' || x === 'Running')
+        return 'judge-blue';
+    else if (x === 'Hidden')
+        return 'judge-purple';
+    else if (x === 'Accepted')
+        return 'judge-green';
+    else if (x === 'Compile Error' || x === 'System Error')
+        return 'judge-orange';
+    else
+        return 'judge-red';
+}

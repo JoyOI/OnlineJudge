@@ -25,7 +25,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     public class JudgeController : BaseController
     {
         [HttpGet("all")]
-        public async Task<ApiResult<PagedResult<IEnumerable<JudgeStatus>>>> Get(string problemId, JudgeResult? status, Guid? userId, string contestId, string language, int? page, CancellationToken token)
+        public async Task<ApiResult<PagedResult<IEnumerable<JudgeStatus>>>> Get(string problemId, JudgeResult? status, Guid? userId, string contestId, string language, int? page, DateTime? begin, DateTime? end, CancellationToken token)
         {
             IQueryable<JudgeStatus> ret = DB.JudgeStatuses;
 
@@ -52,7 +52,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!string.IsNullOrWhiteSpace(language))
             {
                 ret = ret.Where(x => x.Language == language);
-            } 
+            }
+
+            if (begin.HasValue)
+            {
+                ret = ret.Where(x => begin.Value <= x.CreatedTime);
+            }
+
+            if (end.HasValue)
+            {
+                ret = ret.Where(x => x.CreatedTime <= end.Value);
+            }
 
             var result = await Paged(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 50, token);
             if (!IsMasterOrHigher && result.data.result.Any(x => !string.IsNullOrWhiteSpace(x.ContestId)))
