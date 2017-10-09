@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace JoyOI.OnlineJudge.Models
@@ -173,5 +174,7 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>Memory limitation per case in byte</value>
         [WebApi(FilterLevel.GetListDisabled)]
         public int MemoryLimitationPerCaseInByte { get; set; }
+
+        public virtual ICollection<TestCase> TestCases { get; set; } = new List<TestCase>();
     }
 }

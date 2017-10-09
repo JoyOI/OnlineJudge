@@ -106,10 +106,16 @@ namespace JoyOI.OnlineJudge.Models
         public virtual Contest Contest { get; set; }
 
         /// <summary>
+        /// Gets or sets the hint
+        /// </summary>
+        /// <value>The hint of this status</value>
+        public string Hint { get; set; }
+
+        /// <summary>
         /// Gets or sets the related state machine identifiers.
         /// </summary>
         /// <value>The related state machine identifiers.</value>
-        public virtual ICollection<StateMachine> RelatedStateMachineIds { get; set; }
+        public virtual ICollection<JudgeStatusStateMachine> RelatedStateMachineIds { get; set; }
 
         /// <summary>
         /// Gets or sets the sub statuses.

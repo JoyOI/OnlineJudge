@@ -3,8 +3,10 @@ app.links = [];
 
 component.data = function () {
     return {
-        page: 1,
-        pageCount: 10,
+        paging: {
+            current: 1,
+            count: 1
+        },
         statuses: statuses,
         result: [],
         languages: languages,
@@ -14,6 +16,7 @@ component.data = function () {
         selectedLanguage: null,
         selectedContest: null,
         selectedTime: null,
+        page: null,
         submittorSearchResult: [],
         problemSearchResult: []
     };
@@ -21,12 +24,30 @@ component.data = function () {
 
 component.watch = {
     selectedStatus: function () {
-
+        this.loadStatuses();
+    },
+    selectedProblem: function () {
+        this.loadStatuses();
+    },
+    selectedSubmittor: function () {
+        this.loadStatuses();
+    },
+    selectedLanguage: function () {
+        this.loadStatuses();
+    },
+    selectedContest: function () {
+        this.loadStatuses();
+    },
+    selectedTime: function () {
+        this.loadStatuses();
+    },
+    page: function () {
+        this.loadStatuses();
     }
 };
 
 component.created = function () {
-
+    this.loadStatuses();
 };
 
 component.methods = {
@@ -62,6 +83,7 @@ component.methods = {
         }
     },
     toPage: function (p) {
+        this.paging.current = p;
         this.page = p;
     },
     searchSubmittor: function () {
@@ -129,12 +151,13 @@ component.methods = {
     loadStatuses: function () {
         var self = this;
         qv.createView('/api/judge/all', {
-            problemid: self.selectedProblem.id,
+            problemid: self.selectedProblem ? self.selectedProblem.id : null,
             status: self.selectedStatus ? self.selectedStatus.replace(/ /g, '') : null,
             userId: self.selectedSubmittor,
             language: self.selectedLanguage,
             begin: self.selectedTime ? self.selectedTime.begin : null,
-            end: self.selectedTime ? self.selectedTime.end : null
+            end: self.selectedTime ? self.selectedTime.end : null,
+            page: self.page
         }).fetch(x => {
             self.paging.count = x.data.count;
             self.paging.current = x.data.current;

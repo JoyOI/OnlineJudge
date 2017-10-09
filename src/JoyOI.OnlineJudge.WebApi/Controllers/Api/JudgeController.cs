@@ -16,12 +16,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
 using JoyOI.ManagementService.SDK;
+using JoyOI.ManagementService.Model.Dtos;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 {
+    [Route("api/[controller]")]
     public class JudgeController : BaseController
     {
         [HttpGet("all")]
@@ -109,6 +111,142 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return result;
         }
 
+        [HttpPut]
+        public async Task<ApiResult<Guid>> Put(
+            [FromServices] IServiceScopeFactory scopeFactory,
+            [FromServices] StateMachineAwaiter awaiter,
+            [FromServices] ManagementServiceClient MgmtSvc,
+            CancellationToken token)
+        {
+            var request = JsonConvert.DeserializeObject<JudgeRequest>(RequestBody);
+            var problem = await DB.Problems
+                .Include(x => x.TestCases)
+                .SingleOrDefaultAsync(x => x.Id == request.problemId, token);
+
+            if (problem == null)
+            {
+                return Result<Guid>(400, "The problem does not exist.");
+            }
+
+            if (!problem.IsVisiable && string.IsNullOrWhiteSpace(request.contestId) && !await HasPermissionToProblemAsync(problem.Id, token))
+            {
+                return Result<Guid>(403, "You have no permission to the problem.");
+            }
+
+            // TODO: Check contest permission
+
+            if (!Constants.CompileNeededLanguages.Contains(request.language) && !Constants.ScriptLanguages.Contains(request.language))
+            {
+                return Result<Guid>(400, "The programming language which you selected was not supported");
+            }
+
+            if (request.isSelfTest && request.data.Count() == 0)
+            {
+                return Result<Guid>(400, "The self testing data has not been found");
+            }
+
+            var blobs = new ConcurrentDictionary<int, BlobInfo[]>();
+            blobs.TryAdd(-1, new[] { new BlobInfo
+                {
+                    Id = await MgmtSvc.PutBlobAsync("Main" + Constants.GetExtension(request.language), Encoding.UTF8.GetBytes(request.code)),
+                    Name = "Main" + Constants.GetExtension(request.language),
+                    Tag = "Problem=" + problem.Id
+                }
+            });
+            blobs.TryAdd(-2, new[] { new BlobInfo
+                {
+                    Id = await MgmtSvc.PutBlobAsync("limit.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
+                    {
+                        UserTime = problem.TimeLimitationPerCaseInMs,
+                        PhysicalTime = problem.TimeLimitationPerCaseInMs * 2,
+                        Memory = problem.MemoryLimitationPerCaseInByte
+                    }))),
+                    Name = "limit.json",
+                    Tag = "Problem=" +  problem.Id
+                }
+            });
+
+            if (request.isSelfTest)
+            {
+                Parallel.For(0, request.data.Count(), i =>
+                {
+                    // Uploading custom data
+                    var inputId = MgmtSvc.PutBlobAsync($"input_{ i }.txt", Encoding.UTF8.GetBytes(request.data.ElementAt(i).input), token).Result;
+                    var outputId = MgmtSvc.PutBlobAsync($"output_{ i }.txt", Encoding.UTF8.GetBytes(request.data.ElementAt(i).output), token).Result;
+                    blobs.TryAdd(i, new[] {
+                        new BlobInfo { Id = inputId, Name = $"input_{ i }.txt", Tag = i.ToString() },
+                        new BlobInfo { Id = outputId, Name = $"output_{ i }.txt", Tag =  i.ToString() }
+                    });
+                });
+            }
+            else
+            {
+                // TODO: Test case type
+                var testCases = await DB.TestCases
+                    .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large))
+                    .ToListAsync(token);
+                for (var i = 0; i < testCases.Count; i++)
+                {
+                    blobs.TryAdd(i, new[] {
+                        new BlobInfo { Id = testCases[i].InputBlobId, Name = $"input_{ i }.txt", Tag = i.ToString() },
+                        new BlobInfo { Id = testCases[i].OutputBlobId, Name = $"output_{ i }.txt", Tag = i.ToString() }
+                    });
+                }
+            }
+
+            var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", null, blobs.SelectMany(x => x.Value), token);
+
+            var substatuses = blobs
+                .Where(x => x.Key >= 0)
+                .Select(x => new SubJudgeStatus
+                {
+                    SubId = x.Key,
+                    Result = JudgeResult.Pending,
+                    InputBlobId = x.Value.Single(y => y.Name.StartsWith("input_")).Id,
+                    OutputBlobId = x.Value.Single(y => y.Name.StartsWith("output_")).Id,
+                })
+                .ToList();
+
+            var status = new JudgeStatus
+            {
+                Code = request.code,
+                Language = request.language,
+                Result = JudgeResult.Pending,
+                CreatedTime = DateTime.Now,
+                ContestId = request.contestId,
+                SubStatuses = substatuses,
+                ProblemId = problem.Id,
+                UserId = User.Current.Id,
+                RelatedStateMachineIds = new List<JudgeStatusStateMachine>
+                    {
+                        new JudgeStatusStateMachine
+                        {
+                            StateMachine = new StateMachine
+                            {
+                                CreatedTime = DateTime.Now,
+                                Name = "JudgeStateMachine",
+                                Id = stateMachineId
+                            },
+                            StateMachineId = stateMachineId
+                        }
+                    },
+            };
+
+            DB.JudgeStatuses.Add(status);
+            await DB.SaveChangesAsync(token);
+            Task.Factory.StartNew(async () =>
+            {
+                using (var scope = scopeFactory.CreateScope())
+                using (var db = scope.ServiceProvider.GetService<OnlineJudgeContext>())
+                {
+                    var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                    await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, default(CancellationToken));
+                }
+            });
+
+            return Result(status.Id);
+        }
+
         #region Private Functions
         private async Task<bool> HasPermissionToContestAsync(string contestId, CancellationToken token = default(CancellationToken))
             => !(User.Current == null
@@ -123,6 +261,188 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
                    && x.ClaimValue == problemId));
+
+        private async Task<string> ReadBlobAsStringAsync(ManagementServiceClient mgmt, Guid blobId, CancellationToken token)
+        {
+            var blob = await mgmt.GetBlobAsync(blobId, token);
+            return Encoding.UTF8.GetString(blob.Body);
+        }
+
+        private async Task<T> ReadBlobAsObjectAsync<T>(ManagementServiceClient mgmt, Guid blobId, CancellationToken token)
+        {
+            var jsonString = await ReadBlobAsStringAsync(mgmt, blobId, token);
+            return JsonConvert.DeserializeObject<T>(jsonString);
+        }
+
+        private int GetStateMachineTestCaseCount(StateMachineInstanceOutputDto statemachine)
+        {
+            return statemachine.InitialBlobs.Where(x => x.Name.StartsWith("input_")).Count();
+        }
+
+        private async Task<(bool result, string hint)> IsFailedInCompileStageAsync(ManagementServiceClient mgmt, StateMachineInstanceOutputDto statemachine, CancellationToken token)
+        {
+            if (statemachine.StartedActors.Count() == 1 && statemachine.StartedActors.Last().Name == "CompileActor")
+            {
+                var runner = await ReadBlobAsObjectAsync<Runner>(mgmt, statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "runner.json").Id, token);
+                var stdout = await ReadBlobAsStringAsync(mgmt, statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "stdout.txt").Id, token);
+                var stderr = await ReadBlobAsStringAsync(mgmt, statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "stderr.txt").Id, token);
+                return (true, string.Join(Environment.NewLine, runner.Error, stdout, stderr));
+            }
+            else
+            {
+                return (false, statemachine.StartedActors.Last().Outputs.Single(x => x.Name.StartsWith("Main")).Id.ToString());
+            }
+        }
+
+        private async Task<IEnumerable<(int subId, JudgeResult result, int time, int memory, string hint)>> HandleRuntimeResultAsync(ManagementServiceClient mgmt, StateMachineInstanceOutputDto statemachine, int memoryLimit, CancellationToken token)
+        {
+            var runActors = statemachine.StartedActors
+                .Where(x => x.Name == "RunUserProgramActor");
+
+            var compareActors = statemachine.StartedActors
+                .Where(x => x.Name == "CompareActor");
+
+            var testCaseCount = GetStateMachineTestCaseCount(statemachine);
+
+            if (runActors.Count() != testCaseCount)
+            {
+                throw new Exception("Missing RunUserProgramActor");
+            }
+
+            var ret = new List<(int subId, JudgeResult result, int time, int memory, string hint)>();
+            for (var i = 0; i < testCaseCount; i++)
+            {
+                var actor = compareActors.SingleOrDefault(x => x.Tag == i.ToString());
+                if (actor == null)
+                {
+                    actor = runActors.Single(x => x.Tag == i.ToString());
+                    var runner = await ReadBlobAsObjectAsync<Runner>(mgmt, actor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                    if (runner.IsTimeout)
+                    {
+                        ret.Add((
+                            i,
+                            JudgeResult.TimeExceeded,
+                            runner.UserTime,
+                            runner.PeakMemory,
+                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error));
+                    }
+                    else if (runner.ExitCode == 139 || actor.Exceptions.Any(x => x.Contains("May cause by out of memory")) || runner.Error.Contains("std::bad_alloc"))
+                    {
+                        ret.Add((
+                            i,
+                            JudgeResult.MemoryExceeded,
+                            runner.UserTime,
+                            memoryLimit,
+                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error));
+                    }
+                    else
+                    {
+                        ret.Add((
+                            i,
+                            JudgeResult.RuntimeError,
+                            runner.UserTime,
+                            runner.PeakMemory,
+                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error + Environment.NewLine + $"User process exited with code { runner.ExitCode }"));
+                    }
+                }
+                else
+                {
+                    var runActor = runActors.Single(x => x.Tag == i.ToString());
+                    var compareRunner = await ReadBlobAsObjectAsync<Runner>(mgmt, actor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                    var runRunner = await ReadBlobAsObjectAsync<Runner>(mgmt, runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                    if (compareRunner.ExitCode == 0)
+                    {
+                        ret.Add((
+                            i,
+                            JudgeResult.Accepted,
+                            runRunner.UserTime,
+                            runRunner.PeakMemory,
+                            "Congratulations!"));
+                    }
+                    else if (compareRunner.ExitCode == 1)
+                    {
+                        var validatorStdout = await ReadBlobAsStringAsync(mgmt, actor.Outputs.Single(x => x.Name == "stdout.txt").Id, token);
+                        ret.Add((
+                            i,
+                            JudgeResult.PresentationError,
+                            runRunner.UserTime,
+                            runRunner.PeakMemory,
+                            validatorStdout));
+                    }
+                    else if (compareRunner.ExitCode == 2)
+                    {
+                        var validatorStdout = await ReadBlobAsStringAsync(mgmt, actor.Outputs.Single(x => x.Name == "stdout.txt").Id, token);
+                        ret.Add((
+                            i,
+                            JudgeResult.WrongAnswer,
+                            runRunner.UserTime,
+                            runRunner.PeakMemory,
+                            validatorStdout));
+                    }
+                    else
+                    {
+                        ret.Add((
+                            i,
+                            JudgeResult.SystemError,
+                            runRunner.UserTime,
+                            runRunner.PeakMemory,
+                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + compareRunner.Error + Environment.NewLine + $"Validator process exited with code { compareRunner.ExitCode }"));
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private async Task HandleJudgeResultAsync(OnlineJudgeContext db, ManagementServiceClient mgmt, Guid statusId, StateMachineInstanceOutputDto statemachine, Problem problem, CancellationToken token)
+        {
+            // TODO: Inject SignalR hub
+            var compileResult = await IsFailedInCompileStageAsync(mgmt, statemachine, token);
+            if (compileResult.result)
+            {
+                await db.JudgeStatuses
+                    .Where(x => x.Id == statusId)
+                    .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
+                    .SetField(x => x.Hint).WithValue(compileResult.hint)
+                    .UpdateAsync(token);
+                await db.SubJudgeStatuses
+                    .Where(x => x.StatusId == statusId)
+                    .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
+                    .UpdateAsync(token);
+
+                // TODO: Notify clients
+            }
+            else
+            {
+                var runtimeResult = await HandleRuntimeResultAsync(mgmt, statemachine, problem.MemoryLimitationPerCaseInByte, token);
+                var finalResult = runtimeResult.Max(x => x.result);
+                var finalTime = runtimeResult.Sum(x => x.time);
+                var finalMemory = runtimeResult.Max(x => x.memory);
+
+                await db.JudgeStatuses
+                    .Where(x => x.Id == statusId)
+                    .SetField(x => x.TimeUsedInMs).WithValue(finalTime)
+                    .SetField(x => x.MemoryUsedInByte).WithValue(finalMemory)
+                    .SetField(x => x.Result).WithValue((int)finalResult)
+                    .UpdateAsync(token);
+
+                var updateSubStatusTasks = new List<Task>();
+                for (var i = 0; i < runtimeResult.Count(); i++)
+                {
+                    updateSubStatusTasks.Add(db.SubJudgeStatuses
+                        .Where(x => x.StatusId == statusId)
+                        .Where(x => x.SubId == i)
+                        .SetField(x => x.TimeUsedInMs).WithValue(runtimeResult.ElementAt(i).time)
+                        .SetField(x => x.MemoryUsedInByte).WithValue(runtimeResult.ElementAt(i).memory)
+                        .SetField(x => x.Result).WithValue((int)runtimeResult.ElementAt(i).result)
+                        .SetField(x => x.Hint).WithValue(runtimeResult.ElementAt(i).hint)
+                        .UpdateAsync(token));
+                }
+                await Task.WhenAll(updateSubStatusTasks);
+
+                // TODO: Notify clients
+            }
+        }
         #endregion
     }
 }

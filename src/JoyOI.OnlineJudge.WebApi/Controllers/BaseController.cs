@@ -138,7 +138,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 msg = "",
                 data = new PagedResult<IEnumerable<T>>
                 {
-                    count = result.Count,
+                    count = result.Count <= 0 ? 1 : result.Count,
                     current = currentPage,
                     size = size,
                     result = result,

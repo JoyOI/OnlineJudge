@@ -7,7 +7,7 @@ component.data = function () {
         selected: [],
         paging: {
             current: 1,
-            count: 0
+            count: 1
         },
         request: {
             tag: null,

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -35,19 +33,48 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The result.</value>
         [MaxLength(32)]
-        public string Result { get; set; }
+        public JudgeResult Result { get; set; }
 
         /// <summary>
         /// Gets or sets the test case identifier.
         /// </summary>
         /// <value>The test case identifier.</value>
         [ForeignKey("TestCase")]
-        public Guid TestCaseId { get; set; }
+        public Guid? TestCaseId { get; set; }
 
         /// <summary>
         /// Gets or sets the test case.
         /// </summary>
         /// <value>The test case.</value>
         public virtual TestCase TestCase { get; set; }
+
+        /// <summary>
+        /// Gets or sets the input blob id
+        /// </summary>
+        public Guid InputBlobId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the output blob id in management service
+        /// </summary>
+        /// <value>The output blob id</value>
+        public Guid OutputBlobId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hint
+        /// </summary>
+        /// <value>The hint</value>
+        public string Hint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the memory used (byte)
+        /// </summary>
+        /// <value>The memory used in byte</value>
+        public int MemoryUsedInByte { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time used (ms)
+        /// </summary>
+        /// <value>The time used in ms</value>
+        public int TimeUsedInMs { get; set; }
     }
 }
