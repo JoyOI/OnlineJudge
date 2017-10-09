@@ -105,7 +105,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             foreach (var x in result.data.result)
             {
-                x.User = new User { Id = x.UserId, UserName = users[x.Id] };
+                x.User = new User { Id = x.UserId, UserName = users[x.UserId] };
             }
 
             return result;
