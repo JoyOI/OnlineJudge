@@ -152,5 +152,22 @@ component.methods = {
         if (2 * index + 1 < tr.length) {
             $(tr[2 * index + 1]).toggle();
         }
+    },
+    submitToJudge: function () {
+        var self = this;
+        this.form.code = $('#code-editor')[0].editor.getValue();
+        qv.put('/api/judge', {
+            problemId: self.id,
+            isSelfTest: self.form.data.length > 0,
+            code: $('#code-editor')[0].editor.getValue(),
+            language: self.form.language,
+            data: self.form.data.length > 0 ? self.form.data : null
+        })
+        .then(x =>
+        {
+            // TODO: Listen the status SignalR channel, x is the status id.
+            console.log(x);
+            changeEditorMode('judge');
+        });
     }
 };
