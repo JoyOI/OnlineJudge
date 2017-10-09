@@ -113,6 +113,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPut]
         public async Task<ApiResult<Guid>> Put(
+            [FromServices] IConfiguration Config,
             [FromServices] IServiceScopeFactory scopeFactory,
             [FromServices] StateMachineAwaiter awaiter,
             [FromServices] ManagementServiceClient MgmtSvc,
@@ -165,6 +166,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Tag = "Problem=" +  problem.Id
                 }
             });
+            if (!problem.ValidatorBlobId.HasValue)
+            {
+                blobs.TryAdd(-3, new[]
+                {
+                    new BlobInfo
+                    {
+                        Id = Guid.Parse(Config["JoyOI:StandardValidatorBlobId"]),
+                        Name = "Validator.out"
+                    }
+                });
+            }
+            else
+            {
+                // TODO: Special Judge
+            }
 
             if (request.isSelfTest)
             {

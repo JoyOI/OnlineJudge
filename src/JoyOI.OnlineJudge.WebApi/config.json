@@ -7,7 +7,8 @@
     "AppId": "b453aa01-680e-49ca-a332-9d3ae296af9f",
     "Secret": "0",
     "UcUrl": "http://api.uc.joyoi.net",
-    "RegisterUrl": "http://uc.joyoi.net/register"
+    "RegisterUrl": "http://uc.joyoi.net/register",
+    "StandardValidatorBlobId": "0083d685-e5e4-1019-7a26-d22005cc35cc"
   },
   "ManagementService": {
     "Certification": "C:\\Users\\Yuko\\Documents\\webapi-client.pfx",
