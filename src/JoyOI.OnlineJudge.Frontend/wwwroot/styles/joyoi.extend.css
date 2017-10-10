@@ -1398,3 +1398,11 @@ dd {
 .test-case-type-outer.text-left {
     text-align: left;
 }
+
+.judge-panel-hint {
+    padding: 0 10px;
+}
+
+.judge-panel-hint p {
+    margin-bottom: 0;
+}

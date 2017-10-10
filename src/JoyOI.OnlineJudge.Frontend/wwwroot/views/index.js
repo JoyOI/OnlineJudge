@@ -84,6 +84,9 @@
         },
         marked: function (str) {
             return filterXSS(marked(str || ""))
+        },
+        xss: function (str) {
+            return filterXSS(str);
         }
     }
 });
