@@ -258,7 +258,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     try
                     {
                         var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
-                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, default(CancellationToken));
+                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, status.UserId, default(CancellationToken));
                     }
                     catch (Exception ex)
                     {
@@ -459,9 +459,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return ret;
         }
 
-        private async Task HandleJudgeResultAsync(OnlineJudgeContext db, ManagementServiceClient mgmt, Guid statusId, StateMachineInstanceOutputDto statemachine, Problem problem, CancellationToken token)
+        private async Task HandleJudgeResultAsync(OnlineJudgeContext db, ManagementServiceClient mgmt, Guid statusId, StateMachineInstanceOutputDto statemachine, Problem problem, Guid userId, CancellationToken token)
         {
             // TODO: Inject SignalR hub
+            bool isAccepted = false;
             var compileResult = await IsFailedInCompileStageAsync(mgmt, statemachine, token);
             if (compileResult.result)
             {
@@ -503,7 +504,62 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         .Update();
                 }
 
+                if (finalResult == JudgeResult.Accepted)
+                {
+                    isAccepted = true;
+                }
+
                 // TODO: Notify clients
+            }
+
+            UpdateUserProblemJson(db, userId, problem.Id, isAccepted);
+        }
+
+        private void UpdateUserProblemJson(OnlineJudgeContext db, Guid userId, string problemId, bool isAccepted)
+        {
+            var effectedRows = 0;
+            while (effectedRows == 0)
+            {
+                var user = db.Users.Single(x => x.Id == userId);
+                var timestamp = user.ConcurrencyStamp;
+                if (!user.TriedProblems.Object.Contains(problemId))
+                {
+                    user.TriedProblems.Object.Add(problemId);
+                    effectedRows = db.Users
+                        .Where(x => x.Id == userId)
+                        .Where(x => x.ConcurrencyStamp == timestamp)
+                        .SetField(x => x.TriedProblems).WithValue(JsonConvert.SerializeObject(user))
+                        .SetField(x => x.ConcurrencyStamp).WithValue(Guid.NewGuid())
+                        .Update();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (isAccepted)
+            {
+                effectedRows = 0;
+                while (effectedRows == 0)
+                {
+                    var user = db.Users.Single(x => x.Id == userId);
+                    var timestamp = user.ConcurrencyStamp;
+                    if (!user.PassedProblems.Object.Contains(problemId))
+                    {
+                        user.PassedProblems.Object.Add(problemId);
+                        effectedRows = db.Users
+                            .Where(x => x.Id == userId)
+                            .Where(x => x.ConcurrencyStamp == timestamp)
+                            .SetField(x => x.PassedProblems).WithValue(JsonConvert.SerializeObject(user))
+                            .SetField(x => x.ConcurrencyStamp).WithValue(Guid.NewGuid())
+                            .Update();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
         }
         #endregion
