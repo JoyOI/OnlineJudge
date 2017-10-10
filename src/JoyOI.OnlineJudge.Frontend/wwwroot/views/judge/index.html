@@ -51,17 +51,20 @@
             <div class="sidebar-section">
                 <div v-bind:style="{ 'background-image': 'url(/images/' + parseInt(Math.random() * 20 + 1) + '.jpg)' }" class="sidebar-avatar-set-off"></div>
                 <div class="sidebar-padding-outer">
-                    <img src="/images/non-avatar.png" class="sidebar-avatar" />
-                    <div class="sidebar-username">Yuko</div>
+                    <img v-bind:src="user.avatarUrl" class="sidebar-avatar" />
+                    <!-- TODO: link to user profile page -->
+                    <div class="sidebar-username" v-bind:class="user.roleClass">{{ user.username || user.id }}</div>
                 </div>
                 <div class="sidebar-padding-outer">
                     <dl>
                         <dt>题目</dt>
-                        <dd>A+B Problem</dd>
+                        <dd>
+                            <router-link :to="{ name: '/problem/:id', path: '/problem/' + problem.id, params: { 'id': problem.id } }">{{ problem.title || problem.id }}</router-link>
+                        </dd>
                         <dt>总耗时</dt>
                         <dd>{{ totalTime }}ms</dd>
                         <dt>峰值内存</dt>
-                        <dd>{{ (peakMemory / 1024 / 1024).toFixed(2) }}MiB</dd>
+                        <dd>{{ (peakMemory / 1024 / 1024).toFixed(1) }}MiB</dd>
                         <dt>提交时间</dt>
                         <dd>{{ time }}</dd>
                     </dl>

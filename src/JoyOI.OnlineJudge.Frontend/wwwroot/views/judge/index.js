@@ -8,12 +8,14 @@ component.data = function () {
             languages: languages,
             highlighters: syntaxHighlighter
         },
-        id: '8c1185b7-4a35-499b-9344-3cd44bc732e4',
+        id: null,
         language: null,
-        hint: 'Main.cpp: In function \'int main()\': Main.cpp:58:17: error: \'putchar\' was not declared in this scope putchar(\'\\n\'); ^',
-        code: '#include&lt;iostream&gt;\r\nusing namespace std;\r\nint main() \r\n {\r\n',
-        substatuses: [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }],
-        time: new Date()
+        hint: null,
+        code: null,
+        substatuses: [],
+        time: null,
+        problem: { id: null, title: null },
+        user: { id: null, username: null, roleClass: null, avatarUrl: null }
     };
 };
 
@@ -22,8 +24,30 @@ component.created = function () {
     var self = this;
     qv.createView('/api/judge/' + this.id)
         .fetch(x => {
-            this.language = x.data.language;
-            this.code = x.data.code;
+            self.code = x.data.code;
+            self.hint = x.data.hint;
+            self.time = x.data.createdTime;
+            self.problem.id = x.data.problemId;
+            self.user.id = x.data.userId.substr(0, 8);
+            self.substatuses = x.data.subStatuses.map(y =>
+            {
+                return { hint: y.hint, status: formatJudgeResult(y.result), time: y.timeUsedInMs, memory: y.memoryUsedInByte };
+            });
+            self.language = x.data.language;
+
+            qv.createView('/api/user/role', { userids: x.data.userId })
+                .fetch(y =>
+                {
+                    self.user.username = y.data[x.data.userId].username;
+                    self.user.roleClass = ConvertUserRoleToCss(y.data[x.data.userId].role);
+                    self.user.avatarUrl = y.data[x.data.userId].avatarUrl;
+                });
+
+            qv.createView('/api/problem/title', { problemids: self.problem.id })
+                .fetch(y =>
+                {
+                    self.problem.title = y.data[self.problem.id].title;
+                })
         });
 };
 
@@ -66,6 +90,12 @@ component.watch = {
         var dom = $('.code-box-outer .code-box');
         if (!dom.length || !dom[0].editor) return;
         dom[0].editor.session.setMode('ace/mode/' + mode);
+    },
+    code: function (val) {
+        var dom = $('.code-box-outer .code-box');
+        if (!dom.length || !dom[0].editor) return;
+        dom[0].editor.setValue(val);
+        dom[0].editor.selection.moveCursorToPosition({ row: 0, column: 0 });
     }
 };
 

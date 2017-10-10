@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -35,6 +36,7 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The result.</value>
         [MaxLength(32)]
+        [JsonConverter(typeof(StringEnumConverter))]
         public JudgeResult Result { get; set; }
 
         /// <summary>

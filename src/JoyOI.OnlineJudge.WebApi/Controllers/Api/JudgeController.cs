@@ -307,6 +307,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret.Code = null;
             }
 
+            ret.SubStatuses = ret.SubStatuses.OrderBy(x => x.SubId).ToList();
+
             return Result(ret);
         }
 
