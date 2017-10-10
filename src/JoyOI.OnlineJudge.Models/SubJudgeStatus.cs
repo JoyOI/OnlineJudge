@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -20,6 +21,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the status.
         /// </summary>
         /// <value>The status.</value>
+        [JsonIgnore]
         public virtual JudgeStatus Status { get; set; }
 
         /// <summary>
