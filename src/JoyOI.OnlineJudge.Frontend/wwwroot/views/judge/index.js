@@ -18,7 +18,13 @@ component.data = function () {
 };
 
 component.created = function () {
-    this.language = 'C++';
+    this.id = router.history.current.params.id;
+    var self = this;
+    qv.createView('/api/judge/' + this.id)
+        .fetch(x => {
+            this.language = x.data.language;
+            this.code = x.data.code;
+        });
 };
 
 component.computed = {

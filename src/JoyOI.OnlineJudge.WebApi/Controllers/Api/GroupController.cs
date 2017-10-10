@@ -16,7 +16,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         #region Group
         [HttpGet("all")]
-        public Task<ApiResult<PagedResult<IEnumerable<Group>>>> Get(GroupType? type, string name, int? page, CancellationToken token)
+        public Task<IActionResult> Get(GroupType? type, string name, int? page, CancellationToken token)
         {
             IQueryable<Group> ret = DB.Groups;
             if (type.HasValue)
@@ -35,7 +35,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult<Group>> Get(string id, CancellationToken token)
+        public async Task<IActionResult> Get(string id, CancellationToken token)
         {
             var ret = await DB.Groups.SingleOrDefaultAsync(x => x.Id == id, token);
             return Result(ret);
@@ -43,7 +43,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Patch(string id, CancellationToken token)
+        public async Task<IActionResult> Patch(string id, CancellationToken token)
         {
             if (!await HasPermissionToGroupAsync(id, token))
             {
@@ -64,7 +64,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         
         [HttpPut("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Put(string id, CancellationToken token)
+        public async Task<IActionResult> Put(string id, CancellationToken token)
         {
             if (await DB.Groups.AnyAsync(x => x.Id == id, token))
             {
@@ -96,7 +96,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpDelete("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> Delete(string id, CancellationToken token)
+        public async Task<IActionResult> Delete(string id, CancellationToken token)
         {
             if (!await HasPermissionToGroupAsync(id, token))
             {
@@ -118,7 +118,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Group Member
         [HttpGet("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/all")]
-        public Task<ApiResult<PagedResult<IEnumerable<GroupMember>>>> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)
+        public Task<IActionResult> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)
         {
             IQueryable<GroupMember> ret = DB.GroupMembers
                 .Where(x => x.GroupId == groupId);
@@ -139,7 +139,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         
         [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid?}")]
-        public async Task<ApiResult> PutMember(string groupId, Guid? userId, [FromBody] string value, CancellationToken token)
+        public async Task<IActionResult> PutMember(string groupId, Guid? userId, [FromBody] string value, CancellationToken token)
         {
             if (!await DB.Groups.AnyAsync(x => x.Id == groupId, token))
             {
@@ -172,7 +172,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid}")]
         [HttpPatch("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid}")]
-        public async Task<ApiResult> PatchMember(string groupId, Guid userId, [FromBody] string value, CancellationToken token)
+        public async Task<IActionResult> PatchMember(string groupId, Guid userId, [FromBody] string value, CancellationToken token)
         {
             if (!await HasPermissionToGroupAsync(groupId, token))
             {
@@ -191,7 +191,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpDelete("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid?}")]
-        public async Task<ApiResult> DeleteMember(string groupId, Guid? userId, CancellationToken token)
+        public async Task<IActionResult> DeleteMember(string groupId, Guid? userId, CancellationToken token)
         {
             if (userId.HasValue && userId.Value != User.Current.Id && !await HasPermissionToGroupAsync(groupId, token))
             {
@@ -219,7 +219,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Claims
         [HttpGet("{problemid:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
-        public async Task<ApiResult<List<IdentityUserClaim<Guid>>>> GetClaims(string problemId, CancellationToken token)
+        public async Task<IActionResult> GetClaims(string problemId, CancellationToken token)
         {
             var ret = await DB.UserClaims
                 .Where(x => x.ClaimType == Constants.ProblemEditPermission)
@@ -229,7 +229,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim")]
-        public async Task<ApiResult> PutClaims(string groupId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        public async Task<IActionResult> PutClaims(string groupId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
         {
             if (!await HasPermissionToGroupAsync(groupId, token))
             {
@@ -253,7 +253,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{userId:Guid}")]
-        public async Task<ApiResult> DeleteClaim(Guid userId, string groupId, CancellationToken token)
+        public async Task<IActionResult> DeleteClaim(Guid userId, string groupId, CancellationToken token)
         {
             if (!await HasPermissionToGroupAsync(groupId, token))
             {

@@ -12,7 +12,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     public class ConfigurationController : BaseController
     {
         [HttpGet("{key:regex(^[[a-zA-Z0-9-_]]{{1,32}}$)}")]
-        public async Task<ApiResult<Configuration>> Get(string key, CancellationToken token)
+        public async Task<IActionResult> Get(string key, CancellationToken token)
         {
             var configuration = await DB.Configurations.SingleOrDefaultAsync(x => x.Key == key, token);
             if (configuration == null)
@@ -26,7 +26,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut]
-        public async Task<ApiResult> Put(CancellationToken token)
+        public async Task<IActionResult> Put(CancellationToken token)
         {
             var configuration = PutEntity<Configuration>(RequestBody).Entity;
             if (await DB.Configurations.AnyAsync(x => x.Key == configuration.Key, token))
@@ -43,7 +43,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{key:regex(^[[a-zA-Z0-9-_]]{{1,32}}$)}")]
         [HttpPatch("{key:regex(^[[a-zA-Z0-9-_]]{{1,32}}$)}")]
-        public async Task<ApiResult> Patch(string key, CancellationToken token)
+        public async Task<IActionResult> Patch(string key, CancellationToken token)
         {
             if (!IsRoot)
             {
@@ -63,7 +63,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpDelete("{key:regex(^[[a-zA-Z0-9-_]]{{1,32}}$)}")]
-        public async Task<ApiResult> Delete(string key, CancellationToken token)
+        public async Task<IActionResult> Delete(string key, CancellationToken token)
         {
             if (!IsRoot)
             {

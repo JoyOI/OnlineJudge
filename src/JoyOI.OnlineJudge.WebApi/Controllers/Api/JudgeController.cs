@@ -27,7 +27,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     public class JudgeController : BaseController
     {
         [HttpGet("all")]
-        public async Task<ApiResult<PagedResult<IEnumerable<JudgeStatus>>>> Get(string problemId, JudgeResult? status, Guid? userId, string contestId, string language, int? page, DateTime? begin, DateTime? end, CancellationToken token)
+        public async Task<IActionResult> Get(string problemId, JudgeResult? status, Guid? userId, string contestId, string language, int? page, DateTime? begin, DateTime? end, CancellationToken token)
         {
             IQueryable<JudgeStatus> ret = DB.JudgeStatuses;
 
@@ -66,7 +66,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.CreatedTime <= end.Value);
             }
 
-            var result = await Paged(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 50, token);
+            var result = await DoPaging(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 50, token);
             if (!IsMasterOrHigher && result.data.result.Any(x => !string.IsNullOrWhiteSpace(x.ContestId)))
             {
                 var tasks = new List<Task>(13);
@@ -108,11 +108,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 x.User = new User { Id = x.UserId, UserName = users[x.UserId] };
             }
 
-            return result;
+            return Json(result);
         }
 
         [HttpPut]
-        public async Task<ApiResult<Guid>> Put(
+        public async Task<IActionResult> Put(
             [FromServices] IConfiguration Config,
             [FromServices] IServiceScopeFactory scopeFactory,
             [FromServices] StateMachineAwaiter awaiter,
@@ -268,6 +268,46 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             });
 
             return Result(status.Id);
+        }
+
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> Get(Guid id, CancellationToken token)
+        {
+            var ret = await DB.JudgeStatuses
+                .Include(x => x.SubStatuses)
+                .Include(x => x.Problem)
+                .SingleOrDefaultAsync(x => x.Id == id, token);
+
+            var problem = ret.Problem;
+            ret.Problem = null;
+            ret.User = null;
+
+            var hasPermissionToProblem = await HasPermissionToProblemAsync(problem.Id, token);
+
+            if (!problem.IsVisiable && hasPermissionToProblem)
+            {
+                return Result<JudgeStatus>(403, "No permission");
+            }
+
+            if (!string.IsNullOrWhiteSpace(ret.ContestId))
+            {
+                var contest = DB.Contests
+                    .Single(x => x.Id == ret.ContestId);
+
+                // TODO: Handle contest status display
+            }
+
+            if (User.Current != null && User.Current.Id == ret.UserId)
+            {
+                HasOwnership = true;
+            }
+
+            if (!HasOwnership && !hasPermissionToProblem && !await HasPermissionToContestAsync(ret.ContestId, token))
+            {
+                ret.Code = null;
+            }
+
+            return Result(ret);
         }
 
         #region Private Functions

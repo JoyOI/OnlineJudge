@@ -86,7 +86,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
 
         [Inject]
         public ManagementServiceClient ManagementService { get; set; }
-
+        
         public static Expression<Func<T, bool>> ContainsWhere<T>(Expression<Func<T, string>> propSelector, IEnumerable<string> matches)
         {
             if (matches == null || matches.Count() < 1)
@@ -107,7 +107,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             return Expression.Call(expression, containsMethod, parameter);
         }
 
-        public async Task<ApiResult<PagedResult<IEnumerable<T>>>> Paged<T>(IQueryable<T> src, int currentPage, int size = 100, CancellationToken token = default(CancellationToken))
+        [NonAction]
+        public async Task<ApiResult<PagedResult<IEnumerable<T>>>> DoPaging<T>(IQueryable<T> src, int currentPage, int size = 100, CancellationToken token = default(CancellationToken))
         {
             var total = src.Count();
             var result = await src.Skip((currentPage - 1) * size).Take(size).ToListAsync(token);
@@ -147,7 +148,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             };
         }
 
-        public ApiResult<T> Result<T>(T result, int code=  200)
+        [NonAction]
+        public async Task<IActionResult> Paged<T>(IQueryable<T> src, int currentPage, int size = 100, CancellationToken token = default(CancellationToken))
+        {
+            return Json(await DoPaging(src, currentPage, size, token));
+        }
+
+        [NonAction]
+        public IActionResult Result<T>(T result, int code=  200)
         {
             Response.StatusCode = code;
             var type = typeof(T);
@@ -164,21 +172,25 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                     x.SetValue(result, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }
             }
-            return new ApiResult<T> { code = code, data = result };
+            
+            return Json(new ApiResult<T> { code = code, data = result });
         }
 
-        public ApiResult<T> Result<T>(int code, string msg)
+        [NonAction]
+        public IActionResult Result<T>(int code, string msg)
         {
             Response.StatusCode = code;
-            return new ApiResult<T> { code = code, msg = msg };
+            return Json(new ApiResult<T> { code = code, msg = msg });
         }
 
-        public ApiResult Result(int code, string msg)
+        [NonAction]
+        public JsonResult Result(int code, string msg)
         {
             Response.StatusCode = code;
-            return new ApiResult { code = code, msg = msg };
+            return Json(new ApiResult { code = code, msg = msg });
         }
 
+        [NonAction]
         public IEnumerable<string> PatchEntity<T>(T entity, string json)
         {
             var type = entity.GetType();
@@ -207,6 +219,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             return ret;
         }
 
+        [NonAction]
         public (T Entity, IEnumerable<string> Fields) PutEntity<T>(string json)
         {
             var entity = Activator.CreateInstance<T>();
@@ -232,6 +245,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             return (entity, ret);
         }
 
+        [NonAction]
         public void FilterEntity<T>(T entity)
         {
             var type = typeof(T);
