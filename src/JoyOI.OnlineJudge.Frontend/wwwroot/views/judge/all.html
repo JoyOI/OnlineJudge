@@ -83,7 +83,7 @@
                 <tbody>
                     <tr v-for="x in result">
                         <td
-                            v-bind:class="x.resultClass"><router-link :to="{ name: '/judge/:id', path: '/judge/' + x.id, params: { 'id': x.id } }"><i class="fa fa-question"></i>{{ x.result }}</router-link></td>
+                            v-bind:class="x.resultClass"><router-link :to="{ name: '/judge/:id', path: '/judge/' + x.id, params: { 'id': x.id } }"><i class="fa" v-bind:class="x.iconClass"></i>{{ x.result }}</router-link></td>
                         <td>
                             <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
                         </td>

@@ -165,6 +165,7 @@ component.methods = {
             {
                 y.result = formatJudgeResult(y.result);
                 y.resultClass = ConvertJudgeResultToCss(y.result);
+                y.iconClass = ConvertJudgeResultToIconCss(y.result);
                 y.userName = y.userId.substr(0, 8);
                 y.roleClass = null;
                 return y;

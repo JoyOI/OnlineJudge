@@ -286,6 +286,20 @@ function ConvertJudgeResultToCss(x)
         return 'judge-red';
 }
 
+function ConvertJudgeResultToIconCss(x)
+{
+    if (x === 'Pending' || x === 'Running')
+        return 'fa-question';
+    else if (x === 'Hidden')
+        return 'fa-eye-slash';
+    else if (x === 'Accepted')
+        return 'fa-check';
+    else if (x === 'Compile Error' || x === 'System Error')
+        return 'fa-exclamation';
+    else
+        return 'fa-remove';
+}
+
 function ConvertUserRoleToCss(x)
 {
     if (x == 'VIP')
