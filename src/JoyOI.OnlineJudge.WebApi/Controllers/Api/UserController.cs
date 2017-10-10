@@ -22,7 +22,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region User
         [HttpGet("all")]
-        public async Task<ApiResult<PagedResult<IEnumerable<User>>>> Get(
+        public async Task<IActionResult> Get(
             [FromServices] JoyOIUC UC,
             int? page, 
             string username, 
@@ -35,17 +35,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.UserName.Contains(username) || username.Contains(x.UserName));
             }
 
-            var result = await Paged(ret, page ?? 1, 50, token);
+            var result = await DoPaging(ret, page ?? 1, 50, token);
             var type = typeof(IdentityUser<Guid>);
             foreach (var x in result.data.result)
                 foreach (var y in type.GetProperties().Where(y => y.Name != nameof(IdentityUser.Id) && y.Name != nameof(IdentityUser.UserName)))
                     y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
 
-            return result;
+            return Json(result);
         }
 
         [HttpGet("role")]
-        public async Task<ApiResult<object>> GetUserRoles(string usernames, string userids, CancellationToken token)
+        public async Task<IActionResult> GetUserRoles(string usernames, string userids, CancellationToken token)
         {
             object ret = null;
             var roles = await DB.Roles.ToDictionaryAsync(x => x.Id, x => x.Name, token);
@@ -75,7 +75,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Session
         [HttpGet("session/info")]
-        public async Task<ApiResult<dynamic>> GetSessionInfo(CancellationToken token)
+        public async Task<IActionResult> GetSessionInfo(CancellationToken token)
         {
             var ret = new Dictionary<string, object>();
             ret.Add("isSignedIn", User.Current != null);
@@ -91,7 +91,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("session")]
-        public async Task<ApiResult<dynamic>> PutSession([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
+        public async Task<IActionResult> PutSession([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
         {
             var authorizeResult = await UC.TrustedAuthorizeAsync(login.Username, login.Password);
             if (authorizeResult.succeeded)

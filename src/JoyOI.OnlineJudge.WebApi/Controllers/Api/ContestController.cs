@@ -468,7 +468,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/lock/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<ApiResult> PutLock(string contestId, string problemId, CancellationToken token)
+        public async Task<IActionResult> PutLock(string contestId, string problemId, CancellationToken token)
         {
             if (User.Current == null)
             {
