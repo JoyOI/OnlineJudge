@@ -255,8 +255,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 using (var scope = scopeFactory.CreateScope())
                 using (var db = scope.ServiceProvider.GetService<OnlineJudgeContext>())
                 {
-                    var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
-                    await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, default(CancellationToken));
+                    try
+                    {
+                        var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, default(CancellationToken));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine(ex);
+                    }
                 }
             });
 
@@ -306,7 +313,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                return (false, statemachine.StartedActors.Last().Outputs.Single(x => x.Name.StartsWith("Main")).Id.ToString());
+                return (false, statemachine.StartedActors.First(x => x.Name == "CompileActor").Outputs.Single(x => x.Name.StartsWith("Main")).Id.ToString());
             }
         }
 
@@ -435,26 +442,24 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var finalTime = runtimeResult.Sum(x => x.time);
                 var finalMemory = runtimeResult.Max(x => x.memory);
 
-                await db.JudgeStatuses
+                db.JudgeStatuses
                     .Where(x => x.Id == statusId)
                     .SetField(x => x.TimeUsedInMs).WithValue(finalTime)
                     .SetField(x => x.MemoryUsedInByte).WithValue(finalMemory)
                     .SetField(x => x.Result).WithValue((int)finalResult)
-                    .UpdateAsync(token);
+                    .Update();
 
-                var updateSubStatusTasks = new List<Task>();
                 for (var i = 0; i < runtimeResult.Count(); i++)
                 {
-                    updateSubStatusTasks.Add(db.SubJudgeStatuses
+                    db.SubJudgeStatuses
                         .Where(x => x.StatusId == statusId)
                         .Where(x => x.SubId == i)
                         .SetField(x => x.TimeUsedInMs).WithValue(runtimeResult.ElementAt(i).time)
                         .SetField(x => x.MemoryUsedInByte).WithValue(runtimeResult.ElementAt(i).memory)
                         .SetField(x => x.Result).WithValue((int)runtimeResult.ElementAt(i).result)
                         .SetField(x => x.Hint).WithValue(runtimeResult.ElementAt(i).hint)
-                        .UpdateAsync(token));
+                        .Update();
                 }
-                await Task.WhenAll(updateSubStatusTasks);
 
                 // TODO: Notify clients
             }
