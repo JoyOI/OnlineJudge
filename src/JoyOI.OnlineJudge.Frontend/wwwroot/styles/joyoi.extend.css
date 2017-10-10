@@ -1403,6 +1403,10 @@ dd {
     padding: 0 10px;
 }
 
-.judge-panel-hint p {
+    .judge-panel-hint p, .judge-panel-info p {
+        margin-bottom: 0 !important;
+    }
+
+.judge-panel-hint-bottom-no {
     margin-bottom: 0;
 }

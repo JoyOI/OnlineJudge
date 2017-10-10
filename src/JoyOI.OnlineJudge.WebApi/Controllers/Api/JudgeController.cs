@@ -465,15 +465,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var compileResult = await IsFailedInCompileStageAsync(mgmt, statemachine, token);
             if (compileResult.result)
             {
-                await db.JudgeStatuses
+                db.JudgeStatuses
                     .Where(x => x.Id == statusId)
                     .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
                     .SetField(x => x.Hint).WithValue(compileResult.hint)
-                    .UpdateAsync(token);
-                await db.SubJudgeStatuses
+                    .Update();
+                db.SubJudgeStatuses
                     .Where(x => x.StatusId == statusId)
                     .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
-                    .UpdateAsync(token);
+                    .Update();
 
                 // TODO: Notify clients
             }
