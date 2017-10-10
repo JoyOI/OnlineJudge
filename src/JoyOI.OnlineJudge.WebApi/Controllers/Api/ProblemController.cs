@@ -73,7 +73,23 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             return await Paged(ret.OrderBy(x => x.CreatedTime), page.Value, 100, token);
         }
-        
+
+        [HttpGet("title")]
+        public async Task<object> GetTitles(string problemIds, CancellationToken token)
+        {
+            var ids = problemIds
+                .Split(',')
+                .Select(x => x.Trim())
+                .ToList();
+
+            var ret = await DB.Problems
+                .Where(x => ids.Contains(x.Id))
+                .Select(x => new { x.Id, x.Title })
+                .ToDictionaryAsync(x => x.Id, token);
+
+            return Result(ret);
+        }
+
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<ApiResult<Problem>> Get(string id, CancellationToken token)
         {

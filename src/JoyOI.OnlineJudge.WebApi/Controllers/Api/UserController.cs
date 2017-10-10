@@ -45,58 +45,31 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("role")]
-        public async Task<ApiResult<ConcurrentDictionary<string, object>>> GetUserRoles(string usernames, string userids, CancellationToken token)
+        public async Task<ApiResult<object>> GetUserRoles(string usernames, string userids, CancellationToken token)
         {
-            var dic = new ConcurrentDictionary<string, object>();
+            object ret = null;
             var roles = await DB.Roles.ToDictionaryAsync(x => x.Id, x => x.Name, token);
 
             if (!string.IsNullOrWhiteSpace(usernames))
             {
                 var users = usernames.Split(',').Select(x => x.Trim());
-                var tasks = new List<Task>();
-                foreach (var x in users)
-                {
-                    tasks.Add(Task.Factory.StartNew(() =>
-                    {
-                        var user = DB.Users.SingleOrDefault(y => y.UserName == x);
-                        var userId = user.Id;
-                        var role = DB.UserRoles.FirstOrDefault(y => y.UserId == userId);
-                        if (role == null)
-                        {
-                            dic.TryAdd(x, null);
-                        }
-                        else
-                        {
-                            dic.TryAdd(x, new { role = roles[role.RoleId], avatarUrl = user.AvatarUrl, username = user.UserName, id = user.Id });
-                        }
-                    }));
-                }
-                await Task.WhenAll(tasks);
+                ret = (from u in DB.Users
+                    where users.Contains(u.UserName)
+                    let role = DB.UserRoles.Where(x => x.UserId == u.Id).FirstOrDefault()
+                    select new { id = u.Id, username = u.UserName, avatarUrl = u.AvatarUrl, role = role == null ? null : roles[role.RoleId] })
+                    .ToDictionary(x => x.username);
             }
             else if (!string.IsNullOrWhiteSpace(userids))
             {
                 var ids = userids.Split(',').Select(x => Guid.Parse(x.Trim()));
-                var tasks = new List<Task>();
-                foreach (var x in ids)
-                {
-                    tasks.Add(Task.Factory.StartNew(() =>
-                    {
-                        var user = DB.Users.SingleOrDefault(y => y.Id == x);
-                        var username = user.UserName;
-                        var role = DB.UserRoles.FirstOrDefault(y => y.UserId == x);
-                        if (role == null)
-                        {
-                            dic.TryAdd(x.ToString(), new { username = username, role = (string)null, id = user.Id, avatarUrl = user.AvatarUrl });
-                        }
-                        else
-                        {
-                            dic.TryAdd(x.ToString(), new { username = username, role = roles[role.RoleId], avatarUrl = user.AvatarUrl, id = user.Id });
-                        }
-                    }));
-                }
+                ret = (from u in DB.Users
+                    where ids.Contains(u.Id)
+                    let role = DB.UserRoles.Where(x => x.UserId == u.Id).FirstOrDefault()
+                    select new { id = u.Id, username = u.UserName, avatarUrl = u.AvatarUrl, role = role == null ? null : roles[role.RoleId] })
+                    .ToDictionary(x => x.id.ToString());
             }
 
-            return Result(dic);
+            return Result(ret);
         }
         #endregion
 

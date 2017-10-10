@@ -138,7 +138,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 msg = "",
                 data = new PagedResult<IEnumerable<T>>
                 {
-                    count = result.Count <= 0 ? 1 : result.Count,
+                    count = Convert.ToInt32((result.Count + size - 1) / size),
                     current = currentPage,
                     size = size,
                     result = result,

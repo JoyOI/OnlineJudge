@@ -285,3 +285,15 @@ function ConvertJudgeResultToCss(x)
     else
         return 'judge-red';
 }
+
+function ConvertUserRoleToCss(x)
+{
+    if (x == 'VIP')
+        return 'vip';
+    else if (x == 'Master')
+        return 'master';
+    else if (x == 'Root')
+        return 'root';
+    else
+        return null;
+}

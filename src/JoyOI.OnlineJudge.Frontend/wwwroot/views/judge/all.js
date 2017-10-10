@@ -99,12 +99,12 @@ component.methods = {
                         id: y.id,
                         username: y.userName,
                         avatarUrl: y.avatarUrl,
-                        role: null
+                        roleClass: null
                     }
                 }).slice(0,5);
                 qv.createView('/api/user/role', { usernames: self.submittorSearchResult.map(y => y.username).toString()}).fetch(y => {
                     for (var i = 0; i < self.submittorSearchResult.length; i++) {
-                        self.submittorSearchResult[i].role = y.data[self.submittorSearchResult[i].username].role;
+                        self.submittorSearchResult[i].roleClass = ConvertUserRoleToCss(y.data[self.submittorSearchResult[i].username].role);
                     }
                 });
             });
@@ -164,9 +164,25 @@ component.methods = {
             self.result = x.data.result.map(y =>
             {
                 y.result = formatJudgeResult(y.result);
-                y.class = y, result;
+                y.resultClass = ConvertJudgeResultToCss(y.result);
+                y.userName = y.userId.substr(0, 8);
+                y.roleClass = null;
                 return y;
             });
+            qv.createView('/api/problem/title', { problemids: x.data.result.map(y => y.problemId).toString() })
+                .fetch(y => {
+                    for (var i = 0; i < self.result.length; i++) {
+                        self.result[i].problemTitle = y.data[self.result[i].problemId].title;
+                    }
+                });
+            qv.createView('/api/user/role', { userids: x.data.result.map(y => y.userId).toString() })
+                .fetch(y => {
+                    for (var i = 0; i < self.result.length; i++) {
+                        self.result[i].userName = y.data[self.result[i].userId].username;
+                        self.result[i].userRole = y.data[self.result[i].userId].role;
+                        self.result[i].roleClass = ConvertUserRoleToCss(self.result[i].userRole);
+                    }
+                })
 
             // TODO: Fetch problem title & username
         });
