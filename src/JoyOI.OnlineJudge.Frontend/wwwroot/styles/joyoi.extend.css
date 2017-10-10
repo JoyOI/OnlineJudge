@@ -273,10 +273,19 @@
         background-color: #f4f4f4;
     }
 
-    .tag-list, .filter-list {
-        margin: 0;
-        padding: 0;
-    }
+.table-list tbody a {
+    color: #555;
+}
+
+.table-list tbody a:hover {
+    color: #555;
+    text-decoration: underline;
+}
+
+.tag-list, .filter-list {
+    margin: 0;
+    padding: 0;
+}
 
         .tag-list li, .filter-list li {
             width: 50%;
@@ -331,30 +340,30 @@
 }
 
     .judge-green a {
-        color: #2ac649;
+        color: #2ac649 !important;
     }
 
 .judge-red {
-    border-left: 3px solid #fb6666!important;
-    color: #fb6666;
+    border-left: 3px solid #fb6666 !important;
+    color: #fb6666 !important;
 }
 
     .judge-red a {
-        color: #fb6666;
+        color: #fb6666 !important;
     }
 
 .judge-orange {
     border-left: 3px solid #f39800 !important;
-    color: #f39800;
+    color: #f39800 !important;
 }
 
     .judge-orange a {
-        color: #f39800;
+        color: #f39800 !important;
     }
 
 .judge-purple {
     border-left: 3px solid #be3fe2 !important;
-    color: #be3fe2;
+    color: #be3fe2 !important;
 }
 
 .master, .root {
@@ -365,17 +374,17 @@
     color: #fb6666 !important;
 }
 
-    .judge-purple a {
-        color: #be3fe2;
-    }
+.judge-purple a {
+    color: #be3fe2 !important;
+}
 
 .judge-blue {
     border-left: 3px solid #0074d9 !important;
-    color: #0074d9;
+    color: #0074d9 !important;
 }
 
     .judge-blue a {
-        color: #0074d9;
+        color: #0074d9 !important;
     }
 
 .judge-list td i, .filter-item i {
