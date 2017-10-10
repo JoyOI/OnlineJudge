@@ -152,7 +152,7 @@ component.methods = {
         var self = this;
         qv.createView('/api/judge/all', {
             problemid: self.selectedProblem ? self.selectedProblem.id : null,
-            status: self.selectedStatus ? self.selectedStatus.replace(/ /g, '') : null,
+            status: self.selectedStatus,
             userId: self.selectedSubmittor,
             language: self.selectedLanguage,
             begin: self.selectedTime ? self.selectedTime.begin : null,
@@ -169,20 +169,23 @@ component.methods = {
                 y.roleClass = null;
                 return y;
             });
-            qv.createView('/api/problem/title', { problemids: x.data.result.map(y => y.problemId).toString() })
-                .fetch(y => {
-                    for (var i = 0; i < self.result.length; i++) {
-                        self.result[i].problemTitle = y.data[self.result[i].problemId].title;
-                    }
-                });
-            qv.createView('/api/user/role', { userids: x.data.result.map(y => y.userId).toString() })
-                .fetch(y => {
-                    for (var i = 0; i < self.result.length; i++) {
-                        self.result[i].userName = y.data[self.result[i].userId].username;
-                        self.result[i].userRole = y.data[self.result[i].userId].role;
-                        self.result[i].roleClass = ConvertUserRoleToCss(self.result[i].userRole);
-                    }
-                })
+
+            if (self.result.length) {
+                qv.createView('/api/problem/title', { problemids: x.data.result.map(y => y.problemId).toString() })
+                    .fetch(y => {
+                        for (var i = 0; i < self.result.length; i++) {
+                            self.result[i].problemTitle = y.data[self.result[i].problemId].title;
+                        }
+                    });
+                qv.createView('/api/user/role', { userids: x.data.result.map(y => y.userId).toString() })
+                    .fetch(y => {
+                        for (var i = 0; i < self.result.length; i++) {
+                            self.result[i].userName = y.data[self.result[i].userId].username;
+                            self.result[i].userRole = y.data[self.result[i].userId].role;
+                            self.result[i].roleClass = ConvertUserRoleToCss(self.result[i].userRole);
+                        }
+                    })
+            }
 
             // TODO: Fetch problem title & username
         });
