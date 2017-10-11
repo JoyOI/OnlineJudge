@@ -65,13 +65,13 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The passed problems.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public JsonObject<List<string>> PassedProblems { get; set; }
+        public JsonObject<List<string>> PassedProblems { get; set; } = "[]";
 
         /// <summary>
         /// Gets or sets the tried problems.
         /// </summary>
         /// <value>The tried problems.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public JsonObject<List<string>> TriedProblems { get; set; }
+        public JsonObject<List<string>> TriedProblems { get; set; } = "[]";
     }
 }
