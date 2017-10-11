@@ -163,12 +163,13 @@ component.methods = {
             self.paging.current = x.data.current;
             self.result = x.data.result.map(y =>
             {
-                y.result = formatJudgeResult(y.result);
-                y.resultClass = ConvertJudgeResultToCss(y.result);
-                y.iconClass = ConvertJudgeResultToIconCss(y.result);
-                y.userName = y.userId.substr(0, 8);
-                y.roleClass = null;
-                return y;
+                var ret = clone(y);
+                ret.result = formatJudgeResult(y.result);
+                ret.resultClass = ConvertJudgeResultToCss(ret.result);
+                ret.iconClass = ConvertJudgeResultToIconCss(ret.result);
+                ret.userName = y.userId.substr(0, 8);
+                ret.roleClass = null;
+                return ret;
             });
 
             if (self.result.length) {

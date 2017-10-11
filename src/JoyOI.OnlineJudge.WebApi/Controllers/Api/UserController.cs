@@ -44,6 +44,26 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Json(result);
         }
 
+        [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> Get(string username, CancellationToken token)
+        {
+            var user = await DB.Users.SingleOrDefaultAsync(x => x.UserName == username, token);
+            FilterEntity(user);
+            var type = typeof(IdentityUser<Guid>);
+
+            foreach (var y in type.GetProperties().Where(y => y.Name != nameof(IdentityUser.Id) && y.Name != nameof(IdentityUser.UserName)))
+                y.SetValue(user, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+
+            var roles = await User.Manager.GetRolesAsync(user);
+            var ret = user.InternalToDictionary();
+            if (roles.Count > 0)
+            {
+                ret.Add("role", roles.First());
+            }
+
+            return Result(ret);
+        }
+
         [HttpGet("role")]
         public async Task<IActionResult> GetUserRoles(string usernames, string userids, CancellationToken token)
         {
