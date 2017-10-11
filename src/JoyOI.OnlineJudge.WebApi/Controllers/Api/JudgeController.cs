@@ -520,7 +520,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var effectedRows = 0;
             while (effectedRows == 0)
             {
-                var user = db.Users.Single(x => x.Id == userId);
+                var user = db.Users.AsNoTracking().Single(x => x.Id == userId);
                 var timestamp = user.ConcurrencyStamp;
                 if (!user.TriedProblems.Object.Contains(problemId))
                 {
@@ -528,7 +528,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     effectedRows = db.Users
                         .Where(x => x.Id == userId)
                         .Where(x => x.ConcurrencyStamp == timestamp)
-                        .SetField(x => x.TriedProblems).WithValue(JsonConvert.SerializeObject(user))
+                        .SetField(x => x.TriedProblems).WithValue(JsonConvert.SerializeObject(user.TriedProblems.Object))
                         .SetField(x => x.ConcurrencyStamp).WithValue(Guid.NewGuid())
                         .Update();
                 }
@@ -543,7 +543,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 effectedRows = 0;
                 while (effectedRows == 0)
                 {
-                    var user = db.Users.Single(x => x.Id == userId);
+                    var user = db.Users.AsNoTracking().Single(x => x.Id == userId);
                     var timestamp = user.ConcurrencyStamp;
                     if (!user.PassedProblems.Object.Contains(problemId))
                     {
@@ -551,7 +551,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         effectedRows = db.Users
                             .Where(x => x.Id == userId)
                             .Where(x => x.ConcurrencyStamp == timestamp)
-                            .SetField(x => x.PassedProblems).WithValue(JsonConvert.SerializeObject(user))
+                            .SetField(x => x.PassedProblems).WithValue(JsonConvert.SerializeObject(user.PassedProblems.Object))
                             .SetField(x => x.ConcurrencyStamp).WithValue(Guid.NewGuid())
                             .Update();
                     }

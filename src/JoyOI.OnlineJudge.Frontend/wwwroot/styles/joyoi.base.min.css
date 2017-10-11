@@ -15791,10 +15791,6 @@ td i {
     margin-right: 5px
 }
 
-.profile-tabs-section {
-    display: none
-}
-
 .table-no-shadow {
     box-shadow: none;
     border: 1px solid #ddd;

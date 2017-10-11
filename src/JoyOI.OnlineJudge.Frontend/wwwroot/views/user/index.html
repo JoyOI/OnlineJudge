@@ -8,7 +8,7 @@
                             <img v-bind:src="avatarUrl" width="120" height="120" class="profile-avatar">
                         </div>
                         <div class="profile-body">
-                            <h1>{{ username || (userId ? userId.substr(0,8) : null) }} <small>({{ role || 'Member' }})</small></h1>
+                            <h1>{{ username || (id ? id.substr(0,8) : null) }} <small>({{ role || 'Member' }})</small></h1>
                             <p>
                                 注册于 <span class="time relative" datetime="">{{  registeryTime }}</span>,
                                 最后活动于 <span class="time relative" datetime="">{{ activeTime }}</span>.
@@ -24,15 +24,46 @@
                                 <li class="profile-tabs-item" v-on:click="tab = 'blog'" v-bind:class="{ 'active': tab === 'blog' }">博客文章</li>
                                 <li class="profile-tabs-item" v-on:click="tab = 'org'" v-bind:class="{ 'active': tab === 'org' }">加入组织</li>
                             </ul>
-                            <div class="profile-tabs-section" v-if="tab === 'passed'">
-
-                            </div>
                         </div>
+                    </div>
+                    <div class="profile-tabs-section" v-if="tab === 'passed'">
+                        <div v-for="x in passedProblems" class="accepted-problem-item">
+                            <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.id, params: { 'id': x.id } }">{{ x.title || x.id }}</router-link>
+                        </div>
+                        <div v-if="!passedProblems.length">该用户目前还没有通过任何题目</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        @await Html.PartialAsync("_Sidebar")
+        <div class="col-md-3">
+            <div class="profile-statistics">
+                <div class="profile-statistics-number-outer">
+                    <div class="profile-statistics-number">
+                        <div class="profile-statistics-number-count">{{ passedProblems ? passedProblems.length : 0 }}</div>
+                        <div class="profile-statistics-number-text">通过</div>
+                    </div>
+                </div>
+                <div class="profile-statistics-number-outer">
+                    <div class="profile-statistics-number">
+                        <div class="profile-statistics-number-count">0</div>
+                        <div class="profile-statistics-number-text">上传</div>
+                    </div>
+                </div>
+                <div class="profile-statistics-number-outer">
+                    <div class="profile-statistics-number">
+                        <div class="profile-statistics-number-count">0</div>
+                        <div class="profile-statistics-number-text">团队</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section" style="margin-top: 30px">
+                <div class="sidebar-section-header">
+                    <h1>个人简介</h1>
+                </div>
+                <div class="sidebar-section-body">{{ motto }}</div>
+            </div>
+        </div>
     </div>
 </div>

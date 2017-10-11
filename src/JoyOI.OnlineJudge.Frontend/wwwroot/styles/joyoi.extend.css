@@ -1410,3 +1410,25 @@ dd {
 .judge-panel-hint-bottom-no {
     margin-bottom: 0;
 }
+
+.accepted-problem-item {
+    padding: 5px 8px;
+    background-color: #eee;
+    display: inline-block;
+    margin-right: 5px;
+    transition: background-color 0.2s linear;
+    cursor: pointer;
+}
+
+    .accepted-problem-item a {
+        color: #555;
+        transition: background-color 0.2s linear;
+    }
+    
+    .accepted-problem-item:hover {
+        background-color: #ed5f82;
+    }
+
+        .accepted-problem-item:hover a {
+            color: #fff;
+        }

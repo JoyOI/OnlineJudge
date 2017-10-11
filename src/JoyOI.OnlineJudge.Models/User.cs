@@ -73,5 +73,12 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The tried problems.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public JsonObject<List<string>> TriedProblems { get; set; } = "[]";
+
+        /// <summary>
+        /// Gets or sets the motto.
+        /// </summary>
+        /// <value>The motto</value>
+        [WebApi(FilterLevel.GetListDisabled)]
+        public string Motto { get; set; }
     }
 }

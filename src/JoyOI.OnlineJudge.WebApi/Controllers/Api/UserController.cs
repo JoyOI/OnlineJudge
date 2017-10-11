@@ -55,13 +55,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(404, "User not found");
             }
 
-            FilterEntity(user);
-            var type = typeof(IdentityUser<Guid>);
+            var ret = new UserViewModel
+            {
+                activeTime = user.ActiveTime,
+                avatarUrl = user.AvatarUrl,
+                id = user.Id,
+                passedProblems = user.PassedProblems.Object,
+                registeryTime = user.RegisteryTime,
+                role = (await User.Manager.GetRolesAsync(user)).FirstOrDefault(),
+                triedProblems = user.TriedProblems.Object,
+                username = user.UserName,
+                motto = user.Motto
+            };
 
-            foreach (var y in type.GetProperties().Where(y => y.Name != nameof(IdentityUser.Id) && y.Name != nameof(IdentityUser.UserName)))
-                y.SetValue(user, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
-            
-            return Result(user);
+            return Result(ret);
         }
 
         [HttpGet("role")]
