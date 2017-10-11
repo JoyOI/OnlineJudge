@@ -8,7 +8,7 @@
                             <img v-bind:src="avatarUrl" width="120" height="120" class="profile-avatar">
                         </div>
                         <div class="profile-body">
-                            <h1>{{ username || (userId ? userId.substr(0,8) : null) }} <small>({{ role }})</small></h1>
+                            <h1>{{ username || (userId ? userId.substr(0,8) : null) }} <small>({{ role || 'Member' }})</small></h1>
                             <p>
                                 注册于 <span class="time relative" datetime="">{{  registeryTime }}</span>,
                                 最后活动于 <span class="time relative" datetime="">{{ activeTime }}</span>.
