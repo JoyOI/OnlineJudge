@@ -1,2 +1,38 @@
 ﻿<div class="container" id="problem">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="profile-content">
+                <div class="section visible">
+                    <div class="profile-header" v-bind:style="{ 'background-image': 'url(/images/' + parseInt(Math.random() * 20 + 1) + '.jpg)' }">
+                        <div class="profile-avatar-outer">
+                            <img v-bind:src="avatarUrl" width="120" height="120" class="profile-avatar">
+                        </div>
+                        <div class="profile-body">
+                            <h1>{{ username || (userId ? userId.substr(0,8) : null) }} <small>({{ role }})</small></h1>
+                            <p>
+                                注册于 <span class="time relative" datetime="">{{  registeryTime }}</span>,
+                                最后活动于 <span class="time relative" datetime="">{{ activeTime }}</span>.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="profile-tabs-outer">
+                        <div class="profile-tabs">
+                            <ul class="profile-tabs-ul">
+                                <li class="profile-tabs-item" v-on:click="tab = 'passed'" v-bind:class="{ 'active': tab === 'passed' }">通过题目</li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'upload'" v-bind:class="{ 'active': tab === 'upload' }">上传题目</li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'topic'" v-bind:class="{ 'active': tab === 'topic' }">论坛主题</li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'blog'" v-bind:class="{ 'active': tab === 'blog' }">博客文章</li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'org'" v-bind:class="{ 'active': tab === 'org' }">加入组织</li>
+                            </ul>
+                            <div class="profile-tabs-section" v-if="tab === 'passed'">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @await Html.PartialAsync("_Sidebar")
+    </div>
 </div>
