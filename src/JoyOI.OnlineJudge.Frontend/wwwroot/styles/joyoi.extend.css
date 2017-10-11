@@ -366,11 +366,11 @@
     color: #be3fe2 !important;
 }
 
-.master, .root {
-    color: #be3fe2!important;
+.master, .root, .master a, .root a {
+    color: #be3fe2 !important;
 }
 
-.vip {
+.vip, .vip a {
     color: #fb6666 !important;
 }
 
@@ -1432,3 +1432,7 @@ dd {
         .accepted-problem-item:hover a {
             color: #fff;
         }
+
+.profile-avatar-outer img {
+    max-width: initial;
+}

@@ -87,8 +87,11 @@
                         <td>
                             <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
                         </td>
-                        <!-- TODO: Link to user profile page -->
-                        <td v-bind:class="x.roleClass">{{ x.userName }}</td>
+                        <td v-bind:class="x.roleClass">
+                            <router-link :to="{ name: '/user/:username', path: '/user/' + x.userName, params: { 'username': x.userName } }">
+                                {{ x.userName }}
+                            </router-link>
+                        </td>
                         <td>{{ x.timeUsedInMs }}ms</td>
                         <td>{{ (x.memoryUsedInByte / 1024.0 / 1024.0).toFixed(1) }}MiB</td>
                         <td>{{ x.language }}</td>
