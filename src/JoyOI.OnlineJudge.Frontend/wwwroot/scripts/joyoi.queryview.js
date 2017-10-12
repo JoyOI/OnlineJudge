@@ -1,10 +1,10 @@
-﻿var host = 'http://localhost:5000';
-var qv = {
+﻿var qv = {
     __cache: {},
     __cacheDictionary: {},
     __cacheExpire: {},
     __cacheFilters: {},
     __cacheSubscribe: {},
+    __host: null,
     _toUrlString: function(params, ignorePage) {
         var keys = Object.keys(params).sort();
         if (!keys.length)
@@ -38,9 +38,10 @@ var qv = {
             return true;
     },
     request: function (endpoint, method, params) {
+        var self = this;
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: host + endpoint,
+                url: self.__host + endpoint,
                 type: method,
                 dataType: 'json',
                 contentType: 'application/json',
@@ -68,6 +69,13 @@ var qv = {
     },
     delete: function (endpoint, params) {
         return this.request(endpoint, 'DELETE', params);
+    },
+    removeCache: function (endpoint, params) {
+        var key = this._generateCacheKey(endpoint, params);
+        if (this.__cache[key])
+        {
+            delete this.__cache[key];
+        }
     },
     cache: function (endpoint, params, result, expire) {
         var key;
@@ -192,6 +200,10 @@ var qv = {
         var ret = {
             bindings: [],
             _fetchFunc: null,
+            removeCache: function () {
+                var key = self._generateCacheKey(endpoint, params);
+                self.removeCache(endpoint, params);
+            },
             fetch: function (func) {
                 this._fetchFunc = func;
                 var page = params.page;

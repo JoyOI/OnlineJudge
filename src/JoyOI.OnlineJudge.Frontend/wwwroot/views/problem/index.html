@@ -152,8 +152,8 @@
             <div class="judge-panel-status" 
                  v-if="control.statuses.filter(x => x.display === judgeResult).length"
                  v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === judgeResult)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === judgeResult)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === judgeResult)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === judgeResult)[0].color === 'green' }">{{ judgeResult }}</div>
-            <div class="judge-panel-summary-hint" v-if="result.hint">{{ result.hint }}}</div>
-            <div class="judge-panel-table-outer">
+            <div class="judge-panel-summary-hint" v-if="result.hint" v-html="$root.marked(hint)"></div>
+            <div class="judge-panel-table-outer" v-if="judgeResult != 'Pending' && judgeResult != 'Running' && judgeResult != 'Compile Error' && judgeResult != 'Unkown Result'">
                 <table class="judge-panel-table">
                     <colgroup>
                         <col style="width: 70px" />
@@ -174,9 +174,7 @@
                         <tr>
                             <td colspan="4" 
                                 v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
-                                <div class="judge-panel-hint">
-                                    {{ sub.hint }}
-                                </div>
+                                <div class="judge-panel-hint" v-html="$root.xss(sub.hint)"></div>
                             </td>
                         </tr>
                     </template>

@@ -915,7 +915,7 @@ select.code-editor-button {
 }
 
     .judge-panel-table tr:nth-child(2n) td:nth-child(2):hover {
-        color: #c6e9fa!important;
+        text-decoration: underline;
     }
 
 .judge-panel-border-blue {
@@ -1435,4 +1435,9 @@ dd {
 
 .profile-avatar-outer img {
     max-width: initial;
+}
+
+.judge-panel-table .judge-panel-hint pre {
+    background: #555;
+    color: #ccc;
 }

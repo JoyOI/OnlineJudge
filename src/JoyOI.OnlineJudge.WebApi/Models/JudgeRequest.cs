@@ -14,6 +14,13 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
         public bool isSelfTest { get; set; }
 
-        public IEnumerable<(string input, string output)> data { get; set; }
+        public IEnumerable<JudgeRequestData> data { get; set; }
+    }
+
+    public class JudgeRequestData
+    {
+        public string input { get; set; }
+
+        public string output { get; set; }
     }
 }

@@ -29,7 +29,8 @@ component.data = function () {
         result: {
             id: null,
             hint: null,
-            substatuses: []
+            substatuses: [],
+            view: null
         }
     };
 };
@@ -133,19 +134,6 @@ component.methods = {
         if (mode == 'code') {
             $('#code-editor').attr('class', __ace_style + ' active');
         }
-        if (mode == 'judge') {
-            this.result.substatuses = [];
-            var self = this;
-            setTimeout(function () {
-                self.result.hint = 'JoyOI.ManagementService.Core.ActorExecuteException: JoyOI.ManagementService.Core.ActorExecuteException: Unhandled Exception: System.NotSupportedException: Your source code does not support to compile. at JoyOI.ManagementService.Playground.TyvjCompileActor.Main(String[] args) /actor/run-actor.sh: line 10: 15 Aborted (core dumped) dotnet /actor/bin/Debug/netcoreapp2.0/actor.dll at JoyOI.ManagementService.Services.Impl.StateMachineInstanceStore.';
-                self.result.substatuses = [{ status: 'Pending', time: 0, memory: 0, hint: '' }, { status: 'Pending', time: 0, memory: 0, hint: '' }];
-                setTimeout(function () {
-                    self.result.substatuses[0].status = 'Accepted';
-                    self.result.substatuses[1].status = 'Wrong Answer';
-                    self.result.substatuses[1].hint = '选手输出2，答案期望3';
-                }, 500);
-            }, 100);
-        }
     },
     toggleStatusHint: function (index) {
         var tr = $('.judge-panel-table tr');
@@ -165,9 +153,18 @@ component.methods = {
         })
         .then(x =>
         {
-            // TODO: Listen the status SignalR channel, x is the status id.
-            console.log(x);
-            changeEditorMode('judge');
+            self.result.view = qv.createView('/api/judge/' + x.data);
+            self.result.view.fetch(y =>
+            {
+                self.result.hint = y.data.hint;
+                self.result.substatuses = y.data.subStatuses.map(z => {
+                    return { hint: z.hint, status: formatJudgeResult(z.result), time: z.timeUsedInMs, memory: z.memoryUsedInByte };
+                });
+            });
+
+            self.$root.signalr.onlinejudge.listeners.push({ view: self.result.view, id: x.data, type: 'judge' });
+
+            self.changeEditorMode('judge');
         });
     }
 };

@@ -3,7 +3,11 @@
     data: {
         links: [],
         title: '',
-        host: 'http://localhost:5000',
+        hosts: {
+            vue: null,
+            api: null,
+            uc: null
+        },
         showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
         fullScreen: false,
         layout: {
@@ -20,9 +24,29 @@
         },
         preferences: {
             language: 'C++'
+        },
+        signalr: {
+            onlinejudge: {
+                connection: null,
+                listeners: []
+            }
         }
     },
     created: function () {
+        this.hosts.api = 'http://localhost:5000';
+        qv.__host = this.hosts.api;
+
+        this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
+        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id) =>
+        {
+            console.log(type, id);
+            var listners = this.signalr.onlinejudge.listeners.filter(x => x.type === type && x.id === id).map(x => {
+                x.view.removeCache();
+                return x.view.fetch(x.view._fetchFunc);
+            });
+        });
+        this.signalr.onlinejudge.connection.start()
+
         if (document.cookie.indexOf("AspNetCore") >= 0) {
             var self = this;
             self.user.isSignedIn = true;
@@ -47,7 +71,12 @@
             } else {
                 $('body').removeClass('full-screen');
             }
-        }
+        },
+        'host.api': function (val) {
+            if (qv)
+                qv.__host = val;
+        },
+        deep: true
     },
     methods: {
         toggleLoginBox: function () {

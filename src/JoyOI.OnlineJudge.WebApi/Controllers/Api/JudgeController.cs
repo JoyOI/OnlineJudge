@@ -20,6 +20,8 @@ using JoyOI.ManagementService.Model.Dtos;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
+using JoyOI.OnlineJudge.WebApi.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 {
@@ -117,6 +119,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             [FromServices] IServiceScopeFactory scopeFactory,
             [FromServices] StateMachineAwaiter awaiter,
             [FromServices] ManagementServiceClient MgmtSvc,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
             CancellationToken token)
         {
             var request = JsonConvert.DeserializeObject<JudgeRequest>(RequestBody);
@@ -258,7 +261,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     try
                     {
                         var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
-                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, status.UserId, default(CancellationToken));
+                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, status.UserId, hub, default(CancellationToken));
                     }
                     catch (Exception ex)
                     {
@@ -459,9 +462,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return ret;
         }
 
-        private async Task HandleJudgeResultAsync(OnlineJudgeContext db, ManagementServiceClient mgmt, Guid statusId, StateMachineInstanceOutputDto statemachine, Problem problem, Guid userId, CancellationToken token)
+        private async Task HandleJudgeResultAsync(
+            OnlineJudgeContext db, 
+            ManagementServiceClient mgmt, 
+            Guid statusId, 
+            StateMachineInstanceOutputDto statemachine, 
+            Problem problem, 
+            Guid userId,
+            IHubContext<OnlineJudgeHub> hub,
+            CancellationToken token)
         {
-            // TODO: Inject SignalR hub
             bool isAccepted = false;
             var compileResult = await IsFailedInCompileStageAsync(mgmt, statemachine, token);
             if (compileResult.result)
@@ -475,8 +485,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     .Where(x => x.StatusId == statusId)
                     .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
                     .Update();
-
-                // TODO: Notify clients
             }
             else
             {
@@ -508,11 +516,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     isAccepted = true;
                 }
-
-                // TODO: Notify clients
             }
 
             UpdateUserProblemJson(db, userId, problem.Id, isAccepted);
+            hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
         }
 
         private void UpdateUserProblemJson(OnlineJudgeContext db, Guid userId, string problemId, bool isAccepted)

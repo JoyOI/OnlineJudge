@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
+using JoyOI.OnlineJudge.WebApi.Hubs;
 
 namespace JoyOI.OnlineJudge.WebApi
 {
@@ -42,6 +43,17 @@ namespace JoyOI.OnlineJudge.WebApi
             services.AddSmartCookies();
             services.AddSmartUser<User, Guid>();
             services.AddMvc();
+            services.AddSignalR()
+                .AddRedis(x => 
+                {
+                    x.Options.EndPoints.Add(config["Data:Redis:Host"]);
+                    x.Options.Password = config["Data:Redis:Password"];
+                    x.Options.AbortOnConnectFail = false;
+                    x.Options.Ssl = false;
+                    x.Options.ResponseTimeout = 100000;
+                    x.Options.ChannelPrefix = "ONLINE_JUDGE";
+                    x.Options.DefaultDatabase = 2;
+                });
 
             services.AddCors(c => c.AddPolicy("OnlineJudge", x =>
                 x.AllowCredentials()
@@ -58,6 +70,10 @@ namespace JoyOI.OnlineJudge.WebApi
             app.UseCookieMiddleware();
             app.UseAuthentication();
             app.UseErrorHandlingMiddleware();
+            app.UseSignalR(x =>
+            {
+                x.MapHub<OnlineJudgeHub>("signalr/onlinejudge");
+            });
             app.UseMvcWithDefaultRoute();
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
