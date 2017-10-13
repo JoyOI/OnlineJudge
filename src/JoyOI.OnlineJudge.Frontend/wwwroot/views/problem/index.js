@@ -10,8 +10,8 @@ component.data = function () {
         body: null,
         sampleData: [],
         source: null,
-        timelimit: null,
-        memorylimit: null,
+        time: null,
+        memory: null,
         isSpecialJudge: null,
         claims: [],
         control: {
@@ -68,7 +68,7 @@ component.created = function () {
         .fetch(x => {
             app.title = x.data.title;
             self.title = x.data.title;
-            self.timelimit = x.data.timeLimitationPerCaseInMs;
+            self.time = x.data.timeLimitationPerCaseInMs;
             self.memory = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
         });
