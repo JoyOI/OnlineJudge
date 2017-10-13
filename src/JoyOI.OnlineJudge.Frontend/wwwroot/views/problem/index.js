@@ -94,6 +94,10 @@ component.watch = {
         if (val) {
             $('#code-editor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[val]);
         }
+    },
+    'result.view': function (newVal, oldVal) {
+        if (oldVal)
+            oldVal.unsubscribe();
     }
 };
 
@@ -162,7 +166,7 @@ component.methods = {
                 });
             });
 
-            self.$root.signalr.onlinejudge.listeners.push({ view: self.result.view, id: x.data, type: 'judge' });
+            self.result.view.subscribe('judge', x.data);
 
             self.changeEditorMode('judge');
         });

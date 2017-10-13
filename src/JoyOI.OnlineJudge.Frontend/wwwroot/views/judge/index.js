@@ -15,15 +15,16 @@ component.data = function () {
         substatuses: [],
         time: null,
         problem: { id: null, title: null },
-        user: { id: null, username: null, roleClass: null, avatarUrl: null }
+        user: { id: null, username: null, roleClass: null, avatarUrl: null },
+        view: null
     };
 };
 
 component.created = function () {
     this.id = router.history.current.params.id;
     var self = this;
-    qv.createView('/api/judge/' + this.id)
-        .fetch(x => {
+    self.view = qv.createView('/api/judge/' + this.id);
+    self.view.fetch(x => {
             self.code = x.data.code;
             self.hint = x.data.hint;
             self.time = x.data.createdTime;
@@ -48,7 +49,8 @@ component.created = function () {
                 {
                     self.problem.title = y.data[self.problem.id].title;
                 })
-        });
+    });
+    self.view.subscribe('judge', self.id);
 };
 
 component.computed = {

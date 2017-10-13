@@ -29,7 +29,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     public class JudgeController : BaseController
     {
         [HttpGet("all")]
-        public async Task<IActionResult> Get(string problemId, JudgeResult? status, Guid? userId, string contestId, string language, int? page, DateTime? begin, DateTime? end, CancellationToken token)
+        public async Task<IActionResult> Get(
+            string problemId, 
+            JudgeResult? status, 
+            Guid? userId, 
+            string contestId, 
+            string language, 
+            int? page, 
+            DateTime? begin, 
+            DateTime? end,
+            string judgeIds,
+            CancellationToken token)
         {
             IQueryable<JudgeStatus> ret = DB.JudgeStatuses;
 
@@ -68,7 +78,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.CreatedTime <= end.Value);
             }
 
-            var result = await DoPaging(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 50, token);
+            if (!string.IsNullOrWhiteSpace(judgeIds))
+            {
+                var ids = judgeIds.Split(',').Select(x => Guid.Parse(x.Trim()));
+                ret = ret.Where(x => ids.Contains(x.Id));
+            }
+
+            var result = await DoPaging(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 20, token);
             if (!IsMasterOrHigher && result.data.result.Any(x => !string.IsNullOrWhiteSpace(x.ContestId)))
             {
                 var tasks = new List<Task>(13);
@@ -254,6 +270,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             DB.JudgeStatuses.Add(status);
             await DB.SaveChangesAsync(token);
+            
+            hub.Clients.All.InvokeAsync("ItemUpdated", "judge", status.Id);
+
             Task.Factory.StartNew(async () =>
             {
                 using (var scope = scopeFactory.CreateScope())

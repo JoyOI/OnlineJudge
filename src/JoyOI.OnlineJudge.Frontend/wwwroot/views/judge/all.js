@@ -18,7 +18,8 @@ component.data = function () {
         selectedTime: null,
         page: null,
         submittorSearchResult: [],
-        problemSearchResult: []
+        problemSearchResult: [],
+        view: null
     };
 };
 
@@ -43,6 +44,14 @@ component.watch = {
     },
     page: function () {
         this.loadStatuses();
+    },
+    view: function (newVal, oldVal) {
+        if (oldVal) {
+            oldVal.unsubscribe();
+        }
+        if (!newVal.__cacheInfo.params || JSON.stringify(newVal.__cacheInfo.params) == "{}") {
+            newVal.subscribe('judge');
+        }
     }
 };
 
@@ -150,7 +159,7 @@ component.methods = {
     },
     loadStatuses: function () {
         var self = this;
-        qv.createView('/api/judge/all', {
+        self.view = qv.createView('/api/judge/all', {
             problemid: self.selectedProblem ? self.selectedProblem.id : null,
             status: self.selectedStatus,
             userId: self.selectedSubmittor,
@@ -158,7 +167,8 @@ component.methods = {
             begin: self.selectedTime ? self.selectedTime.begin : null,
             end: self.selectedTime ? self.selectedTime.end : null,
             page: self.page
-        }).fetch(x => {
+        });
+        self.view.fetch(x => {
             self.paging.count = x.data.count;
             self.paging.current = x.data.current;
             self.result = x.data.result.map(y =>
@@ -189,7 +199,7 @@ component.methods = {
                     })
             }
 
-            // TODO: Fetch problem title & username
+            self.view.subscribe('judge');
         });
     }
 };

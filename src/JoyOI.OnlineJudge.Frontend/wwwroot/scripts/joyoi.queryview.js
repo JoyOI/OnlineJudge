@@ -199,10 +199,14 @@
         var self = this;
         var ret = {
             bindings: [],
+            _subscribe: null,
             _fetchFunc: null,
+            __cacheInfo: {
+                endpoint: endpoint,
+                params: params
+            },
             removeCache: function () {
-                var key = self._generateCacheKey(endpoint, params);
-                self.removeCache(endpoint, params);
+                self.removeCache(this.__cacheInfo.endpoint, this.__cacheInfo.params);
             },
             fetch: function (func) {
                 this._fetchFunc = func;
@@ -226,8 +230,12 @@
                     }
                 }
             },
-            subscribe: function (func) {
-                return self.subscribe(self._generateCacheKey(endpoint, params), func);
+            subscribe: function (type, id, func) {
+                this._subscribe = { view: this, id: id, type: type, func: func }
+                app.signalr.onlinejudge.listeners.push(this._subscribe);
+            },
+            unsubscribe: function () {
+                app.signalr.onlinejudge.listeners.removeByValue(this._subscribe);
             }
         };
         
