@@ -1,7 +1,10 @@
 ﻿{
   "Data": {
     "MySQL": "Server=yiszheng.mysqldb.chinacloudapi.cn;Port=3306;Database=joyoi_oj;Uid=yiszheng%yuko;Pwd=Yuuko19931101;Connection Reset=False;",
-    "Redis": "localhost"
+    "Redis": {
+      "Host": "joyoi.redis.cache.chinacloudapi.cn:6379",
+      "Password": "vKPwom3FC6lmBS9eH2X7YrQemhnaVdZhuXqcA+Yt1qA="
+    }
   },
   "JoyOI": {
     "AppId": "b453aa01-680e-49ca-a332-9d3ae296af9f",

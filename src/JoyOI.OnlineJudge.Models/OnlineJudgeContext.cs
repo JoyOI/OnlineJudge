@@ -216,9 +216,10 @@ namespace JoyOI.OnlineJudge.Models
             builder.Entity<JudgeStatus>(e =>
 			{
 				e.HasIndex(x => x.CreatedTime);
-				e.HasIndex(x => x.Result);
+                e.HasIndex(x => x.IsSelfTest);
                 e.HasIndex(x => x.Language);
-			});
+                e.HasIndex(x => x.Result);
+            });
 
             builder.Entity<JudgeStatusStateMachine>(e =>
             {

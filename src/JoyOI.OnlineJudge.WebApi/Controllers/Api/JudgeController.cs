@@ -236,6 +236,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 SubStatuses = substatuses,
                 ProblemId = problem.Id,
                 UserId = User.Current.Id,
+                IsSelfTest = request.isSelfTest,
                 RelatedStateMachineIds = new List<JudgeStatusStateMachine>
                     {
                         new JudgeStatusStateMachine
@@ -261,7 +262,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     try
                     {
                         var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
-                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, status.UserId, hub, default(CancellationToken));
+                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, status.UserId, request.isSelfTest, hub,  default(CancellationToken));
                     }
                     catch (Exception ex)
                     {
@@ -469,6 +470,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             StateMachineInstanceOutputDto statemachine, 
             Problem problem, 
             Guid userId,
+            bool isSelfTest,
             IHubContext<OnlineJudgeHub> hub,
             CancellationToken token)
         {
@@ -518,7 +520,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
             }
 
-            UpdateUserProblemJson(db, userId, problem.Id, isAccepted);
+            if (!isSelfTest)
+            {
+                UpdateUserProblemJson(db, userId, problem.Id, isAccepted);
+            }
+
             hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
         }
 

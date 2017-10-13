@@ -112,6 +112,12 @@ namespace JoyOI.OnlineJudge.Models
         public string Hint { get; set; }
 
         /// <summary>
+        /// Gets or sets a value that indicates whether the status is self test.
+        /// </summary>
+        /// <value>The status is self test or not</value>
+        public bool IsSelfTest { get; set; }
+
+        /// <summary>
         /// Gets or sets the related state machine identifiers.
         /// </summary>
         /// <value>The related state machine identifiers.</value>
