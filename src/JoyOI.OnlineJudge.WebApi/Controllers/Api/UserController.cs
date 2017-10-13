@@ -118,8 +118,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("session")]
-        public async Task<IActionResult> PutSession([FromServices] JoyOIUC UC, [FromBody] Login login, CancellationToken token)
+        public async Task<IActionResult> PutSession([FromServices] JoyOIUC UC, CancellationToken token)
         {
+            var login = JsonConvert.DeserializeObject<Login>(RequestBody);
             var authorizeResult = await UC.TrustedAuthorizeAsync(login.Username, login.Password);
             if (authorizeResult.succeeded)
             {

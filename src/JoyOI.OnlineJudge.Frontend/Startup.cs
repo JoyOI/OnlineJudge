@@ -14,10 +14,17 @@ namespace JoyOI.OnlineJudge.Frontend
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(c => c.AddPolicy("OnlineJudge", x =>
+                x.AllowCredentials()
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            ));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCors("OnlineJudge");
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
             app.UseVueMiddleware();

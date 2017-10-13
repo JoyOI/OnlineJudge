@@ -323,7 +323,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 foreach (var x in ret)
                 {
-                    if (await IsAbleToAccessTestCaseContentAsync(x.Id, token))
+                    if (x.Type == TestCaseType.Sample || await IsAbleToAccessTestCaseContentAsync(x.Id, token))
                     {
                         x.Input = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(x.InputBlobId, token)).Body);
                         x.Output = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(x.OutputBlobId, token)).Body);
