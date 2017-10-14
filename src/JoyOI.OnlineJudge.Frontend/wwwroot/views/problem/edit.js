@@ -189,11 +189,18 @@ component.methods = {
                 var file = $('#fileUpload')[0].files[0];
                 var reader = new FileReader();
                 reader.onload = function (e) {
+                    app.notification('pending', '正在上传...', '您提交的测试数据正在上传至服务器，请勿关闭窗口！');
                     qv.put('/api/problem/' + self.id + '/testcase/zip', {
                         zip: e.target.result,
                         type: self.zipSelectedTestCaseType
-                    });
-                    // TODO:
+                    })
+                        .then(x => {
+                            app.notification('succeeded', '上传成功', x.msg);
+                            // TODO: Refresh cache
+                        })
+                        .catch(err => {
+                            app.notification('error', '上传失败', err.responseJSON.msg);
+                        });
                 };  
                 reader.readAsDataURL(file);
             });
@@ -201,11 +208,19 @@ component.methods = {
     },
     uploadInputTestCase: function () {
         var self = this;
+        app.notification('pending', '正在上传...', '您提交的测试数据正在上传至服务器，请勿关闭窗口！');
         qv.put('/api/problem/' + self.id + '/testcase', {
             input: $('#txtInput').val(),
             output: $('#txtOutput').val(),
             type: self.inputSelectedTestCaseType
-        });
+        })
+            .then(x => {
+                app.notification('succeeded', '上传成功', x.msg);
+                // TODO: Refresh cache
+            })
+            .catch(err => {
+                app.notification('error', '上传失败', err.responseJSON.msg);
+            });
     }
 };
 
