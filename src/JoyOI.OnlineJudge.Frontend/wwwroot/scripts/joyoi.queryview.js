@@ -28,8 +28,9 @@
         return ret;
     },
     _generateCacheKey: function (endpoint, params, isPaged) {
-        if (isPaged && params.page) delete params.page;
-        return endpoint + this._toUrlString(params);
+        var par = clone(params);
+        if (isPaged && par.page) delete par.page;
+        return endpoint + this._toUrlString(par);
     },
     _isPagedResult: function (result) {
         if (result.data == undefined || result.data.current === undefined || result.data.size === undefined || result.data.total === undefined || result.data.count === undefined)
@@ -212,7 +213,7 @@
                 this._fetchFunc = func;
                 var page = params.page;
                 var key = self._generateCacheKey(endpoint, params, true);
-                if (!self.__cache[key]) {
+                if (!self.__cache[key] || (page !== undefined && !self.__cache[key][page || 1])) {
                     return self.get(endpoint, params)
                         .then((result) => {
                             self.cache(endpoint, params, result, interval);

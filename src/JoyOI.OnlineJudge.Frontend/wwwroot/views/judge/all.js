@@ -16,7 +16,6 @@ component.data = function () {
         selectedLanguage: null,
         selectedContest: null,
         selectedTime: null,
-        page: null,
         submittorSearchResult: [],
         problemSearchResult: [],
         view: null
@@ -42,7 +41,7 @@ component.watch = {
     selectedTime: function () {
         this.loadStatuses();
     },
-    page: function () {
+    'paging.current': function () {
         this.loadStatuses();
     },
     view: function (newVal, oldVal) {
@@ -52,7 +51,8 @@ component.watch = {
         if (!newVal.__cacheInfo.params || JSON.stringify(newVal.__cacheInfo.params) == "{}") {
             newVal.subscribe('judge');
         }
-    }
+    },
+    deep: true
 };
 
 component.created = function () {
@@ -90,10 +90,6 @@ component.methods = {
         } else {
             this.selectedTime = { start: start, end: end };
         }
-    },
-    toPage: function (p) {
-        this.paging.current = p;
-        this.page = p;
     },
     searchSubmittor: function () {
         var val = $('.textbox-search-submittor').val();
@@ -166,7 +162,7 @@ component.methods = {
             language: self.selectedLanguage,
             begin: self.selectedTime ? self.selectedTime.begin : null,
             end: self.selectedTime ? self.selectedTime.end : null,
-            page: self.page
+            page: self.paging.current
         });
         self.view.fetch(x => {
             self.paging.count = x.data.count;
