@@ -65,20 +65,22 @@ component.created = function () {
             self.range.error = x.data.rangeError;
             self.range.blob = x.data.rangeBlobId;
             self.selected = x.data.tags ? x.data.tags.split(',').map(x => x.trim()) : [];
-            $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
-            
-            if ($('.spjEditor').length) {
-                var editor = $('.spjEditor')[0].editor;
-                editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.validatorLanguage]);
-            }
-            if ($('.stdEditor').length) {
-                var editor = $('.stdEditor')[0].editor;
-                editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.standardLanguage]);
-            }
-            if ($('.rangeEditor').length) {
-                var editor = $('.rangeEditor')[0].editor;
-                editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.rangeLanguage]);
-            }
+            try {
+                $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
+
+                if ($('.spjEditor').length) {
+                    var editor = $('.spjEditor')[0].editor;
+                    editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.validatorLanguage]);
+                }
+                if ($('.stdEditor').length) {
+                    var editor = $('.stdEditor')[0].editor;
+                    editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.standardLanguage]);
+                }
+                if ($('.rangeEditor').length) {
+                    var editor = $('.rangeEditor')[0].editor;
+                    editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.rangeLanguage]);
+                }
+            } catch(ex) { }
         });
 
     qv.createView('/api/configuration/problemtags').fetch(x => {
@@ -109,41 +111,57 @@ component.methods = {
             });
     },
     saveTags: function () {
+        app.notification('pending', '正在保存题目');
         qv.patch('/api/problem/' + this.id, {
             tags: this.selected.toString()
-        });
+        })
+            .then(x => {
+                app.notification('succeeded', '题目编辑成功', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '题目编辑失败', err.responseJSON.msg);
+            });
     },
     saveSpj: function () {
+        app.notification('pending', '正在保存题目');
         this.validator.code = $('.spjEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
             validatorCode: this.validator.code,
             validatorLanguage: this.validator.language
         })
-            .then((x) => {
-                // TODO: Pop Result & Refresh Cache
-                console.error(x);
+            .then(x => {
+                app.notification('succeeded', '题目编辑成功', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '题目编辑失败', err.responseJSON.msg);
             });
     },
     saveStd: function () {
+        app.notification('pending', '正在保存题目');
         this.validator.code = $('.stdEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
             standardCode: this.validator.code,
             standardLanguage: this.validator.language
         })
-            .then((x) => {
-                // TODO: Pop Result & Refresh Cache
-                console.error(x);
+            .then(x => {
+                app.notification('succeeded', '题目编辑成功', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '题目编辑失败', err.responseJSON.msg);
             });
     },
     saveRange: function () {
+        app.notification('pending', '正在保存题目');
         this.validator.code = $('.rangeEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
             rangeCode: this.validator.code,
             rangeLanguage: this.validator.language
         })
-            .then((x) => {
-                // TODO: Pop Result & Refresh Cache
-                console.error(x);
+            .then(x => {
+                app.notification('succeeded', '题目编辑成功', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '题目编辑失败', err.responseJSON.msg);
             });
     },
     triggerTag: function (tag) {
