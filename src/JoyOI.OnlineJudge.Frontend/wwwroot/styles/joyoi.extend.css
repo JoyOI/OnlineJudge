@@ -1441,3 +1441,8 @@ dd {
     background: #555;
     color: #ccc;
 }
+
+.api-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

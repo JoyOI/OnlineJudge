@@ -39,6 +39,9 @@
             return true;
     },
     request: function (endpoint, method, params) {
+        if (app) {
+            app.control.apiLock = true;
+        }
         var self = this;
         return new Promise(function (resolve, reject) {
             $.ajax({
@@ -51,9 +54,15 @@
                     request.setRequestHeader("joyoi_cookie", document.cookie);
                 },
                 success: function (ret) {
+                    if (app) {
+                        app.control.apiLock = false;
+                    }
                     resolve(ret);
                 },
                 error: function (err) {
+                    if (app) {
+                        app.control.apiLock = false;
+                    }
                     reject(err);
                 }
             });

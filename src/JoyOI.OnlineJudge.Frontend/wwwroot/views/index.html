@@ -211,7 +211,7 @@
                         <span>记住我</span>
                     </label>
                     <div class="clear"></div>
-                    <a class="login-btn" v-on:click="login()">登录</a>
+                    <a class="login-btn" v-on:click="login()" v-bind:class="{ 'api-disabled': $root.control.apiLock }" v-bind:disabled="$root.control.apiLock">登录</a>
                 </div>
             </div>
         </div>

@@ -30,6 +30,10 @@
                 connection: null,
                 listeners: []
             }
+        },
+        control: {
+            apiLock: false,
+            notifications: []
         }
     },
     created: function () {
