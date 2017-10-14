@@ -39,7 +39,7 @@
             return true;
     },
     request: function (endpoint, method, params) {
-        if (app) {
+        if (app && method !== 'GET') {
             app.control.apiLock = true;
         }
         var self = this;

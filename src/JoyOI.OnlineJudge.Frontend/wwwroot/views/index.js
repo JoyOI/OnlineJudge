@@ -33,7 +33,9 @@
         },
         control: {
             apiLock: false,
-            notifications: []
+            currentNotification: null,
+            notifications: [],
+            notificationLock: false
         }
     },
     created: function () {
@@ -41,8 +43,7 @@
         qv.__host = this.hosts.api;
 
         this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
-        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id) =>
-        {
+        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id) => {
             var listners = this.signalr.onlinejudge.listeners.filter(x => x.type === type && (x.id === id || !x.id)).map(x => {
                 x.view.removeCache();
                 return x.view.fetch(x.view._fetchFunc);
@@ -97,6 +98,7 @@
         },
         login: function () {
             var self = this;
+            app.notification('pending', '正在登录...');
             qv.put('/api/user/session', { username: $('#username').val(), password: $('#password').val() })
                 .then(function (result) {
                     document.cookie = result.data.cookie;
@@ -107,7 +109,11 @@
                     self.user.profile.username = x.data.username;
                     self.user.profile.role = x.data.role;
                     self.user.profile.id = x.data.id;
+                    self.notification("succeeded", "登录成功");
                     self.toggleLoginBox();
+                })
+                .catch(err => {
+                    self.notification("error", "登录失败", err.responseJSON.msg);
                 });
         },
         logout: function () {
@@ -119,6 +125,31 @@
         },
         xss: function (str) {
             return filterXSS(str);
+        },
+        notification: function (level, title, detail) {
+            this.control.notifications.push({ level: level, title: title, detail: detail });
+            if (this.control.currentNotification && this.control.currentNotification.level === 'pending') {
+                this.control.notificationLock = false;
+            }
+            this._showNotification();
+        },
+        _showNotification: function () {
+            var self = this;
+            if (!this.control.notificationLock && this.control.notifications.length) {
+                this.control.notificationLock = true;
+                var notification = this.control.notifications[0];
+                this.control.notifications = this.control.notifications.slice(1);
+                this.control.currentNotification = notification;
+                setTimeout(function () {
+                    self.control.currentNotification = null;
+                    setTimeout(function () {
+                        self.control.notificationLock = false;
+                        if (self.control.notifications.length) {
+                            self._showNotification();
+                        }
+                    }, 250);
+                }, 6000);
+            }
         }
     }
 });

@@ -1446,3 +1446,48 @@ dd {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.notification {
+    position: fixed;
+    right: 0;
+    top: 50px;
+    width: 380px;
+    background: rgb(57,57,57);
+    border-left: 5px solid #ccc;
+    z-index: 999999;
+    box-shadow: 0 0 25px rgba(0,0,0,0.2);
+    margin-right: -380px;
+    opacity: 0;
+    padding: 10px 15px;
+    transition: margin 0.2s linear, opacity 0.2s linear;
+}
+
+    .notification.active {
+        margin-right: 0;
+        opacity: 1;
+    }
+
+    .notification.succeeded {
+        color: #16b368;
+        border-left: 5px solid #16b368;
+    }
+
+    .notification.warning {
+        color: #f39800;
+        border-left: 5px solid #f39800;
+    }
+
+    .notification.error {
+        color: #fb6666;
+        border-left: 5px solid #fb6666;
+    }
+
+    .notification.pending {
+        color: #8fd6f8;
+        border-left: 5px solid #8fd6f8;
+    }
+
+    .notification-detail {
+        font-size: 12px;
+        color: #ccc;
+    }

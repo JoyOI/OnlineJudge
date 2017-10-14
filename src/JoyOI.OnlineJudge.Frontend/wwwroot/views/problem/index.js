@@ -148,6 +148,7 @@ component.methods = {
     submitToJudge: function () {
         var self = this;
         this.form.code = $('#code-editor')[0].editor.getValue();
+        app.notification('pending', '正在提交评测...');
         qv.put('/api/judge', {
             problemId: self.id,
             isSelfTest: self.form.data.length > 0,
@@ -157,6 +158,7 @@ component.methods = {
         })
         .then(x =>
         {
+            app.notification('succeeded', '评测请求已被接受');
             self.result.view = qv.createView('/api/judge/' + x.data);
             self.result.view.fetch(y =>
             {
@@ -164,7 +166,10 @@ component.methods = {
                 self.result.substatuses = y.data.subStatuses.map(z => {
                     return { hint: z.hint, status: formatJudgeResult(z.result), time: z.timeUsedInMs, memory: z.memoryUsedInByte };
                 });
-            });
+            })
+                .catch(err => {
+                    app.notification('error', '提交评测失败', err.responseJSON.msg);
+                });
 
             self.result.view.subscribe('judge', x.data);
 

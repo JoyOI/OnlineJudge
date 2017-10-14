@@ -94,6 +94,7 @@ component.created = function () {
 component.methods = {
     saveBasic: function () {
         this.body = $('.markdown-textbox')[0].smde.codemirror.getValue();
+        app.notification('pending', '正在保存题目');
         qv.patch('/api/problem/' + this.id, {
             title: this.title,
             timeLimitationPerCaseInMs: this.timeLimitationPerCaseInMs,
@@ -101,7 +102,10 @@ component.methods = {
             body: this.body
         })
             .then((x) => {
-                popResult(x.msg);
+                app.notification('succeeded', '题目编辑成功', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '题目编辑失败', err.responseJSON.msg);
             });
     },
     saveTags: function () {
