@@ -318,7 +318,7 @@
 
 .tag-item.active, .filter-item.active {
     background-color: #ed5f82;
-    color: #fff;
+    color: #fff!important;
 }
 
 .tag-extend-outer.active {
