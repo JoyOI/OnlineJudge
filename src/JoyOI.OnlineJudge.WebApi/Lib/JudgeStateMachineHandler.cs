@@ -19,11 +19,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
     {
         private OnlineJudgeContext _db { get; set; }
 
-        private OnlineJudgeHub _hub { get; set; }
+        private IHubContext<OnlineJudgeHub> _hub { get; set; }
 
         private ManagementServiceClient _mgmt { get; set; }
 
-        public JudgeStateMachineHandler(OnlineJudgeContext db, OnlineJudgeHub hub, ManagementServiceClient mgmt)
+        public JudgeStateMachineHandler(OnlineJudgeContext db, IHubContext<OnlineJudgeHub> hub, ManagementServiceClient mgmt)
         {
             _db = db;
             _hub = hub;

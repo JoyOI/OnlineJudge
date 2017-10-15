@@ -283,6 +283,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     {
                         try
                         {
+                            await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
                             var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
                             await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
                         }

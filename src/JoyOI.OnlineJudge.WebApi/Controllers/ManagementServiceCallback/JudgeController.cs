@@ -19,7 +19,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
         {
             try
             {
-                await handler.HandleJudgeResultAsync(id, token);
+                await handler.HandleJudgeResultAsync(id, default(CancellationToken));
             }
             catch (KeyNotFoundException ex)
             {

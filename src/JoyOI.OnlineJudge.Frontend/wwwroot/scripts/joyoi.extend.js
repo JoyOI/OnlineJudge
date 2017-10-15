@@ -317,3 +317,14 @@ function clone(x)
     var json = JSON.stringify(x);
     return JSON.parse(json);
 }
+
+function getFields(obj) {
+    var ret = [];
+    if (!obj || typeof obj !== 'object') return ret;
+
+    for (var x in obj) {
+        if (obj[x])
+            ret.push(x);
+    }
+    return ret;
+}

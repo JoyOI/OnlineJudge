@@ -81,7 +81,8 @@
         return this.request(endpoint, 'DELETE', params);
     },
     removeCache: function (endpoint, params) {
-        var key = this._generateCacheKey(endpoint, params);
+        var fields = getFields(params);
+        var key = this._generateCacheKey(endpoint, params, fields.some(x => x === 'page'));
         if (this.__cache[key])
         {
             delete this.__cache[key];
