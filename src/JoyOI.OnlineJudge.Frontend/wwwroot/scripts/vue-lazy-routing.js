@@ -16,6 +16,7 @@ router.beforeEach(function (to, from, next) {
         try {
             var component = { };
             eval(LazyRouting._controlJs[to.name]);
+            component.data = LazyRouting._parseQueryString(component.data);
         } catch (ex) {
             console.error(ex);
         }
@@ -25,6 +26,7 @@ router.beforeEach(function (to, from, next) {
         try {
             var component = { };
             eval(LazyRouting._controlJs[LazyRouting.__mirror.filter(x => x.src == to.name)[0].dest]);
+            component.data = LazyRouting._parseQueryString(component.data);
         } catch (ex) {
             console.error(ex);
         }
@@ -67,9 +69,10 @@ LazyRouting._documentReadyPromise = new Promise(function (resolve, reject) {
                         }
                     }
                     var regex = new RegExp("^" + regexStr + "$", "g");
-                    if (regex.test(router.history.current.fullPath) || LazyRouting.__mirror.some(y => y.src == router.history.current.fullPath && y.dest == x)) {
+                    var fullPath = LazyRouting._hideQueryString(router.history.current.fullPath);
+                    if (regex.test(fullPath) || LazyRouting.__mirror.some(y => y.src == fullPath && y.dest == x)) {
                         var mapping = [];
-                        LazyRouting._loadComponentAsync(x, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == x));
+                        LazyRouting._loadComponentAsync(x, LazyRouting.__mirror.filter(y => y.src == fullPath && y.dest == x));
                         is404 = false;
                         break;
                     }
@@ -92,6 +95,50 @@ LazyRouting._getHtmlAsync = async function (url) {
     if (text.indexOf('<head>') >= 0)
         throw "Invalid content";
     return text;
+}
+
+LazyRouting._hideQueryString = function (path) {
+    if (path.indexOf('?') >= 0)
+        return path.substr(0, path.indexOf('?'));
+    else
+        return path;
+}
+
+LazyRouting._parseQueryString = function (dataFunc) {
+    var data = dataFunc();
+    var queryString = window.location.toString();
+    if (queryString.indexOf('?') >= 0) {
+        queryString = queryString.substr(queryString.indexOf('?') + 1);
+        var params = queryString.split('&');
+        for (var i = 0; i < params.length; i++) {
+            var splitedKeyValuePair = params[i].split('=');
+            var key = splitedKeyValuePair[0];
+            var value = decodeURIComponent(splitedKeyValuePair[1]);
+            try {
+                LazyRouting._liftCreate(data, key);
+                if (!isNaN(parseInt(value)) || !isNaN(parseFloat(value))) {
+                    eval('data.' + key + '=' + value + ';');
+                } else {
+                    eval('data.' + key + '=value;');
+                }
+            } catch (ex) { console.error(ex) }
+        }
+        dataFunc = function () { return data; };
+    }
+    return dataFunc;
+}
+
+LazyRouting._liftCreate = function (obj, key) {
+    var fields = key.split('.');
+    var prefix = 'obj';
+    for (var i = 0; i < fields.length; i++) {
+        var needCreate = false;
+        eval('if (!' + prefix + '.' + fields[i] + ') { needCreate = true; }');
+        if (needCreate) {
+            eval(prefix + '.' + fields[i] + '= {};');
+        }
+        prefix = prefix + '.' + fields[i];
+    }
 }
 
 LazyRouting._loadComponentAsync = function (rule, map) {
@@ -123,6 +170,7 @@ LazyRouting._loadComponentAsync = function (rule, map) {
             var component = { template: result };
             if (LazyRouting._controlJs[rule]) {
                 eval(LazyRouting._controlJs[rule]);
+                component.data = LazyRouting._parseQueryString(component.data);
             }
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
             router.addRoutes([LazyRouting.__routeMap[rule]]);

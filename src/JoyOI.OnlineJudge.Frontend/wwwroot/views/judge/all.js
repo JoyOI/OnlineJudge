@@ -49,8 +49,6 @@ component.watch = {
             oldVal.unsubscribe();
         }
         var fields = getFields(newVal.__cacheInfo.params);
-        console.log(fields.length == 0 || fields.length == 1 && fields[0] == 'page');
-        console.log(fields);
         if (fields.length == 0 || fields.length == 1 && fields[0] == 'page') {
             newVal.subscribe('judge');
         }

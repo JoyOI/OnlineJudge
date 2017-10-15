@@ -60,10 +60,12 @@
                     <i class="fa fa-database"></i>
                     <span>查看测试数据</span>
                 </a>
-                <a class="sidebar-section-button">
+                <router-link 
+                        :to="{ name: '/judge/all', path: '/judge/all?selectedProblem.id=' + id + '&selectedProblem.title=' + encodeURIComponent(title), params: { }}"
+                        class="sidebar-section-button">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
-                </a>
+                </router-link>
                 <hr class="sidebar-hr" />
                 <a class="sidebar-section-button">
                     <i class="fa fa-commenting-o"></i>
