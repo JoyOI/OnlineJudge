@@ -71,7 +71,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 page = 1;
             }
 
-            return await Paged(ret.OrderBy(x => x.CreatedTime), page.Value, 100, token);
+            return await Paged(ret.OrderBy(x => x.Source).ThenBy(x => x.CreatedTime), page.Value, 100, token);
         }
 
         [HttpGet("title")]
