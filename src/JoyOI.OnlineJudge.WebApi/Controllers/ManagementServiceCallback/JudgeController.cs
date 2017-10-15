@@ -11,7 +11,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
     [Route("management/[controller]")]
     public class JudgeController : BaseController
     {
-        [HttpPost]
+        [HttpPost("stagechange/{id:Guid}")]
         public async Task<IActionResult> StageChange(
             [FromServices] JudgeStateMachineHandler handler,
             Guid id,
