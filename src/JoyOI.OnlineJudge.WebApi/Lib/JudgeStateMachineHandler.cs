@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -173,55 +174,76 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             var problemId = status.ProblemId;
             var isSelfTest = status.IsSelfTest;
             var problem = await _db.Problems.SingleAsync(x => x.Id == problemId, token);
-            var compileResult = await IsFailedInCompileStageAsync(statemachine, token);
-            if (compileResult.result)
+            #region Local Judge
+            if (problem.Source == ProblemSource.Local)
             {
-                _db.JudgeStatuses
-                    .Where(x => x.Id == statusId)
-                    .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
-                    .SetField(x => x.Hint).WithValue(compileResult.hint)
-                    .Update();
-                _db.SubJudgeStatuses
-                    .Where(x => x.StatusId == statusId)
-                    .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
-                    .Update();
-            }
-            else
-            {
-                var runtimeResult = await HandleRuntimeResultAsync(statemachine, problem.MemoryLimitationPerCaseInByte, token);
-                var finalResult = runtimeResult.Max(x => x.result);
-                var finalTime = runtimeResult.Sum(x => x.time);
-                var finalMemory = runtimeResult.Max(x => x.memory);
-
-                _db.JudgeStatuses
-                    .Where(x => x.Id == statusId)
-                    .SetField(x => x.TimeUsedInMs).WithValue(finalTime)
-                    .SetField(x => x.MemoryUsedInByte).WithValue(finalMemory)
-                    .SetField(x => x.Result).WithValue((int)finalResult)
-                    .Update();
-
-                for (var i = 0; i < runtimeResult.Count(); i++)
+                var compileResult = await IsFailedInCompileStageAsync(statemachine, token);
+                if (compileResult.result)
                 {
+                    _db.JudgeStatuses
+                        .Where(x => x.Id == statusId)
+                        .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
+                        .SetField(x => x.Hint).WithValue(compileResult.hint)
+                        .Update();
                     _db.SubJudgeStatuses
                         .Where(x => x.StatusId == statusId)
-                        .Where(x => x.SubId == i)
-                        .SetField(x => x.TimeUsedInMs).WithValue(runtimeResult.ElementAt(i).time)
-                        .SetField(x => x.MemoryUsedInByte).WithValue(runtimeResult.ElementAt(i).memory)
-                        .SetField(x => x.Result).WithValue((int)runtimeResult.ElementAt(i).result)
-                        .SetField(x => x.Hint).WithValue(runtimeResult.ElementAt(i).hint)
+                        .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
                         .Update();
                 }
-
-                if (finalResult == JudgeResult.Accepted)
+                else
                 {
-                    isAccepted = true;
+                    var runtimeResult = await HandleRuntimeResultAsync(statemachine, problem.MemoryLimitationPerCaseInByte, token);
+                    var finalResult = runtimeResult.Max(x => x.result);
+                    var finalTime = runtimeResult.Sum(x => x.time);
+                    var finalMemory = runtimeResult.Max(x => x.memory);
+
+                    _db.JudgeStatuses
+                        .Where(x => x.Id == statusId)
+                        .SetField(x => x.TimeUsedInMs).WithValue(finalTime)
+                        .SetField(x => x.MemoryUsedInByte).WithValue(finalMemory)
+                        .SetField(x => x.Result).WithValue((int)finalResult)
+                        .Update();
+
+                    for (var i = 0; i < runtimeResult.Count(); i++)
+                    {
+                        _db.SubJudgeStatuses
+                            .Where(x => x.StatusId == statusId)
+                            .Where(x => x.SubId == i)
+                            .SetField(x => x.TimeUsedInMs).WithValue(runtimeResult.ElementAt(i).time)
+                            .SetField(x => x.MemoryUsedInByte).WithValue(runtimeResult.ElementAt(i).memory)
+                            .SetField(x => x.Result).WithValue((int)runtimeResult.ElementAt(i).result)
+                            .SetField(x => x.Hint).WithValue(runtimeResult.ElementAt(i).hint)
+                            .Update();
+                    }
+
+                    if (finalResult == JudgeResult.Accepted)
+                    {
+                        isAccepted = true;
+                    }
+                }
+
+                if (!isSelfTest)
+                {
+                    UpdateUserProblemJson(userId, problem.Id, isAccepted);
                 }
             }
-
-            if (!isSelfTest)
+            #endregion
+            #region Virtual Judge
+            else
             {
-                UpdateUserProblemJson(userId, problem.Id, isAccepted);
+                var result = JsonConvert.DeserializeObject<VirtualJudgeResult>(Encoding.UTF8.GetString((await _mgmt.GetBlobAsync(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "result.json").Id, token)).Body));
+
+                _db.JudgeStatuses
+                    .Where(x => x.Id == statusId)
+                    .SetField(x => x.TimeUsedInMs).WithValue(result.TimeUsedInMs)
+                    .SetField(x => x.MemoryUsedInByte).WithValue(result.MemoryUsedInByte)
+                    .SetField(x => x.Result).WithValue((int)(Enum.Parse<JudgeResult>(result.Result.Replace(" ", ""))))
+                    .SetField(x => x.Hint).WithValue(result.Hint)
+                    .Update();
+
+                // TODO: Sub statuses
             }
+            #endregion
 
             _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
         }

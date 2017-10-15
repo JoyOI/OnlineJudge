@@ -145,35 +145,43 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             if (problem == null)
             {
-                return Result<Guid>(400, "The problem does not exist.");
+                return Result(400, "The problem does not exist.");
             }
 
             if (!problem.IsVisiable && string.IsNullOrWhiteSpace(request.contestId) && !await HasPermissionToProblemAsync(problem.Id, token))
             {
-                return Result<Guid>(403, "You have no permission to the problem.");
+                return Result(403, "You have no permission to the problem.");
             }
 
             // TODO: Check contest permission
 
             if (!Constants.CompileNeededLanguages.Contains(request.language) && !Constants.ScriptLanguages.Contains(request.language))
             {
-                return Result<Guid>(400, "The programming language which you selected was not supported");
+                return Result(400, "The programming language which you selected was not supported");
             }
 
             if (request.isSelfTest && request.data.Count() == 0)
             {
-                return Result<Guid>(400, "The self testing data has not been found");
+                return Result(400, "The self testing data has not been found");
             }
 
-            var blobs = new ConcurrentDictionary<int, BlobInfo[]>();
-            blobs.TryAdd(-1, new[] { new BlobInfo
+            if (problem.Source != ProblemSource.Local && request.isSelfTest)
+            {
+                return Result(400, "You could not use self data to test with a remote problem.");
+            }
+
+            #region Local Judge
+            if (problem.Source == ProblemSource.Local)
+            {
+                var blobs = new ConcurrentDictionary<int, BlobInfo[]>();
+                blobs.TryAdd(-1, new[] { new BlobInfo
                 {
                     Id = await MgmtSvc.PutBlobAsync("Main" + Constants.GetExtension(request.language), Encoding.UTF8.GetBytes(request.code)),
                     Name = "Main" + Constants.GetExtension(request.language),
                     Tag = "Problem=" + problem.Id
                 }
             });
-            blobs.TryAdd(-2, new[] { new BlobInfo
+                blobs.TryAdd(-2, new[] { new BlobInfo
                 {
                     Id = await MgmtSvc.PutBlobAsync("limit.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
                     {
@@ -185,75 +193,75 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Tag = "Problem=" +  problem.Id
                 }
             });
-            if (!problem.ValidatorBlobId.HasValue)
-            {
-                blobs.TryAdd(-3, new[]
+                if (!problem.ValidatorBlobId.HasValue)
                 {
+                    blobs.TryAdd(-3, new[]
+                    {
                     new BlobInfo
                     {
                         Id = Guid.Parse(Config["JoyOI:StandardValidatorBlobId"]),
                         Name = "Validator.out"
                     }
                 });
-            }
-            else
-            {
-                // TODO: Special Judge
-            }
-
-            if (request.isSelfTest)
-            {
-                Parallel.For(0, request.data.Count(), i =>
+                }
+                else
                 {
-                    // Uploading custom data
-                    var inputId = MgmtSvc.PutBlobAsync($"input_{ i }.txt", Encoding.UTF8.GetBytes(request.data.ElementAt(i).input), token).Result;
-                    var outputId = MgmtSvc.PutBlobAsync($"output_{ i }.txt", Encoding.UTF8.GetBytes(request.data.ElementAt(i).output), token).Result;
-                    blobs.TryAdd(i, new[] {
+                    // TODO: Special Judge
+                }
+
+                if (request.isSelfTest)
+                {
+                    Parallel.For(0, request.data.Count(), i =>
+                    {
+                        // Uploading custom data
+                        var inputId = MgmtSvc.PutBlobAsync($"input_{ i }.txt", Encoding.UTF8.GetBytes(request.data.ElementAt(i).input), token).Result;
+                        var outputId = MgmtSvc.PutBlobAsync($"output_{ i }.txt", Encoding.UTF8.GetBytes(request.data.ElementAt(i).output), token).Result;
+                        blobs.TryAdd(i, new[] {
                         new BlobInfo { Id = inputId, Name = $"input_{ i }.txt", Tag = i.ToString() },
                         new BlobInfo { Id = outputId, Name = $"output_{ i }.txt", Tag =  i.ToString() }
                     });
-                });
-            }
-            else
-            {
-                // TODO: Test case type
-                var testCases = await DB.TestCases
-                    .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large))
-                    .ToListAsync(token);
-                for (var i = 0; i < testCases.Count; i++)
+                    });
+                }
+                else
                 {
-                    blobs.TryAdd(i, new[] {
+                    // TODO: Test case type
+                    var testCases = await DB.TestCases
+                        .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large))
+                        .ToListAsync(token);
+                    for (var i = 0; i < testCases.Count; i++)
+                    {
+                        blobs.TryAdd(i, new[] {
                         new BlobInfo { Id = testCases[i].InputBlobId, Name = $"input_{ i }.txt", Tag = i.ToString() },
                         new BlobInfo { Id = testCases[i].OutputBlobId, Name = $"output_{ i }.txt", Tag = i.ToString() }
                     });
+                    }
                 }
-            }
 
-            var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", Config["ManagementService:CallBack"], blobs.SelectMany(x => x.Value), token);
+                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", Config["ManagementService:CallBack"], blobs.SelectMany(x => x.Value), token);
 
-            var substatuses = blobs
-                .Where(x => x.Key >= 0)
-                .Select(x => new SubJudgeStatus
+                var substatuses = blobs
+                    .Where(x => x.Key >= 0)
+                    .Select(x => new SubJudgeStatus
+                    {
+                        SubId = x.Key,
+                        Result = JudgeResult.Pending,
+                        InputBlobId = x.Value.Single(y => y.Name.StartsWith("input_")).Id,
+                        OutputBlobId = x.Value.Single(y => y.Name.StartsWith("output_")).Id,
+                    })
+                    .ToList();
+
+                var status = new JudgeStatus
                 {
-                    SubId = x.Key,
+                    Code = request.code,
+                    Language = request.language,
                     Result = JudgeResult.Pending,
-                    InputBlobId = x.Value.Single(y => y.Name.StartsWith("input_")).Id,
-                    OutputBlobId = x.Value.Single(y => y.Name.StartsWith("output_")).Id,
-                })
-                .ToList();
-
-            var status = new JudgeStatus
-            {
-                Code = request.code,
-                Language = request.language,
-                Result = JudgeResult.Pending,
-                CreatedTime = DateTime.Now,
-                ContestId = request.contestId,
-                SubStatuses = substatuses,
-                ProblemId = problem.Id,
-                UserId = User.Current.Id,
-                IsSelfTest = request.isSelfTest,
-                RelatedStateMachineIds = new List<JudgeStatusStateMachine>
+                    CreatedTime = DateTime.Now,
+                    ContestId = request.contestId,
+                    SubStatuses = substatuses,
+                    ProblemId = problem.Id,
+                    UserId = User.Current.Id,
+                    IsSelfTest = request.isSelfTest,
+                    RelatedStateMachineIds = new List<JudgeStatusStateMachine>
                     {
                         new JudgeStatusStateMachine
                         {
@@ -266,36 +274,114 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                             StateMachineId = stateMachineId
                         }
                     },
-            };
+                };
 
-            DB.JudgeStatuses.Add(status);
-            await DB.SaveChangesAsync(token);
-            
-            hub.Clients.All.InvokeAsync("ItemUpdated", "judge", status.Id);
+                DB.JudgeStatuses.Add(status);
+                await DB.SaveChangesAsync(token);
 
-            // For debugging
-            if (Config["ManagementService:Mode"] == "Polling")
-            {
-                Task.Factory.StartNew(async () =>
+                hub.Clients.All.InvokeAsync("ItemUpdated", "judge", status.Id);
+
+                // For debugging
+                if (Config["ManagementService:Mode"] == "Polling")
                 {
-                    using (var scope = scopeFactory.CreateScope())
-                    using (var db = scope.ServiceProvider.GetService<OnlineJudgeContext>())
+                    Task.Factory.StartNew(async () =>
                     {
-                        try
+                        using (var scope = scopeFactory.CreateScope())
+                        using (var db = scope.ServiceProvider.GetService<OnlineJudgeContext>())
                         {
-                            await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
-                            var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
-                            await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
+                            try
+                            {
+                                await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                                var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
+                                await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine(ex);
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.Error.WriteLine(ex);
+                    });
+                }
+                return Result(status.Id);
+            }
+            #endregion
+            #region Bzoj
+            else if (problem.Source == ProblemSource.Bzoj)
+            {
+                var remoteAccount = DB.VirtualJudgeUsers.First(x => !x.IsInUse && x.Source == ProblemSource.Bzoj);
+                var metadata = new
+                {
+                    Source = "Bzoj",
+                    Language = request.language,
+                    Code = request.code,
+                    ProblemId = problem.Id.Replace("bzoj-", ""),
+                    remoteAccount.Username,
+                    remoteAccount.Password
+                };
+
+                var metadataBlob = new BlobInfo {
+                    Id = await MgmtSvc.PutBlobAsync("metadata.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)), token),
+                    Name = "metadata.json",
+                    Tag = "Problem=" + problem.Id
+                };
+
+                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("VirtualJudgeStateMachine", Config["ManagementService:Callback"], new[] { metadataBlob }, token);
+
+                var status = new JudgeStatus
+                {
+                    Code = request.code,
+                    Language = request.language,
+                    ProblemId = problem.Id,
+                    IsSelfTest = false,
+                    UserId = User.Current.Id,
+                    Result = JudgeResult.Pending,
+                    RelatedStateMachineIds = new List<JudgeStatusStateMachine>
+                    {
+                        new JudgeStatusStateMachine {
+                            StateMachine = new StateMachine
+                            {
+                                CreatedTime = DateTime.Now,
+                                Name = "JudgeStateMachine",
+                                Id = stateMachineId
+                            },
+                            StateMachineId = stateMachineId
                         }
                     }
-                });
-            }
+                };
 
-            return Result(status.Id);
+                DB.JudgeStatuses.Add(status);
+                await DB.SaveChangesAsync(token);
+
+                // For debugging
+                if (Config["ManagementService:Mode"] == "Polling")
+                {
+                    Task.Factory.StartNew(async () =>
+                    {
+                        using (var scope = scopeFactory.CreateScope())
+                        {
+                            try
+                            {
+                                await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                                var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
+                                await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine(ex);
+                            }
+                        }
+                    });
+                }
+
+                return Result(status.Id);
+            }
+            #endregion
+            #region Others
+            else
+            {
+                throw new NotSupportedException(problem.Source.ToString() + " has not been supported yet.");
+            }
+            #endregion
         }
 
         [HttpGet("{id:Guid}")]
@@ -336,6 +422,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             ret.SubStatuses = ret.SubStatuses.OrderBy(x => x.SubId).ToList();
+
+            // Bzoj
+            if (problem.Source == ProblemSource.Bzoj)
+            {
+                ret.SubStatuses.Add(new SubJudgeStatus
+                {
+                    SubId = 1,
+                    MemoryUsedInByte = ret.MemoryUsedInByte,
+                    TimeUsedInMs = ret.TimeUsedInMs,
+                    Result = ret.Result,
+                    Hint = "Bzoj 不支持显示测试点详细信息"
+                });
+            }
 
             return Result(ret);
         }
