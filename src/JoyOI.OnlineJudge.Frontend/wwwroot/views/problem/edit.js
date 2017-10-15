@@ -6,6 +6,7 @@ component.data = function () {
         id: router.history.current.params.id,
         title: null,
         body: null,
+        difficulty: 0,
         sampleData: [],
         source: null,
         timeLimitationPerCaseInMs: null,
@@ -52,6 +53,8 @@ component.created = function () {
             self.timeLimitationPerCaseInMs = x.data.timeLimitationPerCaseInMs;
             self.memoryLimitationPerCaseInByte = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
+            self.difficulty = x.data.difficulty;
+            self.source = x.data.source;
             self.validator.code = x.data.validatorCode;
             self.validator.language = x.data.validatorLanguage || app.preferences.language;
             self.validator.error = x.data.validatorError;
@@ -101,6 +104,7 @@ component.methods = {
             title: this.title,
             timeLimitationPerCaseInMs: this.timeLimitationPerCaseInMs,
             memoryLimitationPerCaseInByte: this.memoryLimitationPerCaseInByte,
+            difficulty: this.difficulty,
             body: this.body
         })
             .then((x) => {

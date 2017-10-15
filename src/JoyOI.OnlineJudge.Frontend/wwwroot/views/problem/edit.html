@@ -18,6 +18,10 @@
                             <input type="text" class="form-control" v-model="memoryLimitationPerCaseInByte" />
                         </p>
                         <p>
+                            <label>题目难度 (0-9)</label>
+                            <input type="text" class="form-control" v-model="difficulty" />
+                        </p>
+                        <p>
                             <label>题面内容 (markdown)</label>
                             <textarea class="markdown-textbox" v-model="body" />
                         </p>
@@ -122,7 +126,7 @@
                         <div class="tag-item" v-bind:class="{ 'primary': uploadMode === 'input' }" v-on:click="uploadMode = uploadMode === 'input' ? null : 'input'"><i class="fa fa-pencil-square-o"></i> 输入上传数据</div>
                     </div>
                 </div>
-                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'zip' || !testCases.length">
+                <div class="area-item" v-if="active === 'testcase' && (uploadMode === 'zip' || !testCases.length)">
                     <div class="area-title">上传测试数据</div>
                     <div class="upload-button-outer" v-on:click="selectZipFile">
                         <i class="fa fa-cloud-upload upload-button"></i>
@@ -139,7 +143,7 @@
                     </div>
                     <input type="file" id="fileUpload" class="upload-button-hidden" />
                 </div>
-                <div class="area-item" v-if="active === 'testcase' && uploadMode === 'input' || !testCases.length">
+                <div class="area-item" v-if="active === 'testcase' && (uploadMode === 'input' || !testCases.length)">
                     <div class="area-title">输入测试数据</div>
                     <table class="sample-data-table">
                         <thead>
@@ -182,24 +186,28 @@
                     <span>标签管理</span>
                 </a>
                 <a class="sidebar-section-button"
+                   v-if="source === 'Local'"
                    v-on:click="active = 'testcase'"
                    v-bind:class="{ active: active === 'testcase' }">
                     <i class="fa fa-database"></i>
                     <span>测试用例</span>
                 </a>
                 <a class="sidebar-section-button"
+                   v-if="source === 'Local'"
                    v-on:click="active = 'spj'"
                    v-bind:class="{ active: active === 'spj' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>特殊比较器</span>
                 </a>
                 <a class="sidebar-section-button"
+                   v-if="source === 'Local'"
                    v-on:click="active = 'std'"
                    v-bind:class="{ active: active === 'std' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>标准程序</span>
                 </a>
                 <a class="sidebar-section-button"
+                   v-if="source === 'Local'"
                    v-on:click="active = 'range'"
                    v-bind:class="{ active: active === 'range' }">
                     <i class="fa fa-file-code-o"></i>

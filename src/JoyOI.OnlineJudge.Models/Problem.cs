@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -132,6 +134,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the source.
         /// </summary>
         /// <value>The source.</value>
+        [JsonConverter(typeof(StringEnumConverter))]
         public ProblemSource Source { get; set; }
 
         /// <summary>

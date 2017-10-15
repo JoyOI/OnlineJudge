@@ -109,7 +109,7 @@
     padding: 0 0 0 25px;
 }
 
-.area-title, .problem-body h1 {
+.area-title, .problem-body h1, .problem-body h2 {
     margin-left: -50px;
     margin-top: -10px;
     padding: 15px 30px 15px 30px;
@@ -569,7 +569,7 @@
         background-color: #5590ae;
     }
 
-.problem-body .area-title, .problem-body h1 {
+.problem-body .area-title, .problem-body h1, .problem-body h2 {
     margin-bottom: 20px;
 }
 
@@ -1307,9 +1307,9 @@ dd {
     padding-bottom: 10px;
 }
 
-.problem-render h1, problem-render .area-title {
-    margin-top: 0;
-}
+    .problem-render h1, .problem-render h2, problem-render .area-title {
+        margin-top: 0;
+    }
 
 .tag-list.wide > li {
     width: 25%;

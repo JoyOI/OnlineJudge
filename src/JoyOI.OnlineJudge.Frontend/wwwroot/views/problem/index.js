@@ -71,6 +71,7 @@ component.created = function () {
             self.time = x.data.timeLimitationPerCaseInMs;
             self.memory = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
+            self.source = x.data.source;
         });
     qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
         .fetch(x => {
@@ -81,7 +82,6 @@ component.created = function () {
             self.claims = x.data.map(x => x.userId);
         });
     this.isSpecialJudge = false;
-    this.source = '本地';
     this.form.language = app.preferences.language;
 };
 
