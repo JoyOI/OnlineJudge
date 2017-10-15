@@ -373,6 +373,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     });
                 }
 
+                hub.Clients.All.InvokeAsync("ItemUpdated", "judge", status.Id);
+
                 return Result(status.Id);
             }
             #endregion
