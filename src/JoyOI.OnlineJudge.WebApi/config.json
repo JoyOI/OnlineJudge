@@ -17,6 +17,7 @@
     "Certification": "C:\\Users\\Yuko\\Documents\\webapi-client.pfx",
     "Password": "123456",
     "Url": "https://mgmtsvc.1234.sh",
-    "Mode": "Polling"
+    "Mode": "Polling",
+    "CallBack": "http://api.oj.joyoi.net"
   }
 }

@@ -229,7 +229,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
             }
 
-            var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", null, blobs.SelectMany(x => x.Value), token);
+            var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", Config["ManagementService:CallBack"], blobs.SelectMany(x => x.Value), token);
 
             var substatuses = blobs
                 .Where(x => x.Key >= 0)
@@ -273,22 +273,26 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             
             hub.Clients.All.InvokeAsync("ItemUpdated", "judge", status.Id);
 
-            Task.Factory.StartNew(async () =>
+            // For debugging
+            if (Config["ManagementService:Mode"] == "Polling")
             {
-                using (var scope = scopeFactory.CreateScope())
-                using (var db = scope.ServiceProvider.GetService<OnlineJudgeContext>())
+                Task.Factory.StartNew(async () =>
                 {
-                    try
+                    using (var scope = scopeFactory.CreateScope())
+                    using (var db = scope.ServiceProvider.GetService<OnlineJudgeContext>())
                     {
-                        var result = await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
-                        await HandleJudgeResultAsync(db, MgmtSvc, status.Id, result, problem, status.UserId, request.isSelfTest, hub,  default(CancellationToken));
+                        try
+                        {
+                            var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
+                            await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine(ex);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine(ex);
-                    }
-                }
-            });
+                });
+            }
 
             return Result(status.Id);
         }
@@ -349,251 +353,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
                    && x.ClaimValue == problemId));
-
-        private async Task<string> ReadBlobAsStringAsync(ManagementServiceClient mgmt, Guid blobId, CancellationToken token)
-        {
-            var blob = await mgmt.GetBlobAsync(blobId, token);
-            return Encoding.UTF8.GetString(blob.Body);
-        }
-
-        private async Task<T> ReadBlobAsObjectAsync<T>(ManagementServiceClient mgmt, Guid blobId, CancellationToken token)
-        {
-            var jsonString = await ReadBlobAsStringAsync(mgmt, blobId, token);
-            return JsonConvert.DeserializeObject<T>(jsonString);
-        }
-
-        private int GetStateMachineTestCaseCount(StateMachineInstanceOutputDto statemachine)
-        {
-            return statemachine.InitialBlobs.Where(x => x.Name.StartsWith("input_")).Count();
-        }
-
-        private async Task<(bool result, string hint)> IsFailedInCompileStageAsync(ManagementServiceClient mgmt, StateMachineInstanceOutputDto statemachine, CancellationToken token)
-        {
-            if (statemachine.StartedActors.Count() == 1 && statemachine.StartedActors.Last().Name == "CompileActor")
-            {
-                var runner = await ReadBlobAsObjectAsync<Runner>(mgmt, statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "runner.json").Id, token);
-                var stdout = await ReadBlobAsStringAsync(mgmt, statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "stdout.txt").Id, token);
-                var stderr = await ReadBlobAsStringAsync(mgmt, statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "stderr.txt").Id, token);
-                return (true, string.Join(Environment.NewLine, runner.Error, stdout, stderr));
-            }
-            else
-            {
-                return (false, statemachine.StartedActors.First(x => x.Name == "CompileActor").Outputs.Single(x => x.Name.StartsWith("Main")).Id.ToString());
-            }
-        }
-
-        private async Task<IEnumerable<(int subId, JudgeResult result, int time, int memory, string hint)>> HandleRuntimeResultAsync(ManagementServiceClient mgmt, StateMachineInstanceOutputDto statemachine, int memoryLimit, CancellationToken token)
-        {
-            var runActors = statemachine.StartedActors
-                .Where(x => x.Name == "RunUserProgramActor");
-
-            var compareActors = statemachine.StartedActors
-                .Where(x => x.Name == "CompareActor");
-
-            var testCaseCount = GetStateMachineTestCaseCount(statemachine);
-
-            if (runActors.Count() != testCaseCount)
-            {
-                throw new Exception("Missing RunUserProgramActor");
-            }
-
-            var ret = new List<(int subId, JudgeResult result, int time, int memory, string hint)>();
-            for (var i = 0; i < testCaseCount; i++)
-            {
-                var actor = compareActors.SingleOrDefault(x => x.Tag == i.ToString());
-                if (actor == null)
-                {
-                    actor = runActors.Single(x => x.Tag == i.ToString());
-                    var runner = await ReadBlobAsObjectAsync<Runner>(mgmt, actor.Outputs.Single(x => x.Name == "runner.json").Id, token);
-                    if (runner.IsTimeout)
-                    {
-                        ret.Add((
-                            i,
-                            JudgeResult.TimeExceeded,
-                            runner.UserTime,
-                            runner.PeakMemory,
-                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error));
-                    }
-                    else if (runner.ExitCode == 139 || actor.Exceptions.Any(x => x.Contains("May cause by out of memory")) || runner.Error.Contains("std::bad_alloc"))
-                    {
-                        ret.Add((
-                            i,
-                            JudgeResult.MemoryExceeded,
-                            runner.UserTime,
-                            memoryLimit,
-                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error));
-                    }
-                    else
-                    {
-                        ret.Add((
-                            i,
-                            JudgeResult.RuntimeError,
-                            runner.UserTime,
-                            runner.PeakMemory,
-                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error + Environment.NewLine + $"User process exited with code { runner.ExitCode }"));
-                    }
-                }
-                else
-                {
-                    var runActor = runActors.Single(x => x.Tag == i.ToString());
-                    var compareRunner = await ReadBlobAsObjectAsync<Runner>(mgmt, actor.Outputs.Single(x => x.Name == "runner.json").Id, token);
-                    var runRunner = await ReadBlobAsObjectAsync<Runner>(mgmt, runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
-                    if (compareRunner.ExitCode == 0)
-                    {
-                        ret.Add((
-                            i,
-                            JudgeResult.Accepted,
-                            runRunner.UserTime,
-                            runRunner.PeakMemory,
-                            "Congratulations!"));
-                    }
-                    else if (compareRunner.ExitCode == 1)
-                    {
-                        var validatorStdout = await ReadBlobAsStringAsync(mgmt, actor.Outputs.Single(x => x.Name == "stdout.txt").Id, token);
-                        ret.Add((
-                            i,
-                            JudgeResult.PresentationError,
-                            runRunner.UserTime,
-                            runRunner.PeakMemory,
-                            validatorStdout));
-                    }
-                    else if (compareRunner.ExitCode == 2)
-                    {
-                        var validatorStdout = await ReadBlobAsStringAsync(mgmt, actor.Outputs.Single(x => x.Name == "stdout.txt").Id, token);
-                        ret.Add((
-                            i,
-                            JudgeResult.WrongAnswer,
-                            runRunner.UserTime,
-                            runRunner.PeakMemory,
-                            validatorStdout));
-                    }
-                    else
-                    {
-                        ret.Add((
-                            i,
-                            JudgeResult.SystemError,
-                            runRunner.UserTime,
-                            runRunner.PeakMemory,
-                            string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + compareRunner.Error + Environment.NewLine + $"Validator process exited with code { compareRunner.ExitCode }"));
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        private async Task HandleJudgeResultAsync(
-            OnlineJudgeContext db, 
-            ManagementServiceClient mgmt, 
-            Guid statusId, 
-            StateMachineInstanceOutputDto statemachine, 
-            Problem problem, 
-            Guid userId,
-            bool isSelfTest,
-            IHubContext<OnlineJudgeHub> hub,
-            CancellationToken token)
-        {
-            bool isAccepted = false;
-            var compileResult = await IsFailedInCompileStageAsync(mgmt, statemachine, token);
-            if (compileResult.result)
-            {
-                db.JudgeStatuses
-                    .Where(x => x.Id == statusId)
-                    .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
-                    .SetField(x => x.Hint).WithValue(compileResult.hint)
-                    .Update();
-                db.SubJudgeStatuses
-                    .Where(x => x.StatusId == statusId)
-                    .SetField(x => x.Result).WithValue((int)JudgeResult.CompileError)
-                    .Update();
-            }
-            else
-            {
-                var runtimeResult = await HandleRuntimeResultAsync(mgmt, statemachine, problem.MemoryLimitationPerCaseInByte, token);
-                var finalResult = runtimeResult.Max(x => x.result);
-                var finalTime = runtimeResult.Sum(x => x.time);
-                var finalMemory = runtimeResult.Max(x => x.memory);
-
-                db.JudgeStatuses
-                    .Where(x => x.Id == statusId)
-                    .SetField(x => x.TimeUsedInMs).WithValue(finalTime)
-                    .SetField(x => x.MemoryUsedInByte).WithValue(finalMemory)
-                    .SetField(x => x.Result).WithValue((int)finalResult)
-                    .Update();
-
-                for (var i = 0; i < runtimeResult.Count(); i++)
-                {
-                    db.SubJudgeStatuses
-                        .Where(x => x.StatusId == statusId)
-                        .Where(x => x.SubId == i)
-                        .SetField(x => x.TimeUsedInMs).WithValue(runtimeResult.ElementAt(i).time)
-                        .SetField(x => x.MemoryUsedInByte).WithValue(runtimeResult.ElementAt(i).memory)
-                        .SetField(x => x.Result).WithValue((int)runtimeResult.ElementAt(i).result)
-                        .SetField(x => x.Hint).WithValue(runtimeResult.ElementAt(i).hint)
-                        .Update();
-                }
-
-                if (finalResult == JudgeResult.Accepted)
-                {
-                    isAccepted = true;
-                }
-            }
-
-            if (!isSelfTest)
-            {
-                UpdateUserProblemJson(db, userId, problem.Id, isAccepted);
-            }
-
-            hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
-        }
-
-        private void UpdateUserProblemJson(OnlineJudgeContext db, Guid userId, string problemId, bool isAccepted)
-        {
-            var effectedRows = 0;
-            while (effectedRows == 0)
-            {
-                var user = db.Users.AsNoTracking().Single(x => x.Id == userId);
-                var timestamp = user.ConcurrencyStamp;
-                if (!user.TriedProblems.Object.Contains(problemId))
-                {
-                    user.TriedProblems.Object.Add(problemId);
-                    effectedRows = db.Users
-                        .Where(x => x.Id == userId)
-                        .Where(x => x.ConcurrencyStamp == timestamp)
-                        .SetField(x => x.TriedProblems).WithValue(JsonConvert.SerializeObject(user.TriedProblems.Object))
-                        .SetField(x => x.ConcurrencyStamp).WithValue(Guid.NewGuid())
-                        .Update();
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if (isAccepted)
-            {
-                effectedRows = 0;
-                while (effectedRows == 0)
-                {
-                    var user = db.Users.AsNoTracking().Single(x => x.Id == userId);
-                    var timestamp = user.ConcurrencyStamp;
-                    if (!user.PassedProblems.Object.Contains(problemId))
-                    {
-                        user.PassedProblems.Object.Add(problemId);
-                        effectedRows = db.Users
-                            .Where(x => x.Id == userId)
-                            .Where(x => x.ConcurrencyStamp == timestamp)
-                            .SetField(x => x.PassedProblems).WithValue(JsonConvert.SerializeObject(user.PassedProblems.Object))
-                            .SetField(x => x.ConcurrencyStamp).WithValue(Guid.NewGuid())
-                            .Update();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-        }
         #endregion
     }
 }
