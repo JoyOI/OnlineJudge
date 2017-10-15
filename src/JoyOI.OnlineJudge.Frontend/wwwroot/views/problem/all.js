@@ -7,7 +7,8 @@ component.data = function () {
         selected: [],
         paging: {
             current: 1,
-            count: 1
+            count: 1,
+            total: 0
         },
         request: {
             tag: null,
@@ -31,6 +32,7 @@ component.watch = {
             qv.createView('/api/problem/all', this.request).fetch(x => {
                 self.paging.count = x.data.count;
                 self.paging.current = x.data.current;
+                self.paging.total = x.data.total;
                 self.result = x.data.result;
             });
         },
@@ -69,6 +71,7 @@ component.created = function () {
     qv.createView('/api/problem/all', this.request).fetch(x => {
         this.paging.count = x.data.count;
         this.paging.current = x.data.current;
+        this.paging.total = x.data.total;
         this.result = x.data.result;
     });
 
