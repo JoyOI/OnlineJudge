@@ -6,7 +6,8 @@
         hosts: {
             vue: null,
             api: null,
-            uc: null
+            uc: null,
+            forum: null
         },
         showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
         fullScreen: false,
@@ -39,6 +40,8 @@
         }
     },
     created: function () {
+        /* Initialize host addresses */
+        this.hosts.forum = 'http://forum.joyoi.net';
         this.hosts.api = 'http://localhost:5000';
         qv.__host = this.hosts.api;
 
