@@ -231,20 +231,22 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             #region Virtual Judge
             else
             {
-                var result = JsonConvert.DeserializeObject<VirtualJudgeResult>(Encoding.UTF8.GetString((await _mgmt.GetBlobAsync(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "result.json").Id, token)).Body));
+                var resultBody = JsonConvert.DeserializeObject<VirtualJudgeResult>(Encoding.UTF8.GetString((await _mgmt.GetBlobAsync(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "result.json").Id, token)).Body));
+                var judgeResult = (Enum.Parse<JudgeResult>(resultBody.Result.Replace(" ", "")));
 
                 _db.JudgeStatuses
                     .Where(x => x.Id == statusId)
-                    .SetField(x => x.TimeUsedInMs).WithValue(result.TimeUsedInMs)
-                    .SetField(x => x.MemoryUsedInByte).WithValue(result.MemoryUsedInByte)
-                    .SetField(x => x.Result).WithValue((int)(Enum.Parse<JudgeResult>(result.Result.Replace(" ", ""))))
-                    .SetField(x => x.Hint).WithValue(result.Hint)
+                    .SetField(x => x.TimeUsedInMs).WithValue(resultBody.TimeUsedInMs)
+                    .SetField(x => x.MemoryUsedInByte).WithValue(resultBody.MemoryUsedInByte)
+                    .SetField(x => x.Result).WithValue((int)judgeResult)
+                    .SetField(x => x.Hint).WithValue(resultBody.Hint)
                     .Update();
 
                 // TODO: Sub statuses
+
+                UpdateUserProblemJson(userId, problem.Id, judgeResult == JudgeResult.Accepted);
             }
             #endregion
-
             _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
         }
 
