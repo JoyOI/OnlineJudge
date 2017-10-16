@@ -180,11 +180,13 @@ component.methods = {
             });
 
             if (self.result.length) {
+                console.error('Fetching title');
                 qv.createView('/api/problem/title', { problemids: x.data.result.map(y => y.problemId).toString() })
                     .fetch(y => {
                         for (var i = 0; i < self.result.length; i++) {
                             self.result[i].problemTitle = y.data[self.result[i].problemId].title;
                         }
+                        self.$forceUpdate();
                     });
                 qv.createView('/api/user/role', { userids: x.data.result.map(y => y.userId).toString() })
                     .fetch(y => {
@@ -193,6 +195,7 @@ component.methods = {
                             self.result[i].userRole = y.data[self.result[i].userId].role;
                             self.result[i].roleClass = ConvertUserRoleToCss(self.result[i].userRole);
                         }
+                        self.$forceUpdate();
                     })
             }
 
