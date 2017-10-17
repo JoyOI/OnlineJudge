@@ -34,7 +34,7 @@
                                     <a v-bind:href="$root.hosts.forumUrl + '/Forum/' + x.forumId" target="_blank">
                                         <div class="thread-body-forum"><i class="fa fa-tag"></i> {{ x.forumTitle }}</div>
                                     </a>
-                                    <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.usermame } }">
+                                    <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
                                         <div class="thread-body-plain"><i class="fa fa-user"></i> {{ x.username }}</div>
                                     </router-link>
                                     <div class="thread-body-plain"><i class="fa fa-clock-o"></i> {{ x.time }}</div>
