@@ -26,39 +26,19 @@
                 <div class="area-item">
                     <div class="area-title">论坛帖子</div>
                     <div class="thread-revert-padding">
-                        <div class="thread-outer highlight">
-                            <div class="thread-avatar"><img src="/images/non-avatar.png" /></div>
+                        <div class="thread-outer" v-for="x in threads" v-bind:class="{ 'highlight': x.highlight }">
+                            <div class="thread-avatar"><img v-bind:src="x.avatarUrl" /></div>
                             <div class="thread-body">
-                                <a>测试帖子</a>
+                                <a v-bind:href="$root.hosts.forumUrl + '/Forum/Thread/' + x.id" target="_blank">{{ x.title }}</a>
                                 <div class="thread-body-subline">
-                                    <div class="thread-body-forum"><i class="fa fa-tag"></i> A+B Problem</div>
-                                    <div class="thread-body-plain"><i class="fa fa-user"></i> Yuko</div>
-                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> 1 hour ago</div>
-                                    <div class="thread-body-plain"><i class="fa fa-comment-o"></i> 30</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="thread-outer">
-                            <div class="thread-avatar"><img src="/images/non-avatar.png" /></div>
-                            <div class="thread-body">
-                                <a>测试帖子</a>
-                                <div class="thread-body-subline">
-                                    <div class="thread-body-forum"><i class="fa fa-tag"></i> A+B Problem</div>
-                                    <div class="thread-body-plain"><i class="fa fa-user"></i> Yuko</div>
-                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> 1 hour ago</div>
-                                    <div class="thread-body-plain"><i class="fa fa-comment-o"></i> 30</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="thread-outer">
-                            <div class="thread-avatar"><img src="/images/non-avatar.png" /></div>
-                            <div class="thread-body">
-                                <a>测试帖子</a>
-                                <div class="thread-body-subline">
-                                    <div class="thread-body-forum"><i class="fa fa-tag"></i> A+B Problem</div>
-                                    <div class="thread-body-plain"><i class="fa fa-user"></i> Yuko</div>
-                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> 1 hour ago</div>
-                                    <div class="thread-body-plain"><i class="fa fa-comment-o"></i> 30</div>
+                                    <a v-bind:href="$root.hosts.forumUrl + '/Forum/' + x.forumId" target="_blank">
+                                        <div class="thread-body-forum"><i class="fa fa-tag"></i> {{ x.forumTitle }}</div>
+                                    </a>
+                                    <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.usermame } }">
+                                        <div class="thread-body-plain"><i class="fa fa-user"></i> {{ x.username }}</div>
+                                    </router-link>
+                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> {{ x.time }}</div>
+                                    <div class="thread-body-plain"><i class="fa fa-comment-o"></i> {{ x.replyCount }}</div>
                                 </div>
                             </div>
                         </div>
