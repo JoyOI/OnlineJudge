@@ -11,6 +11,7 @@
     "Secret": "0",
     "UcUrl": "http://api.uc.joyoi.net",
     "RegisterUrl": "http://uc.joyoi.net/register",
+    "ForumUrl": "http://forum.joyoi.net",
     "StandardValidatorBlobId": "0083d685-e5e4-1019-7a26-d22005cc35cc"
   },
   "ManagementService": {

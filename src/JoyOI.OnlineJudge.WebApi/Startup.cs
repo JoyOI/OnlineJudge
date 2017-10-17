@@ -63,6 +63,7 @@ namespace JoyOI.OnlineJudge.WebApi
             ));
 
             services.AddJudgeStateMachineHandler();
+            services.AddExternalApi();
         }
         
         public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
