@@ -573,6 +573,18 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Resolutions
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> GetResolution(
+            [FromServices] ExternalApi XApi,
+            string problemId, 
+            int? page,
+            CancellationToken token)
+        {
+            return Json(await XApi.GetProblemResolutionsAsync(problemId, page.HasValue ? page.Value : 1, token));
+        }
+        #endregion
+
         #region Claims
         [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
         public async Task<IActionResult> GetClaims(string problemId, CancellationToken token)

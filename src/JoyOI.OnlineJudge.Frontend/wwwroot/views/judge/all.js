@@ -180,7 +180,6 @@ component.methods = {
             });
 
             if (self.result.length) {
-                console.error('Fetching title');
                 qv.createView('/api/problem/title', { problemids: x.data.result.map(y => y.problemId).toString() })
                     .fetch(y => {
                         for (var i = 0; i < self.result.length; i++) {

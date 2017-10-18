@@ -7,6 +7,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using JoyOI.OnlineJudge.WebApi.Lib;
+using JoyOI.OnlineJudge.WebApi.Models;
 
 namespace JoyOI.OnlineJudge.WebApi.Lib
 {
@@ -26,6 +27,27 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 var response = await client.GetAsync("/summary", token);
                 var json = JsonConvert.DeserializeObject<object>(await response.Content.ReadAsStringAsync());
                 return json;
+            }
+        }
+
+        public async Task<ApiResult<PagedResult<IEnumerable<object>>>> GetProblemResolutionsAsync(string problemId, int page, CancellationToken token)
+        {
+            using (var client = new HttpClient { BaseAddress = new Uri(_config["JoyOI:BlogUrl"]) })
+            {
+                var response = await client.GetAsync("/api/resolution/" + problemId, token);
+                var json = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                return new ApiResult<PagedResult<IEnumerable<object>>>
+                {
+                    code = 200,
+                    data = new PagedResult<IEnumerable<object>>
+                    {
+                        count = json.pageCount,
+                        size = json.pageSize,
+                        current = page,
+                        result = json.data,
+                        total = json.total
+                    }
+                };
             }
         }
     }
