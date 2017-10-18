@@ -60,9 +60,8 @@
                     <i class="fa fa-database"></i>
                     <span>查看测试数据</span>
                 </a>
-                <router-link 
-                        :to="{ name: '/judge/all', path: '/judge/all?selectedProblem.id=' + id + '&selectedProblem.title=' + encodeURIComponent(title), params: { }}"
-                        class="sidebar-section-button">
+                <router-link :to="{ name: '/judge/all', path: '/judge/all?selectedProblem.id=' + id + '&selectedProblem.title=' + encodeURIComponent(title), params: { }}"
+                             class="sidebar-section-button">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </router-link>
@@ -71,15 +70,15 @@
                     <i class="fa fa-commenting-o"></i>
                     <span>跳转至讨论</span>
                 </a>
-                <a class="sidebar-section-button">
+                <router-link :to="{ name: '/problem/:id/resolution', path: '/problem/' + id + '/resolution', params: { }}"
+                             class="sidebar-section-button">
                     <i class="fa fa-check-circle-o"></i>
                     <span>跳转至题解</span>
-                </a>
+                </router-link>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
-                <router-link 
-                        :to="{ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } }" 
-                        v-if="hasPermissionToEdit"
-                        class="sidebar-section-button">
+                <router-link :to="{ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } }"
+                             v-if="hasPermissionToEdit"
+                             class="sidebar-section-button">
                     <i class="fa fa-cog"></i>
                     <span>管理题目</span>
                 </router-link>

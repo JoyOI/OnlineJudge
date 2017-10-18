@@ -27,7 +27,11 @@ component.created = function () {
         .fetch(x => {
             self.title = x.data.title;
             app.links[1].text = self.title;
-            app.links[1].to = '/problem/' + self.id;
+            app.links[1].to = {
+                name: '/problem/:id',
+                path: '/problem/' + self.id,
+                params: { id: self.id }
+            };
         })
         .catch(err => {
             app.notification('error', '获取题目信息失败', err.responseJSON.msg);
