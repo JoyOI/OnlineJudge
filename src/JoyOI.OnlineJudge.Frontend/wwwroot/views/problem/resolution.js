@@ -57,5 +57,8 @@ component.created = function () {
             .catch(err => {
                 app.notification('error', '获取用户角色失败', err.responseJSON.msg);
             });
+        })
+        .catch(err => {
+            app.notification('error', '获取题解失败', err.responseJSON.msg);
         });
 };

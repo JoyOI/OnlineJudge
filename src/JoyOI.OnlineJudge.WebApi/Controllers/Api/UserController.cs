@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using JoyOI.UserCenter.SDK;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
+using JoyOI.OnlineJudge.WebApi.Lib;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 {

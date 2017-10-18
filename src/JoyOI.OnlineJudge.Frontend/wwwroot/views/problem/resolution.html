@@ -5,12 +5,12 @@
                 <colgroup>
                     <col />
                     <col style="width: 100px;" />
-                    <col style="width: 100px;" />
+                    <col style="width: 200px;" />
                 </colgroup>
                 <thead>
                     <tr>
                         <th>题解</th>
-                        <th>作者</th>
+                        <th style="text-align: left">作者</th>
                         <th>时间</th>
                     </tr>
                 </thead>
@@ -22,7 +22,7 @@
                                 class="problem-tag"
                                 v-for="tag in x.tags">{{ tag }}</div>
                         </td>
-                        <td v-bind:class="x.roleClass">
+                        <td v-bind:class="x.roleClass"  style="text-align: left">
                             <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
                                 {{ x.username }}
                             </router-link>
@@ -57,7 +57,7 @@
         <div class="col-md-3">
             <div class="sidebar-section all-buttons">
                 <a v-if="$root.user.isSignedIn" v-bind:href="blogUrl + '/admin/login?createResolution=' + id" target="_blank" class="sidebar-section-button highlight">
-                    <i class="fa fa-pencil-square"></i>
+                    <i class="fa fa-pencil"></i>
                     <span>我来编写题解</span>
                 </a>
                 </router-link>
