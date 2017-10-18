@@ -574,7 +574,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Resolutions
-        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/resolution")]
         public async Task<IActionResult> GetResolution(
             [FromServices] ExternalApi XApi,
             string problemId, 

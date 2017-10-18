@@ -7,7 +7,8 @@
             vue: null,
             api: null,
             uc: null,
-            forum: null
+            forum: null,
+            blog: null
         },
         showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
         fullScreen: false,
@@ -41,6 +42,7 @@
     },
     created: function () {
         /* Initialize host addresses */
+        this.hosts.blog = 'http://{USERNAME}.blog.joyoi.net';
         this.hosts.forum = 'http://forum.joyoi.net';
         this.hosts.api = 'http://localhost:5000';
         qv.__host = this.hosts.api;

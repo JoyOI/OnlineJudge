@@ -50,6 +50,16 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 };
             }
         }
+
+        public async Task<string> GetUserBlogDomainAsync(string username, CancellationToken token)
+        {
+            using (var client = new HttpClient { BaseAddress = new Uri(_config["JoyOI:BlogUrl"]) })
+            {
+                var response = await client.GetAsync("/api/blogdomain/" + username, token);
+                var text = await response.Content.ReadAsStringAsync();
+                return text;
+            }
+        }
     }
 }
 

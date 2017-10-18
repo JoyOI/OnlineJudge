@@ -1,0 +1,75 @@
+﻿<div id="problem-resolution" class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <table class="table-list problem-list">
+                <colgroup>
+                    <col />
+                    <col style="width: 100px;" />
+                    <col style="width: 100px;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>题解</th>
+                        <th>作者</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="x in result">
+                        <td>
+                            <a v-bind:href="x.url" target="_blank">{{ x.title }}</a>
+                            <div 
+                                class="problem-tag"
+                                v-for="tag in x.tags">{{ tag }}</div>
+                        </td>
+                        <td v-bind:class="x.roleClass">
+                            <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
+                                {{ x.username }}
+                            </router-link>
+                        </td>
+                        <td>{{ x.time }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" class="tfoot-paging">
+                            <div class="tfoot-paging-outer">
+                                <a class="tfoot-paging-item" v-on:click="toPage(1)">首页</a>
+                                <a class="tfoot-paging-item" v-on:click="toPage(Math.max(paging.current - 1, 1))">上一页</a>
+                                <div class="tfoot-paging-item" v-if="paging.current > 3">...</div>
+                                <a class="tfoot-paging-item"
+                                   v-for="p in 5"
+                                   v-if="paging.current + p - 3 >= 1 && paging.current + p - 3 <= paging.count"
+                                   v-on:click="toPage(paging.current + p - 3)"
+                                   v-bind:class="{ 'current': paging.current + p - 3 === paging.current }">
+                                    {{ paging.current + p - 3 }}
+                                </a>
+                                <div class="tfoot-paging-item" v-if="paging.current < paging.count - 2">...</div>
+                                <a class="tfoot-paging-item" v-on:click="toPage(Math.min(paging.current + 1, paging.count))">下一页</a>
+                                <a class="tfoot-paging-item" v-on:click="toPage(paging.count)">尾页</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="col-md-3">
+            <div class="sidebar-section all-buttons">
+                <a v-if="$root.user.isSignedIn" v-bind:href="blogUrl + '/admin/login?createResolution=' + id" target="_blank" class="sidebar-section-button highlight">
+                    <i class="fa fa-pencil-square"></i>
+                    <span>我来编写题解</span>
+                </a>
+                </router-link>
+                <hr class="sidebar-hr" />
+                <router-link 
+                    v-if="$root.user.isSignedIn"
+                    :to="{ name: '/problem/:id', path: '/problem/' + id, params: { 'id': id } }"
+                    class="sidebar-section-button">
+                        <i class="fa fa-mail-reply"></i>
+                        <span>返回题目</span>
+                </router-link>
+            </div>
+        </div>
+    </div>
+</div>

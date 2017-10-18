@@ -180,5 +180,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
         #endregion
+
+        #region Blog
+        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/blog")]
+        public async Task<IActionResult> GetBlogUrl(
+            [FromServices] ExternalApi XApi,
+            string username,
+            CancellationToken token
+        )
+        {
+            return Result(await XApi.GetUserBlogDomainAsync(username, token));
+        }
+        #endregion
     }
 }
