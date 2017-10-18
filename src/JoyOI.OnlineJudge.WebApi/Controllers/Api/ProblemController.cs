@@ -306,6 +306,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 testCases = testCases.Where(x => x.Type == type.Value);
             }
 
+            testCases = testCases.OrderBy(x => x.Type);
+
             var ret = await testCases.Select(x => new TestCaseWithContent
             {
                 Id = x.Id,

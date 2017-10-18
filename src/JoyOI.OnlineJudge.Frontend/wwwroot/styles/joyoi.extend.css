@@ -1491,3 +1491,27 @@ dd {
         font-size: 12px;
         color: #ccc;
     }
+
+.table-inline {
+    margin: 0 -25px;
+    width: calc(100% + 50px);
+    font-size: 12px;
+    line-height: 24px;
+}
+
+.table-inline thead {
+    color: #888;
+}
+
+    .table-inline td, .table-inline th {
+        padding: 5px 12px;
+        font-weight: normal;
+    }
+
+    .table-inline tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+        .table-inline tbody tr:nth-child(odd) {
+           background: #f4f4f4;
+        }

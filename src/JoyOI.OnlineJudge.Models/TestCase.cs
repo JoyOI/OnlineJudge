@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -45,6 +47,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
+        [JsonConverter(typeof(StringEnumConverter))]
         public TestCaseType Type { get; set; }
 
         /// <summary>
