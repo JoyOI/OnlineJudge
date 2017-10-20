@@ -1,4 +1,7 @@
-﻿component.methods = {
+﻿app.title = '新建题目';
+app.links = [{ text: '题目列表', to: '/problem' }];
+
+component.methods = {
     newProblem: function () {
         var id = $('#txtProblemId').val();
         app.notification('pending', '正在创建题目...');

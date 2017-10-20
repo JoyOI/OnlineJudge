@@ -92,7 +92,7 @@
                 </div>
                 <div class="sidebar-section-body">
                     <p>{{ paging.total }} 道题目</p>
-                    <p><router-link to="/problem/new">我要创建题目</router-link></p>
+                    <p><a v-on:click="$root.redirect('/problem/new')">我要创建题目</a></p>
                 </div>
             </div>
         </div>

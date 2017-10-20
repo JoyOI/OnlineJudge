@@ -204,7 +204,7 @@ LazyRouting._convertToViewNameBase = function(path) {
 
 LazyRouting.RedirectTo = async function (name, path, params) {
     if (LazyRouting.__mirror.some(x => x.src == path)) {
-        if (!!LazyRouting.__routeMap[name]) {
+        if (!LazyRouting.__routeMap[name]) {
             var dest = LazyRouting.__mirror.filter(x => x.src == path)[0].dest;
             await LazyRouting._loadComponentAsync(dest, [{ src: path, dest: dest }]);
         }
@@ -212,7 +212,6 @@ LazyRouting.RedirectTo = async function (name, path, params) {
     else {
         await LazyRouting._loadComponentAsync(name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
     }
-    e.target.lazyload = true;
     if (params) {
         path = name;
         for (var x in params) {

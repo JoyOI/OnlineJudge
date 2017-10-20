@@ -140,6 +140,8 @@
             this._showNotification();
         },
         redirect: function (name, path, params) {
+            if (name && !path)
+                path = name;
             LazyRouting.RedirectTo(name, path, params);
         },
         _showNotification: function () {
