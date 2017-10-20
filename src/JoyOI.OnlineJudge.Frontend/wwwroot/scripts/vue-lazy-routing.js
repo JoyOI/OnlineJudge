@@ -16,7 +16,9 @@ router.beforeEach(function (to, from, next) {
         try {
             var component = { };
             eval(LazyRouting._controlJs[to.name]);
-            component.data = LazyRouting._parseQueryString(component.data);
+            if (component.data) {
+                component.data = LazyRouting._parseQueryString(component.data);
+            }
         } catch (ex) {
             console.error(ex);
         }
@@ -26,7 +28,9 @@ router.beforeEach(function (to, from, next) {
         try {
             var component = { };
             eval(LazyRouting._controlJs[LazyRouting.__mirror.filter(x => x.src == to.name)[0].dest]);
-            component.data = LazyRouting._parseQueryString(component.data);
+            if (component.data) {
+                component.data = LazyRouting._parseQueryString(component.data);
+            } 
         } catch (ex) {
             console.error(ex);
         }
@@ -170,7 +174,9 @@ LazyRouting._loadComponentAsync = function (rule, map) {
             var component = { template: result };
             if (LazyRouting._controlJs[rule]) {
                 eval(LazyRouting._controlJs[rule]);
-                component.data = LazyRouting._parseQueryString(component.data);
+                if (component.data) {
+                    component.data = LazyRouting._parseQueryString(component.data);
+                }
             }
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
             router.addRoutes([LazyRouting.__routeMap[rule]]);
@@ -196,31 +202,33 @@ LazyRouting._convertToViewNameBase = function(path) {
     return path;
 }
 
+LazyRouting.RedirectTo = async function (name, path, params) {
+    if (LazyRouting.__mirror.some(x => x.src == path)) {
+        if (!!LazyRouting.__routeMap[name]) {
+            var dest = LazyRouting.__mirror.filter(x => x.src == path)[0].dest;
+            await LazyRouting._loadComponentAsync(dest, [{ src: path, dest: dest }]);
+        }
+    }
+    else {
+        await LazyRouting._loadComponentAsync(name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
+    }
+    e.target.lazyload = true;
+    if (params) {
+        path = name;
+        for (var x in params) {
+            path = path.replace(new RegExp(":" + x, "g"), params[x]);
+        }
+    }
+    router.push(path);
+}
+
 $(window).click(async function (e) {
     if (e.target.__vue__ && !e.target.lazyload) {
         var name = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.name;
         var path = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.path;
-
-        if (LazyRouting.__mirror.some(x => x.src == path))
-        {
-            var dest = LazyRouting.__mirror.filter(x => x.src == path)[0].dest;
-            await LazyRouting._loadComponentAsync(dest, [{ src: path, dest: dest }]);
-        }
-        else
-        {
-            await LazyRouting._loadComponentAsync(name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
-        }
+        var params = e.target.__vue__.$options.propsData.to.params;
         e.target.lazyload = true;
-        if (e.target.__vue__.$options.propsData.to.params)
-        {
-            var params = e.target.__vue__.$options.propsData.to.params;
-            path = name;
-            for (var x in params)
-            {
-                path = path.replace(new RegExp(":" + x, "g"), params[x]);
-            }
-        }
-        router.push(path);
+        await LazyRouting.RedirectTo(name, path, params);
         return false;
     }
 });

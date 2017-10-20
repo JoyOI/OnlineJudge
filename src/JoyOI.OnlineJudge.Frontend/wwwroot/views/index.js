@@ -139,6 +139,9 @@
             }
             this._showNotification();
         },
+        redirect: function (name, path, params) {
+            LazyRouting.RedirectTo(name, path, params);
+        },
         _showNotification: function () {
             var self = this;
             if (!this.control.notificationLock && this.control.notifications.length) {
