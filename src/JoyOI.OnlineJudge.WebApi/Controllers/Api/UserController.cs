@@ -66,7 +66,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 role = (await User.Manager.GetRolesAsync(user)).FirstOrDefault(),
                 triedProblems = user.TriedProblems.Object,
                 username = user.UserName,
-                motto = user.Motto
+                motto = user.Motto,
+                preferredLanguage = user.PreferredLanguage
             };
 
             return Result(ret);
@@ -98,6 +99,27 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             return Result(ret);
+        }
+
+        [HttpPost("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        [HttpPatch("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> Patch(string username, CancellationToken token)
+        {
+            var user = await DB.Users.SingleOrDefaultAsync(x => x.UserName == username, token);
+            if (user == null)
+            {
+                return Result(404, "The user is not found");
+            }
+            else if (User.Current.Id != user.Id && !IsMasterOrHigher)
+            {
+                return Result(403, "No permission");
+            }
+            else
+            {
+                PatchEntity(user, RequestBody);
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Patched successfully.");
+            }
         }
         #endregion
 

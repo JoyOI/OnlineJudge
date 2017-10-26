@@ -15,6 +15,8 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
         public string motto { get; set; }
 
+        public string preferredLanguage { get; set; }
+
         public DateTime registeryTime { get; set; }
 
         public DateTime activeTime { get; set; }

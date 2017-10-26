@@ -80,5 +80,12 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The motto</value>
         [WebApi(FilterLevel.GetListDisabled)]
         public string Motto { get; set; }
+
+        /// <summary>
+        /// Gets or sets the preferred language.
+        /// </summary>
+        /// <value>The preferred language</value>
+        [WebApi(FilterLevel.GetListDisabled)]
+        public string PreferredLanguage { get; set; } = "C++";
     }
 }
