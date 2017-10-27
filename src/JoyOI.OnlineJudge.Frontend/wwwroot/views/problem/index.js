@@ -149,6 +149,12 @@ component.methods = {
         var self = this;
         this.form.code = $('#code-editor')[0].editor.getValue();
         app.notification('pending', '正在提交评测...');
+
+        if (app.user.profile.preferredLanguage !== self.form.language) {
+            qv.patch('/api/user/' + app.user.profile.username, { preferredLanguage: self.form.language });
+            self.preferences.language = self.form.language;
+        }
+
         qv.put('/api/judge', {
             problemId: self.id,
             isSelfTest: self.form.data.length > 0,

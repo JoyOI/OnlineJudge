@@ -114,6 +114,7 @@
                     self.user.profile.username = x.data.username;
                     self.user.profile.role = x.data.role;
                     self.user.profile.id = x.data.id;
+                    self.preferences.language = x.data.preferredLanguage;
                     self.notification("succeeded", "登录成功");
                     self.toggleLoginBox();
                 })

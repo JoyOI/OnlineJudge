@@ -26,6 +26,7 @@ component.created = function () {
             self.registeryTime = x.data.registeryTime;
             self.activeTime = x.data.activeTime;
             self.motto = x.data.motto;
+            self.preferredLanguage = x.data.preferredLanguage;
             self.passedProblems = x.data.passedProblems.map(y => {
                 return {
                     id: y,
