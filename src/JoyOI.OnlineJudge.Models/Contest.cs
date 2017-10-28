@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JoyOI.OnlineJudge.Models
 {
     /// <summary>
     /// Contest type.
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ContestType
     {
         OI,
