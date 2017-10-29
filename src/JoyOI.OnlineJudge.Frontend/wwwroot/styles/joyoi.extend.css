@@ -934,11 +934,11 @@ select.code-editor-button {
     border-left: 3px solid #16b368;
 }
 
-.judge-panel-color-blue {
+.judge-panel-color-blue, .contest-ready {
     color: #7baefa;
 }
 
-.judge-panel-color-red {
+.judge-panel-color-red, .contest-live {
     color: #fb6666;
 }
 

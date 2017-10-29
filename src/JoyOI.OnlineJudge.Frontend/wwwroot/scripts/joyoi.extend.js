@@ -328,3 +328,12 @@ function getFields(obj) {
     }
     return ret;
 }
+
+function parseTimeSpan(x) {
+    var splited = x.split(':');
+    var ret = 0;
+    ret += parseInt(splited[0]) * 3600;
+    ret += parseInt(splited[1]) * 60;
+    ret += parseInt(splited[2]);
+    return ret *= 1000;
+}

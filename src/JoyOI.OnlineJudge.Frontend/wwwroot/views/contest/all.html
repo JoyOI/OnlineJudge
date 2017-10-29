@@ -1,16 +1,16 @@
-﻿<div id="contest-all">
+﻿<div id="contest-all" class="container">
     <div class="row">
         <div class="col-md-9">
             <div class="area-outer">
-                <div class="area-item" v-for="x in results">
+                <div class="area-item" v-for="x in result">
                     <div class="area-title">{{ x.title }}</div>
                     <div>{{ x.description }}</div>
                     <div class="contest-footer">
-                        <div class="contest-footer-icon" v-bind:class="x.statusClass"><i class="fa fa-arrow-circle-right"></i> { x.status }</div>
-                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> { x.type }</div>
-                        <div class="contest-footer-icon"><i class="fa fa-users"></i> { x.cachedAttendeeCount }</div>
-                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> { x.begin }</div>
-                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> { x.duration }</div>
+                        <div class="contest-footer-icon" v-bind:class="x.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ x.status }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> {{ x.type }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-users"></i> {{ x.cachedAttendeeCount }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> {{ x.begin }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> {{ x.duration }}</div>
                     </div>
                 </div>
             </div>
