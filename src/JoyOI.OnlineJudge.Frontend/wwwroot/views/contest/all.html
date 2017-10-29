@@ -6,11 +6,11 @@
                     <div class="area-title">{{ x.title }}</div>
                     <div>{{ x.description }}</div>
                     <div class="contest-footer">
-                        <div class="contest-footer-icon" style="color: #1d76c7"><i class="fa fa-arrow-circle-right"></i> Ready</div>
-                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> ACM/ICPC</div>
-                        <div class="contest-footer-icon"><i class="fa fa-users"></i> 348</div>
-                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> 2017-08-13 9:00</div>
-                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> 2.5h</div>
+                        <div class="contest-footer-icon" v-bind:class="x.statusClass"><i class="fa fa-arrow-circle-right"></i> { x.status }</div>
+                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> { x.type }</div>
+                        <div class="contest-footer-icon"><i class="fa fa-users"></i> { x.cachedAttendeeCount }</div>
+                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> { x.begin }</div>
+                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> { x.duration }</div>
                     </div>
                 </div>
             </div>

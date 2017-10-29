@@ -97,7 +97,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the password or team, for password, it should be the password string, for team, it should be the team identifier.
         /// </summary>
         /// <value>The password or team.</value>
-        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetListDisabled)]
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetNeedOwner)]
         public string PasswordOrTeamId { get; set; }
 
         /// <summary>
@@ -126,6 +126,13 @@ namespace JoyOI.OnlineJudge.Models
         {
             get => BannedLanguages.Split(',').Select(x => x.Trim()); 
         }
+
+        /// <summary>
+        /// Gets or sets the attendee count.
+        /// </summary>
+        /// <value>The attendee count</value>
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
+        public long CachedAttendeeCount { get; set; }
 
         public virtual ICollection<JudgeStatus> JudgeStatuses { get; set; } = new List<JudgeStatus>();
 
