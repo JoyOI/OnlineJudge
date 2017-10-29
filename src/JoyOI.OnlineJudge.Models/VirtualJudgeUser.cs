@@ -26,10 +26,10 @@ namespace JoyOI.OnlineJudge.Models
         public string Password { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="T:JoyOI.OnlineJudge.Models.VirtualJudgeUser"/> is in use.
+        /// Gets or sets the locker id.
         /// </summary>
-        /// <value><c>true</c> if is in use; otherwise, <c>false</c>.</value>
-        public bool IsInUse { get; set; }
+        /// <value>The locker id.</value>
+        public Guid? LockerId { get; set; }
 
         /// <summary>
         /// Gets or sets the source.

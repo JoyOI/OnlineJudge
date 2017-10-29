@@ -83,6 +83,12 @@ var languages = [
     'JavaScript'
 ];
 
+var contestTypes = [
+    'OI',
+    'ACM',
+    'Codeforces'
+];
+
 var syntaxHighlighter = {
     'C': 'c_cpp',
     'C++': 'c_cpp',
@@ -327,4 +333,13 @@ function getFields(obj) {
             ret.push(x);
     }
     return ret;
+}
+
+function parseTimeSpan(x) {
+    var splited = x.split(':');
+    var ret = 0;
+    ret += parseInt(splited[0]) * 3600;
+    ret += parseInt(splited[1]) * 60;
+    ret += parseInt(splited[2]);
+    return ret *= 1000;
 }

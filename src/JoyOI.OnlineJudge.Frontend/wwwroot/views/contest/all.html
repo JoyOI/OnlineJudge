@@ -1,1 +1,56 @@
-﻿
+﻿<div id="contest-all" class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="area-outer">
+                <div class="area-item" v-for="x in result">
+                    <div class="area-title">{{ x.title }}</div>
+                    <div>{{ x.description }}</div>
+                    <div class="contest-footer">
+                        <div class="contest-footer-icon" v-bind:class="x.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ x.status }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> {{ x.type }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-users"></i> {{ x.cachedAttendeeCount }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> {{ x.begin }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> {{ x.duration }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-outer">
+                <a class="float-left"
+                   v-on:click="paging.current = (Math.max(paging.current - 1, 1))"
+                   v-if="paging.current > 1"><i class="fa fa-arrow-circle-o-left"></i>上一页</a>
+                <a class="float-right"
+                   v-on:click="paging.current = (Math.min(paging.current + 1, paging.count))"
+                   v-if="paging.current < paging.count"><i class="fa fa-arrow-circle-o-right"></i>下一页</a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <h1>搜索比赛</h1>
+                </div>
+                <div class="sidebar-section-body">
+                    <p><input type="text" class="form-control" id="txtSearchContestTitle" placeholder="题目名称或ID" /></p>
+                    <p>
+                        <select class="form-control" id="lstSearchContestType">
+                            <option value="">赛制</option>
+                            <option v-for="x in contestTypes">{{ x }}</option>
+                        </select>
+                    </p>
+                    <p><a class="sidebar-button" v-on:click="filterContests()"><i class="fa fa-search"></i> 搜索</a></p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <h1>统计</h1>
+                </div>
+                <div class="sidebar-section-body">
+                    <p>{{ paging.total }} 场比赛</p>
+                    <p v-if="$root.user.isSignedIn"><a v-on:click="$root.redirect('/contest/new')">我要创建比赛</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

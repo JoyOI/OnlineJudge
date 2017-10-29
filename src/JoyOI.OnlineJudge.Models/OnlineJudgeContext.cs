@@ -270,7 +270,7 @@ namespace JoyOI.OnlineJudge.Models
             builder.Entity<VirtualJudgeUser>(e =>
 			{
 				e.HasIndex(x => x.Source);
-                e.HasIndex(x => x.IsInUse);
+                e.HasIndex(x => x.LockerId);
             });
         }
     }
