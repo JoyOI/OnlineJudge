@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.0" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0-*" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.Lolita.MySql" Version="2.0.0-*" />
   </ItemGroup>
 
