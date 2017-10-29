@@ -83,6 +83,12 @@ var languages = [
     'JavaScript'
 ];
 
+var contestTypes = [
+    'OI',
+    'ACM',
+    'Codeforces'
+];
+
 var syntaxHighlighter = {
     'C': 'c_cpp',
     'C++': 'c_cpp',
