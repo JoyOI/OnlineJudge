@@ -14,6 +14,15 @@
                     </div>
                 </div>
             </div>
+
+            <div class="area-outer">
+                <a class="float-left" 
+                   v-on:click="paging.current = (Math.max(paging.current - 1, 1))"
+                   v-if="paging.current > 1"><i class="fa fa-arrow-circle-o-left"></i> 上一页</a>
+                <a class="float-right"
+                   v-on:click="paging.current = (Math.min(paging.current + 1, paging.count))"
+                   v-if="paging.current < paging.count"><i class="fa fa-arrow-circle-o-right"></i> 下一页</a>
+            </div>
         </div>
     </div>
 </div>
