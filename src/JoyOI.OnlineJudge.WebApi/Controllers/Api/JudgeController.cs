@@ -308,7 +308,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             #region Bzoj
             else if (problem.Source == ProblemSource.Bzoj)
             {
-                var remoteAccount = DB.VirtualJudgeUsers.First(x => !x.IsInUse && x.Source == ProblemSource.Bzoj);
+                var remoteAccount = DB.VirtualJudgeUsers.First(x => !x.LockerId.HasValue && x.Source == ProblemSource.Bzoj);
                 var metadata = new
                 {
                     Source = "Bzoj",
