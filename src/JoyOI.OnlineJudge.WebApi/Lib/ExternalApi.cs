@@ -24,7 +24,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
         {
             using (var client = new HttpClient { BaseAddress = new Uri(_config["JoyOI:ForumUrl"]) })
             {
-                var response = await client.GetAsync("/summary", token);
+                var response = await client.GetAsync("/home/summary", token);
                 var json = JsonConvert.DeserializeObject<object>(await response.Content.ReadAsStringAsync());
                 return json;
             }
