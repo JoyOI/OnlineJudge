@@ -28,6 +28,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     [Route("api/[controller]")]
     public class JudgeController : BaseController
     {
+        [HttpGet("bjoz-account")]
+        public async Task<IActionResult> Get(Guid? lockerId) {
+            while (await DB.VirtualJudgeUsers
+                                .Where(x => !x.LockerId.HasValue && x.Source == ProblemSource.Bzoj)
+                                .Take(1)
+                                .SetField(x => x.LockerId).WithValue(lockerId)
+                                .UpdateAsync() == 0)
+            {
+                await Task.Delay(1000);
+            }
+            var remoteAccount = await DB.VirtualJudgeUsers
+                .FirstAsync(x => x.LockerId == lockerId && x.Source == ProblemSource.Bzoj);
+            return Json(remoteAccount);
+        }
         [HttpGet("all")]
         public async Task<IActionResult> Get(
             string problemId, 
@@ -308,7 +322,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             #region Bzoj
             else if (problem.Source == ProblemSource.Bzoj)
             {
-                var remoteAccount = DB.VirtualJudgeUsers.First(x => !x.LockerId.HasValue && x.Source == ProblemSource.Bzoj);
                 var metadata = new
                 {
                     Source = "Bzoj",
@@ -316,7 +329,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Code = request.code,
                     ProblemId = problem.Id.Replace("bzoj-", "")
                 };
-
                 var metadataBlob = new BlobInfo {
                     Id = await MgmtSvc.PutBlobAsync("metadata.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)), token),
                     Name = "metadata.json",
