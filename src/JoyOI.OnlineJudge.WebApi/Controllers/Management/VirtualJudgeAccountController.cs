@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
 {
@@ -12,8 +13,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
     public class VirtualJudgeAccountController : BaseController
     {
         [HttpPost("requestaccount")]
-        public async Task<IActionResult> RequestAccount(Guid stateMachineId, CancellationToken token)
+        public async Task<IActionResult> RequestAccount(CancellationToken token)
         {
+            Guid stateMachineId = JsonConvert.DeserializeObject<dynamic>(RequestBody).id;
             var status = await DB.JudgeStatuses
                 .Include(x => x.Problem)
                 .Where(x => x.RelatedStateMachineIds.Any(y => y.StateMachineId == stateMachineId))
