@@ -32,12 +32,12 @@ namespace JoyOI.OnlineJudge.WebApi
             redisOptions.AbortOnConnectFail = false;
             redisOptions.Ssl = false;
             redisOptions.ResponseTimeout = 100000;
-            redisOptions.ChannelPrefix = "ONLINE_JUDGE";
-            redisOptions.DefaultDatabase = 2;
+            redisOptions.ChannelPrefix = "SHARED_KEYS";
+            redisOptions.DefaultDatabase = 5;
             var redis = ConnectionMultiplexer.Connect(redisOptions);
 
             services.AddDataProtection()
-                .PersistKeysToRedis(redis, "DATA_PROTECTION_KEYS_");
+                .PersistKeysToRedis(redis, "ASPNET_DATA_PROTECTION_KEYS");
 
             services.AddJoyOIManagementService();
 			services.AddStateMachineAwaiter();
