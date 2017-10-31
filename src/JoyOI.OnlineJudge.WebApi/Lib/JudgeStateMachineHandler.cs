@@ -231,6 +231,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             #region Virtual Judge
             else
             {
+                _db.VirtualJudgeUsers
+                    .Where(x => x.LockerId == statusId)
+                    .SetField(x => x.LockerId).WithValue(null)
+                    .Update();
+
                 var resultBody = JsonConvert.DeserializeObject<VirtualJudgeResult>(Encoding.UTF8.GetString((await _mgmt.GetBlobAsync(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "result.json").Id, token)).Body));
                 var judgeResult = (Enum.Parse<JudgeResult>(resultBody.Result.Replace(" ", "")));
 
