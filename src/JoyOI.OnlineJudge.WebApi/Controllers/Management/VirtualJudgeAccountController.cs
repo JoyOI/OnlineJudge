@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
 {
     [Route("management/[controller]")]
-    public class VirtualJudgeAccount : BaseController
+    public class VirtualJudgeAccountController : BaseController
     {
-        [HttpPost]
+        [HttpPost("requestaccount")]
         public async Task<IActionResult> RequestAccount(Guid stateMachineId, CancellationToken token)
         {
             var status = await DB.JudgeStatuses

@@ -314,9 +314,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Source = "Bzoj",
                     Language = request.language,
                     Code = request.code,
-                    ProblemId = problem.Id.Replace("bzoj-", ""),
-                    remoteAccount.Username,
-                    remoteAccount.Password
+                    ProblemId = problem.Id.Replace("bzoj-", "")
                 };
 
                 var metadataBlob = new BlobInfo {

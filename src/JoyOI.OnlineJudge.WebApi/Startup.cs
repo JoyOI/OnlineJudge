@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Hubs;
@@ -24,7 +26,20 @@ namespace JoyOI.OnlineJudge.WebApi
                     x.UseMySqlLolita();
                 });
 
-			services.AddJoyOIManagementService();
+            var redisOptions = new ConfigurationOptions();
+            redisOptions.EndPoints.Add(config["Data:Redis:Host"]);
+            redisOptions.Password = config["Data:Redis:Password"];
+            redisOptions.AbortOnConnectFail = false;
+            redisOptions.Ssl = false;
+            redisOptions.ResponseTimeout = 100000;
+            redisOptions.ChannelPrefix = "ONLINE_JUDGE";
+            redisOptions.DefaultDatabase = 2;
+            var redis = ConnectionMultiplexer.Connect(redisOptions);
+
+            services.AddDataProtection()
+                .PersistKeysToRedis(redis, "DATA_PROTECTION_KEYS_");
+
+            services.AddJoyOIManagementService();
 			services.AddStateMachineAwaiter();
             services.AddJoyOIUserCenter();
 
