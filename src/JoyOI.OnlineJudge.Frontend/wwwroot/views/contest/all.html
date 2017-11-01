@@ -3,7 +3,7 @@
         <div class="col-md-9">
             <div class="area-outer">
                 <div class="area-item" v-for="x in result">
-                    <div class="area-title">{{ x.title }}</div>
+                    <router-link class="area-title pointer" :to="{ name: '/contest/:id', path: '/contest/' + x.id, params: { 'id': x.id } }">{{ x.title }}</router-link>
                     <div>{{ x.description }}</div>
                     <div class="contest-footer">
                         <div class="contest-footer-icon" v-bind:class="x.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ x.status }}</div>
