@@ -4,7 +4,7 @@
             <div class="area-outer">
                 <div class="area-item" v-for="x in result">
                     <router-link class="area-title pointer" :to="{ name: '/contest/:id', path: '/contest/' + x.id, params: { 'id': x.id } }">{{ x.title }}</router-link>
-                    <div>{{ x.description }}</div>
+                    <div v-html="$root.marked(x.description)"></div>
                     <div class="contest-footer">
                         <div class="contest-footer-icon" v-bind:class="x.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ x.status }}</div>
                         <div class="contest-footer-icon"><i class="fa fa-trophy"></i> {{ x.type }}</div>

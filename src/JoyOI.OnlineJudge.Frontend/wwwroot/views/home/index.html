@@ -10,14 +10,14 @@
         <div class="col-md-9">
             <div class="area-outer">
                 <div class="area-item" v-for="contest in contests">
-                    <div class="area-title">{{ contest.title }}</div>
-                    <div>{{ contest.description }}</div>
+                    <router-link class="area-title pointer" :to="{ name: '/contest/:id', path: '/contest/' + contest.id, params: { 'id': contest.id } }">{{ contest.title }}</router-link>
+                    <div v-html="$root.marked(contest.description)"></div>
                     <div class="contest-footer">
-                        <div class="contest-footer-icon" style="color: #1d76c7"><i class="fa fa-arrow-circle-right"></i> Ready</div>
-                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> ACM/ICPC</div>
-                        <div class="contest-footer-icon"><i class="fa fa-users"></i> 348</div>
-                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> 2017-08-13 9:00</div>
-                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> 2.5h</div>
+                        <div class="contest-footer-icon" v-bind:class="contest.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ contest.status }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-trophy"></i> {{ contest.type }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-users"></i> {{ contest.cachedAttendeeCount }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> {{ contest.begin }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> {{ contest.duration }}</div>
                     </div>
                 </div>
             </div>
