@@ -156,16 +156,31 @@ component.methods = {
     },
     loadStatuses: function () {
         var self = this;
+        
         self.view = qv.createView('/api/judge/all', {
             problemid: self.selectedProblem ? self.selectedProblem.id : null,
             status: self.selectedStatus,
             userId: self.selectedSubmittor,
+            contestId: self.selectedContest.id,
             language: self.selectedLanguage,
             begin: self.selectedTime ? self.selectedTime.begin : null,
             end: self.selectedTime ? self.selectedTime.end : null,
             page: self.paging.current
         });
         self.view.fetch(x => {
+            if (this.selectedContest) {
+                app.links = [
+                    {
+                        text: '比赛列表',
+                        to: '/contest'
+                    },
+                    {
+                        text: this.selectedContest.title,
+                        to: { name: '/contest/:id', path: '/contest/' + this.selectedContest.id, params: { id: this.selectedContest.id } }
+                    }
+                ];
+            }
+
             self.paging.count = x.data.count;
             self.paging.current = x.data.current;
             self.result = x.data.result.map(y =>
