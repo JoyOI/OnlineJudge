@@ -1,1 +1,38 @@
-﻿
+﻿<div class="container" id="contest">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="area-outer problem-body" v-bind:class="{ 'edit-mode': control.isInEditMode }">
+                <div class="area-item">
+                    <div v-html="$root.marked(body)" class="problem-render"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 title-align">
+            <div class="sidebar-section all-buttons">
+                <a v-if="$root.user.isSignedIn" class="sidebar-section-button">
+                    <i class="fa fa-trohpy"></i>
+                    <span>比赛首页</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-flag"></i>
+                    <span>比赛排名</span>
+                </a>
+                <a class="sidebar-section-button">
+                    <i class="fa fa-question-circle-o"></i>
+                    <span>比赛答疑</span>
+                </a>
+                <router-link class="sidebar-section-button">
+                    <i class="fa fa-clock-o"></i>
+                    <span>提交记录</span>
+                </router-link>
+                <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
+                <router-link v-if="hasPermissionToEdit"
+                             class="sidebar-section-button">
+                    <i class="fa fa-cog"></i>
+                    <span>管理比赛</span>
+                </router-link>
+            </div>
+        </div>
+    </div>
+</div>
