@@ -1519,3 +1519,8 @@ dd {
         .table-inline tbody tr:nth-child(odd) {
            background: #f4f4f4;
         }
+
+.contest-countdown {
+    font-size: 18px;
+    color: #ed5f82;
+}

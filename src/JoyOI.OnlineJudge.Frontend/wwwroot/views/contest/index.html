@@ -9,6 +9,14 @@
         </div>
 
         <div class="col-md-3 title-align">
+            <div class="sidebar-section" v-if="status !== 'Done'">
+                <div class="sidebar-section-header">
+                    <h1>{{ status === 'Live' ? '距离比赛结束' : '距离比赛开始' }}</h1>
+                </div>
+                <div class="sidebar-section-body contest-countdown" v-bind:datetime="status === 'Live' ? endTimestamp : beginTimestamp">
+                </div>
+            </div>
+
             <div class="sidebar-section all-buttons">
                 <a class="sidebar-section-button active">
                     <i class="fa fa-trophy"></i>
@@ -23,7 +31,7 @@
                     <span>比赛答疑</span>
                 </a>
                 <router-link :to="{ name: '/judge/all', path: '/judge/all?selectedContest.id=' + encodeURIComponent(id) + '&selectedContest.title=' + encodeURIComponent(title), params: { }}"
-                    class="sidebar-section-button">
+                             class="sidebar-section-button">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </router-link>
