@@ -158,7 +158,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             bool isAccepted = false;
             var statemachine = await _mgmt.GetStateMachineInstanceAsync(statemachineId, token);
 
-            if (statemachine.Status == ManagementService.Model.Enums.StateMachineStatus.Running)
+            if (statemachine.Status == ManagementService.Model.Enums.StateMachineStatus.Running && statemachine.Stage != "Finally")
             {
                 throw new InvalidOperationException("The statemachine status is: " + statemachine.Status.ToString());
             }

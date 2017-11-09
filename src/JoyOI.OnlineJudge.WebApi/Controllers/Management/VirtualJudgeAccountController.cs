@@ -18,8 +18,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
             Guid stateMachineId = JsonConvert.DeserializeObject<dynamic>(RequestBody).id;
             var status = await DB.JudgeStatuses
                 .Include(x => x.Problem)
-                .Where(x => x.RelatedStateMachineIds.Any(y => y.StateMachineId == stateMachineId))
-                .FirstOrDefaultAsync(token);
+                .FirstOrDefaultAsync(x => x.RelatedStateMachineIds.Any(y => y.StateMachineId == stateMachineId), token);
 
             if (status == null)
             {
@@ -33,11 +32,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
 
                 while (account == null)
                 {
-                    var affectedRows = await DB.VirtualJudgeUsers
+                    var affectedRows = DB.VirtualJudgeUsers
                         .Where(x => x.Source == OnlineJudge.Models.ProblemSource.Bzoj && !x.LockerId.HasValue)
                         .Take(1)
                         .SetField(x => x.LockerId).WithValue(status.Id)
-                        .UpdateAsync(token);
+                        .Update();
 
                     if (affectedRows == 1)
                     {
