@@ -14,7 +14,7 @@ component.data = function () {
         selectedProblem: null,
         selectedSubmittor: null,
         selectedLanguage: null,
-        selectedContest: null,
+        selectedContest: {},
         selectedTime: null,
         submittorSearchResult: [],
         problemSearchResult: [],
