@@ -45,6 +45,7 @@
         this.hosts.blog = 'http://{USERNAME}.blog.joyoi.net';
         this.hosts.forum = 'http://forum.joyoi.net';
         this.hosts.api = 'http://localhost:5000';
+        this.hosts.uc = 'http://uc.joyoi.cn';
         qv.__host = this.hosts.api;
 
         this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
