@@ -32,7 +32,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> Get(
             string problemId, 
             JudgeResult? status, 
-            Guid? userId, 
+            string userId, 
             string contestId, 
             string language, 
             int? page, 
@@ -53,9 +53,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.Result == status.Value);
             }
 
-            if (userId.HasValue)
+            if (!string.IsNullOrWhiteSpace(userId))
             {
-                ret = ret.Where(x => x.UserId == userId);
+                ret = ret.Where(x => x.User.UserName == userId);
             }
 
             if (!string.IsNullOrWhiteSpace(contestId))
