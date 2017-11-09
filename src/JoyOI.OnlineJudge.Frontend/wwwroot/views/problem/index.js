@@ -23,7 +23,7 @@ component.data = function () {
         },
         form: {
             code: '',
-            language: null,
+            language: app.preferences.language,
             data: []
         },
         result: {
@@ -152,7 +152,7 @@ component.methods = {
 
         if (app.user.profile.preferredLanguage !== self.form.language) {
             qv.patch('/api/user/' + app.user.profile.username, { preferredLanguage: self.form.language });
-            self.preferences.language = self.form.language;
+            app.preferences.language = self.form.language;
         }
 
         qv.put('/api/judge', {
