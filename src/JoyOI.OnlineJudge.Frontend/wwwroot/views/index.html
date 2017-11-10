@@ -57,7 +57,7 @@
                             <li class="logout" v-if="user.isSignedIn"><a v-bind:href="hosts.blog.replace('{USERNAME}', user.profile.username) + '/admin/login'" target="_blank">我的空间</a></li>
                             <li class="logout" v-if="user.isSignedIn"><a v-on:click="logout()">注销</a></li>
                             <li class="login"><a v-if="!user.isSignedIn" v-on:click="toggleLoginBox()" class="login">登录</a></li>
-                            <li class="register" v-if="!user.isSignedIn"><a v-bind:href="hosts.uc" target="_blank">注册</a></li>
+                            <li class="register" v-if="!user.isSignedIn"><a v-bind:href="hosts.uc + '/Register'" target="_blank">注册</a></li>
                         </ul>
                     </div>
 
