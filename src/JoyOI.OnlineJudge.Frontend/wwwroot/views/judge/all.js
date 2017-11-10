@@ -168,7 +168,7 @@ component.methods = {
             page: self.paging.current
         });
         self.view.fetch(x => {
-            if (this.selectedContest) {
+            if (this.selectedContest.id) {
                 app.links = [
                     {
                         text: '比赛列表',
