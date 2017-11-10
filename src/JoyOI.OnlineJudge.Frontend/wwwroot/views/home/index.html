@@ -29,7 +29,7 @@
                         <div class="thread-outer" v-for="x in threads" v-bind:class="{ 'highlight': x.highlight }">
                             <div class="thread-avatar"><img v-bind:src="x.avatarUrl" /></div>
                             <div class="thread-body">
-                                <a v-bind:href="$root.hosts.forumUrl + '/Forum/Thread/' + x.id" target="_blank">{{ x.title }}</a>
+                                <a v-bind:href="$root.hosts.forumUrl + '/Forum/Thread/' + x.id" target="_blank">{{ x.threadTitle }}</a>
                                 <div class="thread-body-subline">
                                     <a v-bind:href="$root.hosts.forumUrl + '/Forum/' + x.forumId" target="_blank">
                                         <div class="thread-body-forum"><i class="fa fa-tag"></i> {{ x.forumTitle }}</div>

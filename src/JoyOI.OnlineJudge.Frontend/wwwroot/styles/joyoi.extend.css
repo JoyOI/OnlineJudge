@@ -1524,3 +1524,11 @@ dd {
     font-size: 18px;
     color: #ed5f82;
 }
+
+.thread-body-subline {
+    margin-top: 10px;
+}
+
+.thread-body-subline a {
+    display: inline-block;
+}
