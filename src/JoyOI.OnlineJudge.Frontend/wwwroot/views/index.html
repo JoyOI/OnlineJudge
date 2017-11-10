@@ -52,6 +52,7 @@
                             <li class="home"><router-link to="/group">团队</router-link></li>
                             <li class="home"><router-link to="/judge">评测</router-link></li>
                             <li class="home"><router-link to="/hack">Hack</router-link></li>
+                            <li class="home"><a v-bind:href="hosts.forum" target="_blank">论坛</a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="logout" v-if="user.isSignedIn"><a v-bind:href="hosts.blog.replace('{USERNAME}', user.profile.username) + '/admin/login'" target="_blank">我的空间</a></li>
