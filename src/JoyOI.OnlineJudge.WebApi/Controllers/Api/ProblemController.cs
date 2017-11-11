@@ -24,6 +24,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     [Route("api/[controller]")]
     public class ProblemController : BaseController
     {
+        public const string LocalProblemSetTag = "按题库:本地";
+
         #region Problem
         [HttpGet("all")]
         public async Task<IActionResult> Get(string title, int? difficulty, string tag, int? page, CancellationToken token)
@@ -210,6 +212,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         }
                     }
                 }
+
+                if ((string.IsNullOrWhiteSpace(problem.Tags) || problem.Tags.IndexOf(LocalProblemSetTag) < 0) && problem.Source == ProblemSource.Local)
+                {
+                    problem.Tags += "," + LocalProblemSetTag;
+                    problem.Tags = problem.Tags.Trim(',');
+                }
+
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }
@@ -225,6 +234,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             var problem = PutEntity<Problem>(RequestBody).Entity;
             problem.Id = id;
+            problem.Tags = LocalProblemSetTag;
 
             // 处理比较器
             if (problem.ValidatorBlobId.HasValue)

@@ -9,6 +9,7 @@ component.data = function () {
         difficulty: 0,
         sampleData: [],
         source: null,
+        isVisiable: false,
         timeLimitationPerCaseInMs: null,
         memoryLimitationPerCaseInByte: null,
         isSpecialJudge: null,
@@ -55,6 +56,7 @@ component.created = function () {
             self.body = x.data.body;
             self.difficulty = x.data.difficulty;
             self.source = x.data.source;
+            self.isVisiable = x.data.isVisiable;
             self.validator.code = x.data.validatorCode;
             self.validator.language = x.data.validatorLanguage || app.preferences.language;
             self.validator.error = x.data.validatorError;

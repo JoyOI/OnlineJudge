@@ -204,7 +204,7 @@ $(document).bind('DOMNodeInserted', function (e) {
                 },
                     function (result) {
                         smde.codemirror.setSelection(begin_pos, end_pos);
-                        smde.codemirror.replaceSelection('![' + result.FileName + '](/file/download/' + result.Id + ')');
+                        smde.codemirror.replaceSelection('![' + result.fileName + '](' + app.hosts.api + '/api/file/download/' + result.id + ')');
                     });
             }
         });
