@@ -247,6 +247,10 @@
             },
             unsubscribe: function () {
                 app.signalr.onlinejudge.listeners.removeByValue(this._subscribe);
+            },
+            refresh: function () {
+                this.removeCache();
+                this.fetch(this._fetchFunc);
             }
         };
         

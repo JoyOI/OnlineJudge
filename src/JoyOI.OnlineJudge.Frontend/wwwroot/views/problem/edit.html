@@ -122,7 +122,7 @@
                                 <td>input{{ index + 1 }}.txt ({{ (x.inputSizeInByte / 1024.0).toFixed(1) }} KiB)</td>
                                 <td>output{{ index + 1 }}.txt ({{ (x.outputSizeInByte / 1024.0).toFixed(1) }} KiB)</td>
                                 <td>{{ x.type }}</td>
-                                <td></td>
+                                <td><a v-on:click="removeTestCase(x.id)">删除</a></td>
                             </tr>
                         </tbody>
                     </table>

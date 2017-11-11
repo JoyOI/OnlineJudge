@@ -40,7 +40,8 @@ component.data = function () {
         },
         tags: [],
         selected: [],
-        languages: languages
+        languages: languages,
+        testCaseView: null
     }
 };
 
@@ -92,8 +93,8 @@ component.created = function () {
         self.tags = JSON.parse(x.data.value);
     });
 
-    console.log('fetching test cases');
-    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all').fetch(x => {
+    this.testCaseView = qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all')
+    this.testCaseView.fetch(x => {
         self.testCases = x.data;
     });
 };
@@ -107,7 +108,8 @@ component.methods = {
             timeLimitationPerCaseInMs: this.timeLimitationPerCaseInMs,
             memoryLimitationPerCaseInByte: this.memoryLimitationPerCaseInByte,
             difficulty: this.difficulty,
-            body: this.body
+            body: this.body,
+            isVisiable: this.isVisiable
         })
             .then((x) => {
                 app.notification('succeeded', '题目编辑成功', x.msg);
@@ -202,7 +204,7 @@ component.methods = {
                     })
                         .then(x => {
                             app.notification('succeeded', '上传成功', x.msg);
-                            // TODO: Refresh cache
+                            self.testCaseView.refresh();
                         })
                         .catch(err => {
                             app.notification('error', '上传失败', err.responseJSON.msg);
@@ -222,11 +224,29 @@ component.methods = {
         })
             .then(x => {
                 app.notification('succeeded', '上传成功', x.msg);
-                // TODO: Refresh cache
+                self.testCaseView.refresh();
+                $('#txtInput').val('');
+                $('#txtOutput').val('');
             })
             .catch(err => {
                 app.notification('error', '上传失败', err.responseJSON.msg);
             });
+    },
+    removeTestCase: function (id) {
+        var self = this;
+        if (confirm("删除测试用例后将无法恢复，确定要这样做吗？")) {
+            app.notification('pending', '正在删除测试用例...');
+            qv.delete('/api/problem/' + self.id + '/testcase/' + id)
+                .then(x => {
+                    app.notification('succeeded', '删除成功', x.msg);
+                    self.testCaseView.refresh();
+                    $('#txtInput').val('');
+                    $('#txtOutput').val('');
+                })
+                .catch(err => {
+                    app.notification('error', '删除失败', err.responseJSON.msg);
+                });
+        }
     }
 };
 

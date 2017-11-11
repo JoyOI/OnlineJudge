@@ -1532,3 +1532,11 @@ dd {
 .thread-body-subline a {
     display: inline-block;
 }
+
+.sample-data-table {
+    table-layout: fixed;
+}
+
+    .sample-data-table td {
+        vertical-align: top;
+    }
