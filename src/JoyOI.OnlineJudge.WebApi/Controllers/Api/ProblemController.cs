@@ -257,16 +257,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else if (string.IsNullOrWhiteSpace(problem.ValidatorCode) && string.IsNullOrEmpty(problem.ValidatorLanguage))
             {
-                // 如果没有指定Validator，则自动使用默认Validator
-                var defaultValidator = await DB.SharedValidators.FirstOrDefaultAsync(x => x.IsDefault, token);
-
-                // 如果系统没有默认比较器，则触发Incident
-                if (defaultValidator == null)
-                {
-                    await IcM.TriggerIncidentAsync(2, "默认比较器未设定", $"用户 { User.Current.UserName } 创建题目时未设置比较器，系统在尝试为其设置默认比较器时，没有找到默认比较器。");
-                    return Result(500, "Default Validator Not Found");
-                }
-                problem.ValidatorBlobId = defaultValidator.Id;
+                problem.ValidatorBlobId = null;
             }
             else
             {
