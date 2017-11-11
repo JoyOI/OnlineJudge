@@ -51,6 +51,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("Download/{id:Guid}")]
+        [ResponseCache(Duration = 604800000)]
         public async Task<IActionResult> Download(Guid id, [FromServices] ManagementServiceClient mgmt)
         {
             var blob = await mgmt.GetBlobAsync(id);
