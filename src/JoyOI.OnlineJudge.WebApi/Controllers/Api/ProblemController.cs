@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ using JoyOI.ManagementService.SDK;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
+using JoyOI.OnlineJudge.WebApi.Hubs;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 {
@@ -113,6 +115,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             string id, 
             [FromServices] ManagementServiceClient MgmtSvc,
             [FromServices] StateMachineAwaiter Awaiter,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
             CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(id, token))
@@ -220,6 +223,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
 
                 await DB.SaveChangesAsync(token);
+
+                hub.Clients.All.InvokeAsync("ItemUpdated", "problem", problem.Id);
+                if (fields.Any(x => x == nameof(Problem.Title)) || fields.Any(x => x == nameof(Problem.IsVisiable)))
+                {
+                    hub.Clients.All.InvokeAsync("ItemUpdated", "problem-list", problem.Id);
+                }
+
                 return Result(200, "Patch Succeeded");
             }
         }

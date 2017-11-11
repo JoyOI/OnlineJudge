@@ -15,6 +15,7 @@ component.data = function () {
             title: null,
             page: 1
         },
+        view: null,
         result: []
     };
 }
@@ -29,11 +30,13 @@ component.watch = {
         handler: function (value) {
             console.log(value);
             var self = this;
-            qv.createView('/api/problem/all', this.request).fetch(x => {
+            this.view.unsubscribe();
+            this.view = qv.createView('/api/problem/all', this.request).fetch(x => {
                 self.paging.count = x.data.count;
                 self.paging.current = x.data.current;
                 self.paging.total = x.data.total;
                 self.result = x.data.result;
+                self.view.subscribe('problem-list');
             });
         },
         deep: true
@@ -68,11 +71,13 @@ component.methods = {
 };
 
 component.created = function () {
-    qv.createView('/api/problem/all', this.request).fetch(x => {
+    this.view = qv.createView('/api/problem/all', this.request);
+    this.view.fetch(x => {
         this.paging.count = x.data.count;
         this.paging.current = x.data.current;
         this.paging.total = x.data.total;
         this.result = x.data.result;
+        this.view.subscribe('problem-list');
     });
 
     qv.createView('/api/configuration/problemtags').fetch(x => {

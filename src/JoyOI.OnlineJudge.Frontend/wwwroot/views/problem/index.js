@@ -64,7 +64,8 @@ component.created = function () {
     qv.createView('/api/problem/' + router.history.current.params.id + '/testCase/all', { type: 'Sample' }).fetch(x => {
         self.sampleData = x;
     });
-    qv.createView('/api/problem/' + router.history.current.params.id)
+    var problemView = qv.createView('/api/problem/' + router.history.current.params.id);
+    problemView
         .fetch(x => {
             app.title = x.data.title;
             self.title = x.data.title;
@@ -72,6 +73,7 @@ component.created = function () {
             self.memory = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
             self.source = x.data.source;
+            problemView.subscribe('problem', x.data.id);
         });
     qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
         .fetch(x => {
