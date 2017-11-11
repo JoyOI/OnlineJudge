@@ -442,15 +442,18 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             value.Zip = value.Zip.Substring(value.Zip.IndexOf("base64,") + "base64,".Length);
 
-            var zip = new MemoryStream(Convert.FromBase64String(value.Zip));
-            using (var zipArchive = new ZipArchive(zip))
+            var path = Path.Combine(Path.GetTempPath(), "joyoi_" + Guid.NewGuid().ToString().Replace("-", "") + ".zip");
+            System.IO.File.WriteAllBytes(path, Convert.FromBase64String(value.Zip));
+
+            var count = 0;
+            using (var zip = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (var zipArchive = new ZipArchive(zip, ZipArchiveMode.Update))
             {
                 var inputs = zipArchive.Entries.Where(x => x.FullName.EndsWith(".in"));
-                var count = 0;
 
                 foreach (var input in inputs)
                 {
-                    var output = zipArchive.Entries.SingleOrDefault(x => x.FullName == input.FullName.Substring(0, input.FullName.Length - 3) + ".out");
+                    var output = zipArchive.Entries.SingleOrDefault(x => x.FullName == input.FullName.Substring(0, input.FullName.Length - 3) + ".out" || x.FullName == input.FullName.Substring(0, input.FullName.Length - 3) + ".ans");
                     if (output == null)
                     {
                         continue;
@@ -481,10 +484,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     DB.TestCases.Add(testCase);
                     ++count;
                 }
-
                 await DB.SaveChangesAsync(token);
-                return Result(200, count + " test cases uploaded.");
             }
+
+            System.IO.File.Delete(path);
+            return Result(200, count + " test cases uploaded.");
         }
 
         [HttpPost("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
@@ -667,6 +671,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Private Functions
+        private static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, bytesRead);
+            }
+        }
+
         private Task<bool> ProblemIsVisiableAsync(string problemId, CancellationToken token = default(CancellationToken))
             => DB.Problems.AnyAsync(x => x.Id == problemId && x.IsVisiable, token);
 
