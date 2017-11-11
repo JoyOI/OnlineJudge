@@ -228,6 +228,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     var testCases = await DB.TestCases
                         .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large))
                         .ToListAsync(token);
+
+                    if (testCases.Count == 0)
+                    {
+                        return Result(400, "No test case found.");
+                    }
+
                     for (var i = 0; i < testCases.Count; i++)
                     {
                         blobs.TryAdd(i, new[] {

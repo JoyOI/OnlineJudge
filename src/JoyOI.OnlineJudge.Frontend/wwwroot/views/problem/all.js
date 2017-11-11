@@ -22,7 +22,6 @@ component.data = function () {
 
 component.watch = {
     selected: function (value) {
-        console.log(value);
         value = value.filter(x => !value.some(y => x != y && y.indexOf(x) >= 0));
         this.request.tag = value.join(', ');
     },

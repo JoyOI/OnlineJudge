@@ -133,7 +133,7 @@ component.methods = {
                         id: y.id,
                         title: y.title
                     };
-                });
+                }).slice(0, 5);
             });
         }
     },

@@ -177,12 +177,15 @@ component.methods = {
                 });
             })
                 .catch(err => {
-                    app.notification('error', '提交评测失败', err.responseJSON.msg);
+                    app.notification('error', '获取评测详细信息失败', err.responseJSON.msg);
                 });
 
             self.result.view.subscribe('judge', x.data);
 
             self.changeEditorMode('judge');
-        });
+        })
+            .catch(err => {
+                app.notification('error', '提交评测失败', err.responseJSON.msg);
+            });
     }
 };
