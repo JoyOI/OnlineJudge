@@ -75,10 +75,11 @@ component.created = function () {
             self.source = x.data.source;
             problemView.subscribe('problem', x.data.id);
         });
-    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
-        .fetch(x => {
-            self.sampleData = x.data.map(x => { return { input: x.input, output: x.output } });
-        });
+    var sampleView = qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
+    sampleView.fetch(x => {
+        self.sampleData = x.data.map(x => { return { input: x.input, output: x.output } });
+        sampleView.subscribe('problem-sample-data', self.id);
+    });
     qv.get('/api/problem/' + router.history.current.params.id + '/claim/all')
         .then((x) => {
             self.claims = x.data.map(x => x.userId);

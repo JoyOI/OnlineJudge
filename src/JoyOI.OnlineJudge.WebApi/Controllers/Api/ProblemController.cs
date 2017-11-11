@@ -99,7 +99,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             this.HasOwnership = await HasPermissionToProblemAsync(id, token);
             var ret = await DB.Problems.SingleOrDefaultAsync(x => x.Id == id, token);
-            if (ret == null)
+            if (ret == null || !ret.IsVisiable && !this.HasOwnership)
             {
                 return Result<Problem>(404, "Not Found");
             }
@@ -318,6 +318,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             bool? showContent,
             CancellationToken token)
         {
+            this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
+            var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
+            if (problem == null || !problem.IsVisiable && !this.HasOwnership)
+            {
+                return Result<Problem>(404, "Not Found");
+            }
+            
             IQueryable<TestCase> testCases = DB.TestCases
                 .Where(x => x.ProblemId == problemId);
 
@@ -364,6 +371,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             bool? showContent,
             CancellationToken token)
         {
+            this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
+            var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
+            if (problem == null || !problem.IsVisiable && !this.HasOwnership)
+            {
+                return Result<Problem>(404, "Not Found");
+            }
+
             var ret = await DB.TestCases
                 .Select(x => new TestCaseWithContent
                 {
@@ -403,7 +417,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase")]
-        public async Task<IActionResult> PutTestCase(string problemId, CancellationToken token)
+        public async Task<IActionResult> PutTestCase(
+            string problemId,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
+            CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
             {
@@ -427,18 +444,22 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 DB.TestCases.Add(testCase);
                 await DB.SaveChangesAsync(token);
 
+                if (value.Type == TestCaseType.Sample)
+                {
+                    hub.Clients.All.InvokeAsync("ItemUpdated", "problem-sample-data", problemId);
+                }
+
                 return Result(testCase.Id);
             }
         }
 
         [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/zip")]
-        public async Task<IActionResult> PutTestCaseZip(string problemId, CancellationToken token)
+        public async Task<IActionResult> PutTestCaseZip(
+            string problemId,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
+            CancellationToken token)
         {
             var value = JsonConvert.DeserializeObject<TestCaseZipUpload>(RequestBody);
-            if (value.Zip.IndexOf("application/x-zip") < 0)
-            {
-                return Result(400, "Invalid file.");
-            }
 
             value.Zip = value.Zip.Substring(value.Zip.IndexOf("base64,") + "base64,".Length);
 
@@ -488,12 +509,22 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             System.IO.File.Delete(path);
+
+            if (value.Type == TestCaseType.Sample)
+            {
+                hub.Clients.All.InvokeAsync("ItemUpdated", "problem-sample-data", problemId);
+            }
+
             return Result(200, count + " test cases uploaded.");
         }
 
         [HttpPost("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
         [HttpPatch("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
-        public async Task<IActionResult> PatchTestCase(string problemId, Guid id, [FromBody] string value, CancellationToken token)
+        public async Task<IActionResult> PatchTestCase(
+            string problemId, 
+            Guid id,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
+            CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
             {
@@ -501,6 +532,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
+                var value = RequestBody;
+
                 var testCase = await DB.TestCases.SingleOrDefaultAsync(x => x.Id == id, token);
                 if (testCase == null)
                 {
@@ -538,12 +571,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
 
                 await DB.SaveChangesAsync(token);
+
+                hub.Clients.All.InvokeAsync("ItemUpdated", "problem-sample-data", problemId);
+
                 return Result(200, "Succeeded");
             }
         }
 
         [HttpDelete("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}")]
-        public async Task<IActionResult> DeleteTestCase(string problemId, Guid id, CancellationToken token)
+        public async Task<IActionResult> DeleteTestCase(
+            string problemId, 
+            Guid id,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
+            CancellationToken token)
         {
             if (!await HasPermissionToProblemAsync(problemId, token))
             {
@@ -554,6 +594,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 await DB.TestCases
                     .Where(x => x.Id == id)
                     .DeleteAsync(token);
+
+                hub.Clients.All.InvokeAsync("ItemUpdated", "problem-sample-data", problemId);
 
                 return Result(200, "Succeeded");
             }
