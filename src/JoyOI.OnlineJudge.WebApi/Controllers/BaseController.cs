@@ -22,6 +22,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         {
             base.Prepare();
             var touch = User.Current;
+            if (User.Current != null)
+            {
+                if (User.Current.ActiveTime.AddMinutes(1) < DateTime.UtcNow)
+                {
+                    User.Current.ActiveTime = new DateTime(DateTime.UtcNow.Ticks);
+                    DB.SaveChanges();
+                }
+            }
         }
 
         public virtual bool IsRoot

@@ -1423,6 +1423,7 @@ dd {
     margin-right: 5px;
     transition: background-color 0.2s linear;
     cursor: pointer;
+    margin-bottom: 4px;
 }
 
     .accepted-problem-item a {
