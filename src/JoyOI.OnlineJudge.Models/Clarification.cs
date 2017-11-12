@@ -38,7 +38,7 @@ namespace JoyOI.OnlineJudge.Models
 
         public string ResponseText { get; set; }
 
-        public DateTime CreatedTime { get; set; } = DateTime.Now;
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         public ClarificationStatus Status { get; set; }
     }

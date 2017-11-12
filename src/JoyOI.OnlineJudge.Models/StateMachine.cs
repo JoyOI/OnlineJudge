@@ -19,7 +19,7 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The created time.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public DateTime CreatedTime { get; set; } = DateTime.Now;
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the name.

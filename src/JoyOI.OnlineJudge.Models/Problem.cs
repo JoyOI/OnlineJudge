@@ -163,7 +163,7 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The created time</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public DateTime CreatedTime { get; set; } = DateTime.Now;
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the time limitation per case in ms
@@ -184,8 +184,7 @@ namespace JoyOI.OnlineJudge.Models
         public string Template { get; set; }
 
         [NotMapped]
-        [WebApi(FilterLevel.GetListDisabled | FilterLevel.PatchDisabled)]
-        public Dictionary<string, string> CodeTemplate { get { return JsonConvert.DeserializeObject<Dictionary<string, string>>(Template); } }
+        public Dictionary<string, string> CodeTemplate { get { return Template != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>(Template) : null; } }
 
         public virtual ICollection<TestCase> TestCases { get; set; } = new List<TestCase>();
     }

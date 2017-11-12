@@ -51,14 +51,14 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The active time.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public DateTime ActiveTime { get; set; } = DateTime.Now;
+        public DateTime ActiveTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the last login time.
         /// </summary>
         /// <value>The last login time.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public DateTime LastLoginTime { get; set; } = DateTime.Now;
+        public DateTime LastLoginTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the passed problems.
