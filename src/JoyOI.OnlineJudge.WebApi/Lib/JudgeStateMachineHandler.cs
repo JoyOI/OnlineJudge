@@ -173,6 +173,12 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             var userId = status.UserId;
             var problemId = status.ProblemId;
             var isSelfTest = status.IsSelfTest;
+
+            _db.Problems
+                .Where(x => x.Id == problemId)
+                .SetField(x => x.CachedSubmitCount).Plus(1)
+                .Update();
+
             var problem = await _db.Problems.SingleAsync(x => x.Id == problemId, token);
             #region Local Judge
             if (problem.Source == ProblemSource.Local)
@@ -219,6 +225,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     if (finalResult == JudgeResult.Accepted)
                     {
                         isAccepted = true;
+
+                        _db.Problems
+                            .Where(x => x.Id == problemId)
+                            .SetField(x => x.CachedAcceptedCount).Plus(1)
+                            .Update();
                     }
                 }
 
@@ -250,6 +261,13 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 // TODO: Sub statuses
 
                 UpdateUserProblemJson(userId, problem.Id, judgeResult == JudgeResult.Accepted);
+                if (judgeResult == JudgeResult.Accepted)
+                {
+                    _db.Problems
+                        .Where(x => x.Id == problemId)
+                        .SetField(x => x.CachedAcceptedCount).Plus(1)
+                        .Update();
+                }
             }
             #endregion
             _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);

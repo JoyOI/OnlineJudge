@@ -26,7 +26,7 @@
                                  v-for="tag in problem.tags ? problem.tags.split(',').map(x => x.trim()).sort() : []">{{ tag.split(':').slice(-1).pop() }}</div>
                         </td>
                         <td>{{ problem.cachedAcceptedCount }}</td>
-                        <td>{{ problem.cachedSubmitCount ? (problem.cachedAcceptedCount / problem.cachedSubmitCount).toFixed(0) : '0' }}%</td>
+                        <td>{{ problem.cachedSubmitCount ? (problem.cachedAcceptedCount * 100 / problem.cachedSubmitCount).toFixed(0) : '0' }}%</td>
                         <td>{{ problem.difficulty }}</td>
                     </tr>
                 </tbody>
