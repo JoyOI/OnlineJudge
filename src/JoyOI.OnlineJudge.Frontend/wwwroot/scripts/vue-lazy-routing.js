@@ -38,6 +38,10 @@ router.beforeEach(function (to, from, next) {
     next();
 })
 
+router.afterEach((to, from, next) => {
+    $(window).scrollTop(0);
+});
+
 var app;
 
 LazyRouting.SetRoute = function (routemap) {
