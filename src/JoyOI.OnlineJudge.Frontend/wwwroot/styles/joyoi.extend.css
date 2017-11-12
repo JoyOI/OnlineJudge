@@ -29,8 +29,8 @@
 .application-item-details {
     color: #999;
     font-size: 12px;
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
 }
 
 .application-item-btn {
@@ -68,7 +68,7 @@
             background: #16b368;
             color: #fff;
         }
-    
+
 .clear {
     clear: both;
 }
@@ -86,22 +86,22 @@
     font-size: 14px;
 }
 
-.sidebar-section-button.nested {
-    padding-left: 35px;
-}
+    .sidebar-section-button.nested {
+        padding-left: 35px;
+    }
 
-.sidebar-section-button.active-uplevel {
-    border-color: #ccc;
-    background: #eee;
-    color: #666 !important;
-}
+    .sidebar-section-button.active-uplevel {
+        border-color: #ccc;
+        background: #eee;
+        color: #666 !important;
+    }
 
 .sidebar-uplevel {
     display: none;
 }
 
 .sidebar-section-button.active-uplevel .sidebar-uplevel {
-    display:inline;
+    display: inline;
     float: right;
 }
 
@@ -156,7 +156,7 @@
 }
 
     .thread-outer.highlight {
-        border-left: 5px solid #df6589!important;
+        border-left: 5px solid #df6589 !important;
     }
 
 .thread-avatar {
@@ -184,10 +184,10 @@
         display: block;
     }
 
-    .thread-body-subline {
-        height: 24px;
-        line-height: 24px;
-    }
+.thread-body-subline {
+    height: 24px;
+    line-height: 24px;
+}
 
 .thread-body-forum {
     height: 24px;
@@ -260,38 +260,38 @@
         font-size: 12px;
     }
 
-    .problem-list th:first-child, .problem-list td:first-child {
-        text-align: left;
-        border-right: 1px solid #ddd;
-    }
+.problem-list .problem-list-title, .problem-list .problem-list-status {
+    text-align: left;
+    border-right: 1px solid #ddd;
+}
 
-    .problem-list th:last-child, .problem-list td:last-child {
-        border-left: 1px solid #ddd;
-    }
+.problem-list th:last-child, .problem-list td:last-child {
+    border-left: 1px solid #ddd;
+}
 
-    .table-list tbody tr:nth-child(odd) {
-        background-color: #f4f4f4;
-    }
+.table-list tbody tr:nth-child(odd) {
+    background-color: #f4f4f4;
+}
 
 .table-list tbody a {
     color: #555;
 }
 
-.table-list tbody a:hover {
-    color: #555;
-    text-decoration: underline;
-}
+    .table-list tbody a:hover {
+        color: #555;
+        text-decoration: underline;
+    }
 
 .tag-list, .filter-list {
     margin: 0;
     padding: 0;
 }
 
-        .tag-list li, .filter-list li {
-            width: 50%;
-            margin-bottom: 5px;
-            display: inline-block;
-        }
+    .tag-list li, .filter-list li {
+        width: 50%;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
 
 .tag-outer:not(:first-child) {
     margin-top: -30px;
@@ -307,7 +307,7 @@
         color: #666;
         background-color: #eee;
     }
-     
+
 .tag-extend-outer {
     display: none;
     padding: 15px;
@@ -318,7 +318,7 @@
 
 .tag-item.active, .filter-item.active {
     background-color: #ed5f82;
-    color: #fff!important;
+    color: #fff !important;
 }
 
 .tag-extend-outer.active {
@@ -387,7 +387,7 @@
         color: #0074d9 !important;
     }
 
-.judge-list td i, .filter-item i {
+.judge-list td i, .filter-item i, .problem-list i {
     width: 16px !important;
     height: 12px !important;
     font-size: 12px !important;
@@ -442,7 +442,7 @@
 }
 
     .status-filter li a {
-        border-left: none!important;
+        border-left: none !important;
     }
 
 @media (min-width:768px) {
@@ -453,8 +453,8 @@
 
 @media (max-width:767px) {
     .filter-outer {
-        width: calc(100% - 30px)!important;
-        left: 0!important;
+        width: calc(100% - 30px) !important;
+        left: 0 !important;
         margin-left: 15px;
     }
 }
@@ -606,7 +606,7 @@
     width: 100%;
     font-size: 38px;
     line-height: 38px;
-    color: #999!important;
+    color: #999 !important;
     margin-top: 15px;
 }
 
@@ -649,8 +649,8 @@
 }
 
 .banner-outer {
-    margin-left: 25px!important;
-    margin-right: 25px!important;
+    margin-left: 25px !important;
+    margin-right: 25px !important;
     width: calc(100% - 25px);
 }
 
@@ -752,9 +752,9 @@ body.full-screen {
     height: 100%;
 }
 
-.code-editor-outer.edit-mode pre {
-    height: calc(100% - 94px);
-}
+    .code-editor-outer.edit-mode pre {
+        height: calc(100% - 94px);
+    }
 
 .code-editor-header {
     background-color: #333;
@@ -792,9 +792,9 @@ body.full-screen {
     display: none;
 }
 
-#code-editor.active {
-    display: block;
-}
+    #code-editor.active {
+        display: block;
+    }
 
 .data-editor, .judge-panel {
     display: none;
@@ -804,7 +804,7 @@ body.full-screen {
 }
 
     .data-editor a {
-        color #aaa!important;
+        color #aaa !important;
     }
 
     .data-editor.active, .judge-panel.active {
@@ -885,16 +885,17 @@ select.code-editor-button {
         border-bottom: 1px solid #666;
     }
 
-.judge-panel-table tr:nth-child(4n) {
-    background: #444;
-}
-    .judge-panel-table tr:nth-child(4n+1) {
-        background: #444;
-    }
+        .judge-panel-table tr:nth-child(4n) {
+            background: #444;
+        }
 
-    .judge-panel-table tr:nth-child(2n+1) {
-        display: none;
-    }
+        .judge-panel-table tr:nth-child(4n+1) {
+            background: #444;
+        }
+
+        .judge-panel-table tr:nth-child(2n+1) {
+            display: none;
+        }
 
 .judge-panel-table-outer {
     margin: 0 -20px -20px -20px;
@@ -1099,10 +1100,10 @@ dd {
     transition: all 0.2s linear;
 }
 
-.login-box-bg.active {
-    visibility: visible;
-    opacity: 1;
-}
+    .login-box-bg.active {
+        visibility: visible;
+        opacity: 1;
+    }
 
 .login-box-outer {
     width: 670px;
@@ -1117,21 +1118,21 @@ dd {
     transition: all 0.2s ease-in-out;
 }
 
-.login-box-outer.active {
-    transform: scale(1);
-    opacity: 1;
-}
+    .login-box-outer.active {
+        transform: scale(1);
+        opacity: 1;
+    }
 
 .login-box-main {
-        width: 320px;
-        height: 450px;
-        background: #fff;
-        box-shadow: 0 0 30px rgba(0,0,0,.6);
-        padding: 50px;
-        margin-top: -400px;
-        margin-left: 25px;
-        color: #555;
-    }
+    width: 320px;
+    height: 450px;
+    background: #fff;
+    box-shadow: 0 0 30px rgba(0,0,0,.6);
+    padding: 50px;
+    margin-top: -400px;
+    margin-left: 25px;
+    color: #555;
+}
 
 .login-box-set {
     width: 670px;
@@ -1155,17 +1156,17 @@ dd {
         line-height: 22px;
         font-size: 16px;
         color: #e0e0e0;
-    } 
-        
-    .login-box-main h1 {
-        line-height: 35px;
-        font-size: 30px;
-        color: #5590ae;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-        font-weight: normal;
     }
+
+.login-box-main h1 {
+    line-height: 35px;
+    font-size: 30px;
+    color: #5590ae;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-weight: normal;
+}
 
 .login-box-note {
     margin-top: 4.2px;
@@ -1175,12 +1176,12 @@ dd {
 }
 
 .login-column {
-   font-size: 14px;
-   color: #555;
-   font-weight: normal;
-   display: block;
-   transition: all 0.2s linear;
-   cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    font-weight: normal;
+    display: block;
+    transition: all 0.2s linear;
+    cursor: pointer;
 }
 
 .login-focus-label {
@@ -1204,9 +1205,9 @@ dd {
     transition: all 0.2s linear;
 }
 
-.login-textbox:focus {
-    border-color: #5590ae;
-}
+    .login-textbox:focus {
+        border-color: #5590ae;
+    }
 
 .login-column input[type="checkbox"] {
     box-sizing: border-box;
@@ -1276,22 +1277,22 @@ dd {
         box-shadow: 0 4px 15px rgba(53,162,255,.3);
     }
 
-    .login-register {
-        display: inline-block;
-        font-size: 14px;
-        line-height: 31px;
-        border-radius: 35px;
-        padding: 0 25px;
-        text-align: center;
-        border: 2px solid #fff;
-        color: #fff;
-        transition: all 0.2s linear;
-    }
+.login-register {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 31px;
+    border-radius: 35px;
+    padding: 0 25px;
+    text-align: center;
+    border: 2px solid #fff;
+    color: #fff;
+    transition: all 0.2s linear;
+}
 
-        .login-register:hover {
-            border-color: #ffef87;
-            color: #ffef87;
-        }
+    .login-register:hover {
+        border-color: #ffef87;
+        color: #ffef87;
+    }
 
 .clear {
     clear: both;
@@ -1301,10 +1302,10 @@ dd {
     color: #666;
 }
 
-.problem-list a:hover {
-    color: #666;
-    text-decoration: underline;
-}
+    .problem-list a:hover {
+        color: #666;
+        text-decoration: underline;
+    }
 
 .problem-render {
     margin-top: 25px;
@@ -1335,10 +1336,10 @@ dd {
         font-size: 12px;
         font-family: 'Courier New';
     }
-    
-    .problem-edit-compile-error-message p:last-child {
-        margin-bottom: 0;
-    }
+
+        .problem-edit-compile-error-message p:last-child {
+            margin-bottom: 0;
+        }
 
 .problem-edit-compile-error-message-title {
     font-size: 16px;
@@ -1346,7 +1347,7 @@ dd {
 }
 
 .upload-button {
-    font-size: 128px!important;
+    font-size: 128px !important;
     color: #ccc;
     text-shadow: 5px 5px 0px #eee;
 }
@@ -1369,10 +1370,10 @@ dd {
         color: #ed5f82 !important;
     }
 
-    .upload-button-hidden {
-        display: none;
-        visibility: hidden;
-    }
+.upload-button-hidden {
+    display: none;
+    visibility: hidden;
+}
 
 .test-case-type-outer {
     text-align: center;
@@ -1382,7 +1383,7 @@ dd {
     .test-case-type-outer .tag-item {
         cursor: pointer;
         display: inline-block;
-        margin: inherit 5px!important;
+        margin: inherit 5px !important;
     }
 
 .area-item .table {
@@ -1428,7 +1429,7 @@ dd {
         color: #555;
         transition: background-color 0.2s linear;
     }
-    
+
     .accepted-problem-item:hover {
         background-color: #ed5f82;
     }
@@ -1491,10 +1492,10 @@ dd {
         border-left: 5px solid #8fd6f8;
     }
 
-    .notification-detail {
-        font-size: 12px;
-        color: #ccc;
-    }
+.notification-detail {
+    font-size: 12px;
+    color: #ccc;
+}
 
 .table-inline {
     margin: 0 -25px;
@@ -1503,9 +1504,9 @@ dd {
     line-height: 24px;
 }
 
-.table-inline thead {
-    color: #888;
-}
+    .table-inline thead {
+        color: #888;
+    }
 
     .table-inline td, .table-inline th {
         padding: 5px 12px;
@@ -1516,9 +1517,9 @@ dd {
         border-bottom: 1px solid #ddd;
     }
 
-        .table-inline tbody tr:nth-child(odd) {
-           background: #f4f4f4;
-        }
+    .table-inline tbody tr:nth-child(odd) {
+        background: #f4f4f4;
+    }
 
 .contest-countdown {
     font-size: 18px;
@@ -1529,9 +1530,9 @@ dd {
     margin-top: 10px;
 }
 
-.thread-body-subline a {
-    display: inline-block;
-}
+    .thread-body-subline a {
+        display: inline-block;
+    }
 
 .sample-data-table {
     table-layout: fixed;

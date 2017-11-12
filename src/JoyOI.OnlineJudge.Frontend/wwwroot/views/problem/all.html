@@ -3,6 +3,7 @@
         <div class="col-md-9">
             <table class="table-list problem-list">
                 <colgroup>
+                    <col v-if="$root.user.isSignedIn" style="width: 120px;" />
                     <col />
                     <col style="width: 60px;" />
                     <col style="width: 60px;" />
@@ -10,7 +11,8 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>题目</th>
+                        <th class="problem-list-status" v-if="$root.user.isSignedIn">状态</th>
+                        <th class="problem-list-title">题目</th>
                         <th>提交</th>
                         <th>AC%</th>
                         <th>难度</th>
@@ -18,16 +20,22 @@
                 </thead>
                 <tbody>
                     <tr v-for="problem in result">
-                        <td>
+                        <td v-if="$root.user.isSignedIn"
+                            class="problem-list-status"
+                            v-bind:class="{ 'judge-blue': $root.user.tried.some(x => x == problem.id) && !$root.user.passed.some(x => x == problem.id), 'judge-green': $root.user.passed.some(x => x == problem.id) }">
+                            <span v-if="$root.user.passed.some(x => x == problem.id)"><i class="fa fa-check"></i>Accepted</span>
+                            <span v-if="$root.user.tried.some(x => x == problem.id) && !$root.user.passed.some(x => x == problem.id)"><i class="fa fa-question"></i>Trying</span>
+                        </td>
+                        <td class="problem-list-title">
                             <router-link :to="{ name: '/problem/:id', path: '/problem/' + problem.id, params: { 'id': problem.id } }">{{ problem.title }}</router-link>
                             <div 
                                  class="problem-tag"
                                  v-on:click="triggerTag(tag)"
                                  v-for="tag in problem.tags ? problem.tags.split(',').map(x => x.trim()).sort() : []">{{ tag.split(':').slice(-1).pop() }}</div>
                         </td>
-                        <td>{{ problem.cachedSubmitCount }}</td>
-                        <td>{{ problem.cachedSubmitCount ? (problem.cachedAcceptedCount * 100 / problem.cachedSubmitCount).toFixed(0) : '0' }}%</td>
-                        <td>{{ problem.difficulty }}</td>
+                        <td class="problem-list-submit">{{ problem.cachedSubmitCount }}</td>
+                        <td class="problem-list-ratio">{{ problem.cachedSubmitCount ? (problem.cachedAcceptedCount * 100 / problem.cachedSubmitCount).toFixed(0) : '0' }}%</td>
+                        <td class="problem-list-difficulty">{{ problem.difficulty }}</td>
                     </tr>
                 </tbody>
                 <tfoot>

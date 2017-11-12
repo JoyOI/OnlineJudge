@@ -21,7 +21,9 @@
                 id: null,
                 username: null,
                 avatarUrl: null,
-                role: null
+                role: null,
+                tried: [],
+                passed: []
             }
         },
         preferences: {
@@ -65,6 +67,8 @@
                     self.user.profile.username = x.data.username;
                     self.user.profile.role = x.data.role;
                     self.user.profile.id = x.data.id;
+                    self.user.tried = x.data.tried;
+                    self.user.passed = x.data.passed;
                 });
         }
         else {

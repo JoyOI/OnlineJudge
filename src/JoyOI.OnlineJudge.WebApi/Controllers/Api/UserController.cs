@@ -136,6 +136,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret.Add("username", User.Current.UserName);
                 ret.Add("email", User.Current.Email);
                 ret.Add("role", roles.Count > 0 ? roles.First() : "Member");
+                ret.Add("tried", User.Current.TriedProblems.Object);
+                ret.Add("passed", User.Current.PassedProblems.Object);
             }
             return Result<dynamic>(ret);
         }
