@@ -175,6 +175,7 @@ component.methods = {
                 self.result.substatuses = y.data.subStatuses.map(z => {
                     return { hint: z.hint, status: formatJudgeResult(z.result), time: z.timeUsedInMs, memory: z.memoryUsedInByte };
                 });
+                app.control.userInfoView.refresh();
             })
                 .catch(err => {
                     app.notification('error', '获取评测详细信息失败', err.responseJSON.msg);

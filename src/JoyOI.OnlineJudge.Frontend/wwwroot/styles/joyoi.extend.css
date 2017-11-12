@@ -1445,6 +1445,7 @@ dd {
 .judge-panel-table .judge-panel-hint pre {
     background: #555;
     color: #ccc;
+    padding: 5px 10px;
 }
 
 .api-disabled {
@@ -1541,3 +1542,10 @@ dd {
     .sample-data-table td {
         vertical-align: top;
     }
+
+
+.judge-panel-table-outer-light pre {
+    background: none !important;
+    color: #888 !important;
+    border: 1px solid #ddd;
+}

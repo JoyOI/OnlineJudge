@@ -39,7 +39,8 @@
             apiLock: false,
             currentNotification: null,
             notifications: [],
-            notificationLock: false
+            notificationLock: false,
+            userInfoView: null
         }
     },
     created: function () {
@@ -62,14 +63,14 @@
         if (document.cookie.indexOf("AspNetCore") >= 0) {
             var self = this;
             self.user.isSignedIn = true;
-            qv.get('/api/user/session/info')
-                .then((x) => {
-                    self.user.profile.username = x.data.username;
-                    self.user.profile.role = x.data.role;
-                    self.user.profile.id = x.data.id;
-                    self.user.tried = x.data.tried;
-                    self.user.passed = x.data.passed;
-                });
+            self.control.userInfoView = qv.createView('/api/user/session/info');
+            self.control.userInfoView.fetch((x) => {
+                self.user.profile.username = x.data.username;
+                self.user.profile.role = x.data.role;
+                self.user.profile.id = x.data.id;
+                self.user.tried = x.data.tried;
+                self.user.passed = x.data.passed;
+            });
         }
         else {
             this.user.isSignedIn = false;
