@@ -163,8 +163,8 @@ component.methods = {
             userId: self.selectedSubmittor,
             contestId: self.selectedContest.id,
             language: self.selectedLanguage,
-            begin: self.selectedTime ? self.selectedTime.begin : null,
-            end: self.selectedTime ? self.selectedTime.end : null,
+            begin: self.selectedTime && self.selectedTime.begin ? new Date(self.selectedTime.begin).toISOString() : null,
+            end: self.selectedTime && self.selectedTime.end ? new Date(self.selectedTime.end).toISOString() : null,
             page: self.paging.current
         });
         self.view.fetch(x => {
