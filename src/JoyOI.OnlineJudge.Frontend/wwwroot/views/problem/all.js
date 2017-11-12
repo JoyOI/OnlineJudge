@@ -27,10 +27,14 @@ component.watch = {
     },
     request: {
         handler: function (value) {
-            console.log(value);
             var self = this;
-            this.view.unsubscribe();
-            this.view = qv.createView('/api/problem/all', this.request).fetch(x => {
+
+            if (this.view) {
+                this.view.unsubscribe();
+            }
+
+            this.view = qv.createView('/api/problem/all', this.request)
+            this.view.fetch(x => {
                 self.paging.count = x.data.count;
                 self.paging.current = x.data.current;
                 self.paging.total = x.data.total;

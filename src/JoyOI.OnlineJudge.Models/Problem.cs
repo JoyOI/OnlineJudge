@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -177,6 +178,14 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>Memory limitation per case in byte</value>
         [WebApi(FilterLevel.GetListDisabled)]
         public int MemoryLimitationPerCaseInByte { get; set; }
+
+        [JsonIgnore]
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetSingleDisabled | FilterLevel.PatchDisabled)]
+        public string Template { get; set; }
+
+        [NotMapped]
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.PatchDisabled)]
+        public Dictionary<string, string> CodeTemplate { get { return JsonConvert.DeserializeObject<Dictionary<string, string>>(Template); } }
 
         public virtual ICollection<TestCase> TestCases { get; set; } = new List<TestCase>();
     }
