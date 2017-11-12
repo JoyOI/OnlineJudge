@@ -15,7 +15,7 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The registery time.</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
-        public DateTime RegisteryTime { get; set; }
+        public DateTime RegisteryTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Gets or sets the access token.

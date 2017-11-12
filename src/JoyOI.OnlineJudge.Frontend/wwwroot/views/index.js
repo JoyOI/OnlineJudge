@@ -151,6 +151,9 @@
                 path = name;
             LazyRouting.RedirectTo(name, path, params);
         },
+        toLocalTime: function (timeStr) {
+            return moment(new Date(timeStr + 'Z')).format('YYYY-MM-DD HH:mm:ss');
+        },
         _showNotification: function () {
             var self = this;
             if (!this.control.notificationLock && this.control.notifications.length) {

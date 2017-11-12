@@ -67,7 +67,7 @@
                         <dt>峰值内存</dt>
                         <dd>{{ (peakMemory / 1024 / 1024).toFixed(1) }}MiB</dd>
                         <dt>提交时间</dt>
-                        <dd>{{ time }}</dd>
+                        <dd v-bind:title="$root.toLocalTime(time)">{{ $root.toLocalTime(time) }}</dd>
                     </dl>
                 </div>
             </div>
