@@ -66,7 +66,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var tags = tag.Split(",").Select(x => x.Trim());
                 if (tags.Count() > 0)
                 {
-                    ret = ret.Where(ContainsWhere<Problem>(x => x.Tags, tags));
+                    foreach (var t in tags.GroupBy(x => x.Split(':')[0]))
+                    {
+                        ret = ret.Where(ContainsWhere<Problem>(x => x.Tags, t));
+                    }
                 }
             }
 
