@@ -45,9 +45,6 @@ component.watch = {
         this.loadStatuses();
     },
     view: function (newVal, oldVal) {
-        if (oldVal) {
-            oldVal.unsubscribe();
-        }
         var fields = getFields(newVal.__cacheInfo.params);
         if (fields.length == 0 || fields.length == 1 && fields[0] == 'page') {
             newVal.subscribe('judge');
@@ -156,7 +153,9 @@ component.methods = {
     },
     loadStatuses: function () {
         var self = this;
-        
+        if (self.view) {
+            self.unsubscribe();
+        }
         self.view = qv.createView('/api/judge/all', {
             problemid: self.selectedProblem ? self.selectedProblem.id : null,
             status: self.selectedStatus,
