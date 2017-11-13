@@ -219,7 +219,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Uploaded Problems
-        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)/uploadedproblem}")]
+        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/uploadedproblem")]
         public async Task<IActionResult> GetUploadedProblem(string username, CancellationToken token)
         {
             var user = await User.Manager.FindByNameAsync(username);
