@@ -11,6 +11,7 @@ component.data = function () {
         activeTime: null,
         topics: [],
         passedProblems: [],
+        uploadedProblems: [],
         motto: null,
         tab: 'passed'
     };
@@ -18,7 +19,7 @@ component.data = function () {
 
 component.created = function () {
     var self = this;
-    qv.createView('/api/user/' + router.history.current.params.username)
+    qv.createView('/api/user/' + router.history.current.params.username, 300 * 1000)
         .fetch(x => {
             self.id = x.data.id;
             self.username = x.data.username;
@@ -44,9 +45,12 @@ component.created = function () {
             }
 
             qv.createView('/api/user/role', { userids: x.data.id })
-                .fetch(y =>
-                {
+                .fetch(y => {
                     self.role = y.data[x.data.id].role;
                 });
+        });
+    qv.createView('/api/user' + router.history.current.params.username + '/uploadedproblem', 600 * 1000)
+        .fetch(x => {
+            self.uploadedProblems = x.data;
         });
 };

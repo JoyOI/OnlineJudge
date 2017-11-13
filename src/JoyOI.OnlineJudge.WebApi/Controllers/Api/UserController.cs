@@ -217,5 +217,24 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(await XApi.GetUserBlogDomainAsync(username, token));
         }
         #endregion
+
+        #region Uploaded Problems
+        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)/uploadedproblem}")]
+        public async Task<IActionResult> GetUploadedProblem(string username, CancellationToken token)
+        {
+            var user = await User.Manager.FindByNameAsync(username);
+            var problems = DB.Problems
+                .Where(x => x.IsVisiable)
+                .Where(x => DB.UserClaims.Any(y => y.UserId == user.Id && y.ClaimType == Constants.ProblemEditPermission && y.ClaimValue == x.Id))
+                .OrderBy(x => x.Id)
+                .Select(x => new
+                {
+                    id = x.Id,
+                    title = x.Title
+                });
+
+            return Result(problems);
+        }
+        #endregion
     }
 }
