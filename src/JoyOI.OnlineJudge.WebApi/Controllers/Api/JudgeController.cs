@@ -186,7 +186,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Id = await MgmtSvc.PutBlobAsync("limit.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
                     {
                         UserTime = problem.TimeLimitationPerCaseInMs,
-                        PhysicalTime = problem.TimeLimitationPerCaseInMs * 2,
+                        PhysicalTime = problem.TimeLimitationPerCaseInMs * 4,
                         Memory = problem.MemoryLimitationPerCaseInByte
                     }))),
                     Name = "limit.json",
