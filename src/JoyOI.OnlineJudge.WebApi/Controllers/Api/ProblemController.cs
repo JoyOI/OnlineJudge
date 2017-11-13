@@ -279,6 +279,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             DB.Problems.Add(problem);
             await DB.SaveChangesAsync(token);
+            await User.Manager.AddClaimAsync(User.Current, new System.Security.Claims.Claim(Constants.ProblemEditPermission, problem.Id));
             return Result(200, "Put Succeeded");
         }
         
