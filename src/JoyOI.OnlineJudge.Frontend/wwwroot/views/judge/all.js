@@ -170,6 +170,7 @@ component.methods = {
         $('.time-filter').removeClass('active');
     },
     loadStatuses: function () {
+        $(window).scrollTop(0);
         var self = this;
         if (self.view) {
             self.view.unsubscribe();

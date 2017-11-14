@@ -40,6 +40,7 @@ component.watch = {
                 self.paging.total = x.data.total;
                 self.result = x.data.result;
                 self.view.subscribe('problem-list');
+                $(window).scrollTop(0);
             });
         },
         deep: true
