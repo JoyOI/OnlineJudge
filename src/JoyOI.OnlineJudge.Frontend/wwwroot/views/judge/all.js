@@ -102,14 +102,32 @@ component.methods = {
                         id: y.id,
                         username: y.userName,
                         avatarUrl: y.avatarUrl,
-                        roleClass: null
+                        roleClass: app.lookup.user[y.id] ? app.lookup.user[y.id].class : undefined
                     }
-                }).slice(0,5);
-                qv.createView('/api/user/role', { usernames: self.submittorSearchResult.map(y => y.username).toString()}).fetch(y => {
-                    for (var i = 0; i < self.submittorSearchResult.length; i++) {
-                        self.submittorSearchResult[i].roleClass = ConvertUserRoleToCss(y.data[self.submittorSearchResult[i].username].role);
-                    }
-                });
+                }).slice(0, 5);
+
+                var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
+                var uncachedUsers = self.submittorSearchResult.map(y => y.username).filter(y => !cachedUsers.some(z => z == y));
+                if (uncachedUsers.length) {
+                    qv.get('/api/user/role', { usernames: self.submittorSearchResult.map(y => y.username).toString() }).then(y => {
+                        for (var z in y.data) {
+                            app.lookup.user[z] = {
+                                id: z.id,
+                                avatar: y.data[z].avatarUrl,
+                                name: y.data[z].username,
+                                role: y.data[z].role,
+                                class: ConvertUserRoleToCss(y.data[z].role)
+                            };
+
+                            app.lookup[y.data[z].username] = app.lookup.user[z];
+
+                            var impactedResults = self.submittorSearchResult.filter(r => r.username == z);
+                            for (var i in impactedResults) {
+                                impactedResults[i].roleClass = app.lookup.user[z].class;
+                            }
+                        }
+                    });
+                }
             });
         }
     },
@@ -188,8 +206,9 @@ component.methods = {
                 ret.result = formatJudgeResult(y.result);
                 ret.resultClass = ConvertJudgeResultToCss(ret.result);
                 ret.iconClass = ConvertJudgeResultToIconCss(ret.result);
-                ret.userName = y.userId.substr(0, 8);
-                ret.roleClass = null;
+                ret.userName = app.lookup.user[y.userId] ? app.lookup.user[y.userId].name : y.userId.substr(0, 8);
+                ret.userRole = app.lookup.user[y.userId] ? app.lookup.user[y.userId].role : undefined;
+                ret.roleClass = app.lookup.user[y.userId] ? app.lookup.user[y.userId].class : undefined;
                 ret.problemTitle = app.lookup.problem[ret.problemId];
                 return ret;
             });
@@ -200,23 +219,43 @@ component.methods = {
                 if (uncachedProblems.length) {
                     qv.get('/api/problem/title', { problemids: uncachedProblems.toString() })
                         .then(y => {
-                            for (var i = 0; i < self.result.length; i++) {
-                                app.lookup.problem[self.result[i].problemId] = y.data[self.result[i].problemId].title;
-                                self.result[i].problemTitle = app.lookup.problem[self.result[i].problemId];
+                            for (var z in y.data) {
+                                app.lookup.problem[z] = y.data[z].title;
+                                var impactedResults = self.result.filter(a => a.problemId == z);
+                                for (var i in impactedResults) {
+                                    impactedResults[i].problemTitle = app.lookup.problem[z];
+                                }
                             }
                             self.$forceUpdate();
                         });
                 }
 
-                qv.createView('/api/user/role', { userids: x.data.result.map(y => y.userId).toString() })
-                    .fetch(y => {
-                        for (var i = 0; i < self.result.length; i++) {
-                            self.result[i].userName = y.data[self.result[i].userId].username;
-                            self.result[i].userRole = y.data[self.result[i].userId].role;
-                            self.result[i].roleClass = ConvertUserRoleToCss(self.result[i].userRole);
-                        }
-                        self.$forceUpdate();
-                    })
+                var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
+                var uncachedUsers = x.data.result.map(y => y.userId).filter(y => !cachedUsers.some(z => z == y));
+                if (uncachedUsers.length) {
+                    qv.get('/api/user/role', { userids: uncachedUsers.toString() })
+                        .then(y => {
+                            for (var z in y.data) {
+                                app.lookup.user[z] = {
+                                    id: z.id,
+                                    avatar: y.data[z].avatarUrl,
+                                    name: y.data[z].username,
+                                    role: y.data[z].role,
+                                    class: ConvertUserRoleToCss(y.data[z].role)
+                                };
+
+                                app.lookup[y.data[z].id] = app.lookup.user[z];
+
+                                var impactedResults = self.result.filter(a => a.userId == z);
+                                for (var i in impactedResults) {
+                                    impactedResults[i].userName = app.lookup.user[z].name;
+                                    impactedResults[i].userRole = app.lookup.user[z].role;
+                                    impactedResults[i].roleClass = app.lookup.user[z].class;
+                                }
+                            }
+                            self.$forceUpdate();
+                        });
+                }
             }
 
             self.view.subscribe('judge');
