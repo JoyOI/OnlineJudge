@@ -35,6 +35,10 @@
                 listeners: []
             }
         },
+        lookup: {
+            user: {},
+            problem: {}
+        },
         control: {
             apiLock: false,
             currentNotification: null,

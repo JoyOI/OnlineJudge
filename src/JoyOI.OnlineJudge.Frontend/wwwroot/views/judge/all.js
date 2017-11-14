@@ -154,7 +154,7 @@ component.methods = {
     loadStatuses: function () {
         var self = this;
         if (self.view) {
-            self.unsubscribe();
+            self.view.unsubscribe();
         }
         self.view = qv.createView('/api/judge/all', {
             problemid: self.selectedProblem ? self.selectedProblem.id : null,
@@ -190,17 +190,24 @@ component.methods = {
                 ret.iconClass = ConvertJudgeResultToIconCss(ret.result);
                 ret.userName = y.userId.substr(0, 8);
                 ret.roleClass = null;
+                ret.problemTitle = app.lookup.problem[ret.problemId];
                 return ret;
             });
 
             if (self.result.length) {
-                qv.createView('/api/problem/title', { problemids: x.data.result.map(y => y.problemId).toString() })
-                    .fetch(y => {
-                        for (var i = 0; i < self.result.length; i++) {
-                            self.result[i].problemTitle = y.data[self.result[i].problemId].title;
-                        }
-                        self.$forceUpdate();
-                    });
+                var cachedProblems = Object.getOwnPropertyNames(app.lookup.problem);
+                var uncachedProblems = x.data.result.map(y => y.problemId).filter(y => !cachedProblems.some(z => z == y));
+                if (uncachedProblems.length) {
+                    qv.get('/api/problem/title', { problemids: uncachedProblems.toString() })
+                        .then(y => {
+                            for (var i = 0; i < self.result.length; i++) {
+                                app.lookup.problem[self.result[i].problemId] = y.data[self.result[i].problemId].title;
+                                self.result[i].problemTitle = app.lookup.problem[self.result[i].problemId];
+                            }
+                            self.$forceUpdate();
+                        });
+                }
+
                 qv.createView('/api/user/role', { userids: x.data.result.map(y => y.userId).toString() })
                     .fetch(y => {
                         for (var i = 0; i < self.result.length; i++) {
