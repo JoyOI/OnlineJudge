@@ -177,20 +177,26 @@
     float: left;
 }
 
-    .thread-body a {
+    .thread-body>a {
         font-size: 22px;
         line-height: 22px;
         margin-bottom: 14px;
         display: block;
+        font-weight: lighter;
     }
 
 .thread-body-subline {
     height: 24px;
     line-height: 24px;
+    color: #aaa!important;
 }
 
+    .thread-body-subline a, .thread-body-subline span, .thread-body-subline div, .thread-body-subline i {
+        color: #aaa !important;
+    }
+
 .thread-body-forum {
-    height: 24px;
+    height: 26px;
     line-height: 24px;
     font-size: 14px;
     display: inline-block;
@@ -591,6 +597,10 @@
 .sidebar-hr {
     border: none;
     border-top: 1px solid #ddd;
+}
+
+.sidebar-section-button:hover {
+    text-decoration: none;
 }
 
 .sidebar-section-button i {
@@ -1429,6 +1439,7 @@ dd {
     .accepted-problem-item a {
         color: #555;
         transition: background-color 0.2s linear;
+        text-decoration: none;
     }
 
     .accepted-problem-item:hover {
@@ -1550,3 +1561,17 @@ dd {
     color: #888 !important;
     border: 1px solid #ddd;
 }
+
+.table-list th a {
+    color: #5590ae;
+}
+
+.thread-body-forum:hover {
+    border-color: #699fd4;
+    background-color: #699fd4;
+    color: #fff !important;
+}
+
+    .thread-body-forum:hover i {
+        color: #fff !important;
+    }

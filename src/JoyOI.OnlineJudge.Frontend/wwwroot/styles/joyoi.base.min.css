@@ -1364,7 +1364,6 @@ a {
 }
 
     a:focus, a:hover {
-        color: #23527c;
         text-decoration: underline
     }
 
@@ -10554,20 +10553,6 @@ body {
     line-height: 1.25em
 }
 
-a {
-    color: #ff5722;
-    -webkit-transition: all .25s;
-    -moz-transition: all .25s;
-    -ms-transition: all .25s;
-    -o-transition: all .25s;
-    transition: all .25s
-}
-
-    a:focus, a:hover {
-        color: #ff5722;
-        text-decoration: none
-    }
-
     a img, a:active, a:focus {
         outline: 0;
         text-decoration: none
@@ -12745,7 +12730,7 @@ body {
 }
 
 a {
-    color: #5590ae;
+    color: #555;
     -webkit-transition: all .25s;
     -moz-transition: all .25s;
     -ms-transition: all .25s;
@@ -12754,8 +12739,7 @@ a {
 }
 
     a:focus, a:hover {
-        color: #ffa285;
-        text-decoration: none
+        text-decoration: underline;
     }
 
     a img, a:active, a:focus {
