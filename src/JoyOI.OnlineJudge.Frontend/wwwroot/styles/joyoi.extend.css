@@ -1576,3 +1576,9 @@ dd {
     .thread-body-forum:hover i {
         color: #fff !important;
     }
+
+.area-item .panel {
+    border: none;
+    box-shaodw: none;
+    -webkit-box-shadow: none;
+}
