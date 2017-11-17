@@ -64,7 +64,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
             Guid id)
         {
             var statemachine = await MgmtSvc.GetStateMachineInstanceAsync(id, default(CancellationToken));
-            var actors = statemachine.StartedActors.Where(x => x.Name == "LeetCodePullProblemBodyActor" && x.Outputs.Any(y => y.Name == "problem.json")).ToDictionary(x => "bzoj-" + x.Tag);
+            var actors = statemachine.StartedActors.Where(x => x.Name == "LeetCodePullProblemBodyActor" && x.Outputs.Any(y => y.Name == "problem.json")).ToDictionary(x => "leetcode-" + x.Tag);
             var ids = actors.Keys.Select(x => x).ToList();
 
             foreach (var i in ids)
@@ -100,6 +100,5 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
 
             return Result(200, "ok");
         }
-
     }
 }

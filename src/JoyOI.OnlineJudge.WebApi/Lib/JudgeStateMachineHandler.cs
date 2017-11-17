@@ -40,10 +40,18 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
         {
             if (statemachine.StartedActors.Count() == 1 && statemachine.StartedActors.Last().Name == "CompileActor")
             {
-                var runner = await _mgmt.ReadBlobAsObjectAsync<Runner>(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "runner.json").Id, token);
-                var stdout = await _mgmt.ReadBlobAsStringAsync(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "stdout.txt").Id, token);
-                var stderr = await _mgmt.ReadBlobAsStringAsync(statemachine.StartedActors.Last().Outputs.Single(x => x.Name == "stderr.txt").Id, token);
-                return (true, string.Join(Environment.NewLine, runner.Error, stdout, stderr));
+                var actor = statemachine.StartedActors.Last();
+                if (actor.Status == ManagementService.Model.Enums.ActorStatus.Failed)
+                {
+                    return (true, string.Join(Environment.NewLine, string.Join("\r\n", actor.Exceptions), null, null));
+                }
+                else
+                {
+                    var runner = await _mgmt.ReadBlobAsObjectAsync<Runner>(actor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                    var stdout = await _mgmt.ReadBlobAsStringAsync(actor.Outputs.Single(x => x.Name == "stdout.txt").Id, token);
+                    var stderr = await _mgmt.ReadBlobAsStringAsync(actor.Outputs.Single(x => x.Name == "stderr.txt").Id, token);
+                    return (true, string.Join(Environment.NewLine, runner.Error, stdout, stderr));
+                }
             }
             else
             {

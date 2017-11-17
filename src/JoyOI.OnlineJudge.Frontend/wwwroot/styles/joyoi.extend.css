@@ -342,7 +342,7 @@
 
 .judge-green {
     border-left: 3px solid #2ac649 !important;
-    color: #2ac649;
+    color: #2ac649 !important;
 }
 
     .judge-green a {
@@ -599,8 +599,8 @@
     border-top: 1px solid #ddd;
 }
 
-.sidebar-section-button:hover {
-    text-decoration: none;
+.sidebar-section-button:hover, .tag-item {
+    text-decoration: none !important;
 }
 
 .sidebar-section-button i {
