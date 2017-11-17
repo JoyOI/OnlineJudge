@@ -783,6 +783,7 @@ body.full-screen {
 
     .code-editor-button:hover {
         background-color: #555;
+        text-decoration: none!important;
     }
 
     .code-editor-button.active {
@@ -818,7 +819,7 @@ body.full-screen {
     }
 
     .data-editor.active, .judge-panel.active {
-        height: calc(100% - 44px);
+        height: calc(100% - 88px);
         overflow-y: auto;
         display: block;
     }
@@ -883,7 +884,7 @@ body.full-screen {
 select.code-editor-button {
     background-color: #333;
     border: 1px solid #666;
-    border-radius: none;
+    border-radius: 0;
 }
 
 .judge-panel-table {

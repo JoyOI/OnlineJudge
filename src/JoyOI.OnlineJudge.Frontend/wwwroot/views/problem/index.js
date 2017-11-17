@@ -8,6 +8,7 @@ component.data = function () {
         id: router.history.current.params.id,
         title: null,
         body: null,
+        template: null,
         sampleData: [],
         source: null,
         time: null,
@@ -72,7 +73,11 @@ component.created = function () {
             self.time = x.data.timeLimitationPerCaseInMs;
             self.memory = x.data.memoryLimitationPerCaseInByte;
             self.body = x.data.body;
+            self.template = x.data.codeTemplate;
             self.source = x.data.source;
+            if (self.template) {
+                self.control.languages = Object.getOwnPropertyNames(x.data.codeTemplate).filter(x => x !== '__ob__');
+            }
             problemView.subscribe('problem', x.data.id);
         });
     var sampleView = qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
@@ -94,8 +99,13 @@ component.watch = {
         app.title = this.title;
     },
     'form.language': function (val) {
+        var self = this;
         if (val) {
             $('#code-editor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[val]);
+            if (self.template) {
+                $('#code-editor')[0].editor.setValue(self.template[val]);
+                $('#code-editor')[0].editor.selection.moveCursorToPosition({ row: 0, column: 0 });
+            }
         }
     },
     'result.view': function (newVal, oldVal) {
@@ -106,6 +116,9 @@ component.watch = {
 
 component.methods = {
     goToEditMode: function () {
+        if (!this.form.code && this.template) {
+            this.form.code = this.template[this.form.language];
+        }
         $('#code-editor')[0].editor.setValue(this.form.code);
         this.control.isInSubmitMode = false;
         this.control.isInEditMode = true;
@@ -113,6 +126,9 @@ component.methods = {
         __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
     },
     goToSubmitMode: function () {
+        if (!this.form.code && this.template) {
+            this.form.code = this.template[this.form.language];
+        }
         this.control.isInSubmitMode = true;
         $('#code-editor')[0].editor.setValue(this.form.code);
         setTimeout(function () { $('#code-editor')[0].editor.resize(); }, 250);

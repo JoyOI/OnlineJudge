@@ -9,6 +9,7 @@
         Bzoj,
         Codeforces,
         Vijos,
-        LeetCode
+        LeetCode,
+        CodeVS
     }
 }

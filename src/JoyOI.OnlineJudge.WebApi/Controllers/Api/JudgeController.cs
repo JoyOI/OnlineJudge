@@ -314,7 +314,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             #region Bzoj
             else if (problem.Source == ProblemSource.Bzoj)
             {
-                var remoteAccount = DB.VirtualJudgeUsers.First(x => !x.LockerId.HasValue && x.Source == ProblemSource.Bzoj);
                 var metadata = new
                 {
                     Source = "Bzoj",
@@ -323,7 +322,79 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     ProblemId = problem.Id.Replace("bzoj-", "")
                 };
 
-                var metadataBlob = new BlobInfo {
+                var metadataBlob = new BlobInfo
+                {
+                    Id = await MgmtSvc.PutBlobAsync("metadata.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)), token),
+                    Name = "metadata.json",
+                    Tag = "Problem=" + problem.Id
+                };
+
+                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("VirtualJudgeStateMachine", Config["ManagementService:Callback"], new[] { metadataBlob }, token);
+
+                var status = new JudgeStatus
+                {
+                    Code = request.code,
+                    Language = request.language,
+                    ProblemId = problem.Id,
+                    IsSelfTest = false,
+                    UserId = User.Current.Id,
+                    Result = JudgeResult.Pending,
+                    RelatedStateMachineIds = new List<JudgeStatusStateMachine>
+                    {
+                        new JudgeStatusStateMachine {
+                            StateMachine = new StateMachine
+                            {
+                                CreatedTime = DateTime.Now,
+                                Name = "JudgeStateMachine",
+                                Id = stateMachineId
+                            },
+                            StateMachineId = stateMachineId
+                        }
+                    }
+                };
+
+                DB.JudgeStatuses.Add(status);
+                await DB.SaveChangesAsync(token);
+
+                // For debugging
+                if (Config["ManagementService:Mode"] == "Polling")
+                {
+                    Task.Factory.StartNew(async () =>
+                    {
+                        using (var scope = scopeFactory.CreateScope())
+                        {
+                            try
+                            {
+                                await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                                var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
+                                await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine(ex);
+                            }
+                        }
+                    });
+                }
+
+                hub.Clients.All.InvokeAsync("ItemUpdated", "judge", status.Id);
+
+                return Result(status.Id);
+            }
+            #endregion
+            #region LeetCode
+            else if (problem.Source == ProblemSource.LeetCode)
+            {
+                var metadata = new
+                {
+                    Source = "LeetCode",
+                    Language = request.language,
+                    Code = request.code,
+                    ProblemId = problem.Id.Replace("leetcode-", "")
+                };
+
+                var metadataBlob = new BlobInfo
+                {
                     Id = await MgmtSvc.PutBlobAsync("metadata.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(metadata)), token),
                     Name = "metadata.json",
                     Tag = "Problem=" + problem.Id
@@ -428,19 +499,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             ret.SubStatuses = ret.SubStatuses.OrderBy(x => x.SubId).ToList();
-
-            // Bzoj
-            if (problem.Source == ProblemSource.Bzoj)
-            {
-                ret.SubStatuses.Add(new SubJudgeStatus
-                {
-                    SubId = 1,
-                    MemoryUsedInByte = ret.MemoryUsedInByte,
-                    TimeUsedInMs = ret.TimeUsedInMs,
-                    Result = ret.Result,
-                    Hint = "Bzoj 不支持显示测试点详细信息"
-                });
-            }
 
             return Result(ret);
         }

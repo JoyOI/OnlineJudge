@@ -266,7 +266,35 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     .SetField(x => x.Hint).WithValue(resultBody.Hint)
                     .Update();
 
-                // TODO: Sub statuses
+                // Handle sub-status
+                if (resultBody.SubStatuses != null && resultBody.SubStatuses.Count() > 0)
+                {
+                    foreach (var x in resultBody.SubStatuses)
+                    {
+                        _db.SubJudgeStatuses.Add(new SubJudgeStatus
+                        {
+                            SubId = x.SubId,
+                            Result = Enum.Parse<JudgeResult>(x.Result),
+                            TimeUsedInMs = (int)x.TimeUsedInMs,
+                            MemoryUsedInByte = (int)x.MemoryUsedInByte,
+                            StatusId = statusId,
+                            Hint = x.Hint
+                        });
+                    }
+                }
+                else
+                {
+                    _db.SubJudgeStatuses.Add(new SubJudgeStatus
+                    {
+                        SubId = 1,
+                        Result = Enum.Parse<JudgeResult>(resultBody.Result),
+                        TimeUsedInMs = (int)resultBody.TimeUsedInMs,
+                        MemoryUsedInByte = (int)resultBody.MemoryUsedInByte,
+                        StatusId = statusId,
+                        Hint = $"{ problem.Source }不支持查看测试点信息"
+                    });
+                }
+                _db.SaveChanges();
 
                 UpdateUserProblemJson(userId, problem.Id, judgeResult == JudgeResult.Accepted);
                 if (judgeResult == JudgeResult.Accepted)

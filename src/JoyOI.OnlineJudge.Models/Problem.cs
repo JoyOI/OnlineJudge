@@ -180,7 +180,7 @@ namespace JoyOI.OnlineJudge.Models
         public int MemoryLimitationPerCaseInByte { get; set; }
 
         [JsonIgnore]
-        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetSingleDisabled | FilterLevel.PatchDisabled)]
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.PatchDisabled)]
         public string Template { get; set; }
 
         [NotMapped]

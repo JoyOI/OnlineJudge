@@ -25,15 +25,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
                 return Result(404, "Status not found");
             }
 
-            if (status.Problem.Source == OnlineJudge.Models.ProblemSource.Bzoj)
+            if (await DB.VirtualJudgeUsers.AnyAsync(x => x.Source == status.Problem.Source))
             {
                 var account = await DB.VirtualJudgeUsers
-                    .SingleOrDefaultAsync(x => x.Source == OnlineJudge.Models.ProblemSource.Bzoj && x.LockerId == status.Id, token);
+                    .SingleOrDefaultAsync(x => x.Source == status.Problem.Source && x.LockerId == status.Id, token);
 
                 while (account == null)
                 {
                     var affectedRows = DB.VirtualJudgeUsers
-                        .Where(x => x.Source == OnlineJudge.Models.ProblemSource.Bzoj && !x.LockerId.HasValue)
+                        .Where(x => x.Source == status.Problem.Source && !x.LockerId.HasValue)
                         .Take(1)
                         .SetField(x => x.LockerId).WithValue(status.Id)
                         .Update();
@@ -41,7 +41,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
                     if (affectedRows == 1)
                     {
                         account = await DB.VirtualJudgeUsers
-                            .SingleOrDefaultAsync(x => x.Source == OnlineJudge.Models.ProblemSource.Bzoj && x.LockerId == status.Id, token);
+                            .SingleOrDefaultAsync(x => x.Source == status.Problem.Source && x.LockerId == status.Id, token);
                     }
                     else
                     {
@@ -57,7 +57,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Management
             }
             else
             {
-                return Result(400, "Problem source not supported");
+                return Result(400, "Problem source not supported or the admin did not put accounts into the pool");
             }
         }
     }

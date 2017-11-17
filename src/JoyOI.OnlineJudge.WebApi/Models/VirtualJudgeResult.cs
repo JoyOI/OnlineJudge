@@ -14,7 +14,7 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
     public class VirtualJudgeSubStatus
     {
-        public string SubId { get; set; }
+        public int SubId { get; set; }
 
         public string Result { get; set; }
 
