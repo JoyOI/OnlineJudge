@@ -155,7 +155,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             // TODO: Check contest permission
 
-            if (!Constants.CompileNeededLanguages.Contains(request.language) && !Constants.ScriptLanguages.Contains(request.language) && problem.Source == ProblemSource.Local)
+            if (!Constants.SupportedLanguages.Contains(request.language) && !Constants.UnsupportedLanguages.Contains(request.language) && problem.Source == ProblemSource.Local)
             {
                 return Result(400, "The programming language which you selected was not supported");
             }
@@ -176,8 +176,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var blobs = new ConcurrentDictionary<int, BlobInfo[]>();
                 blobs.TryAdd(-1, new[] { new BlobInfo
                 {
-                    Id = await MgmtSvc.PutBlobAsync("Main" + Constants.GetExtension(request.language), Encoding.UTF8.GetBytes(request.code)),
-                    Name = "Main" + Constants.GetExtension(request.language),
+                    Id = await MgmtSvc.PutBlobAsync("Main" + Constants.GetSourceExtension(request.language), Encoding.UTF8.GetBytes(request.code)),
+                    Name = "Main" + Constants.GetSourceExtension(request.language),
                     Tag = "Problem=" + problem.Id
                 }
             });
@@ -200,7 +200,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     new BlobInfo
                     {
                         Id = Guid.Parse(Config["JoyOI:StandardValidatorBlobId"]),
-                        Name = "Validator.out"
+                        Name = "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage)
                     }
                 });
                 }
@@ -297,7 +297,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         {
                             try
                             {
-                                await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                                await awaiter.GetStateMachineResultAsync(stateMachineId);
                                 var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
                                 await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
                             }
@@ -365,7 +365,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         {
                             try
                             {
-                                await awaiter.GetStateMachineResultAsync(stateMachineId, default(CancellationToken));
+                                await awaiter.GetStateMachineResultAsync(stateMachineId);
                                 var handler = scope.ServiceProvider.GetService<JudgeStateMachineHandler>();
                                 await handler.HandleJudgeResultAsync(stateMachineId, default(CancellationToken));
                             }

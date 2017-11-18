@@ -78,10 +78,11 @@ var languages = [
     'C++',
     'Pascal',
     'C#',
+    'F#',
+    'VB.NET',
+    'Java',
     'Python',
-    'Ruby',
-    'JavaScript',
-    'Java'
+    'JavaScript'
 ];
 
 var contestTypes = [
@@ -95,10 +96,11 @@ var syntaxHighlighter = {
     'C++': 'c_cpp',
     'C#': 'csharp',
     'Pascal': 'pascal',
-    'Ruby': 'ruby',
     'Python': 'python',
     'JavaScript': 'javascript',
-    'Java': 'java'
+    'Java': 'java',
+    'VB.NET': 'vb',
+    'F#': 'fsharp'
 };
 
 var testCaseType = {

@@ -5,16 +5,16 @@
         // Languages
         public const string C = "C";
         public const string Cxx = "C++";
-        public const string Cxx11 = "C++ 11";
-        public const string Cxx14 = "C++ 14";
         public const string Python = "Python";
         public const string CSharp = "C#";
         public const string Pascal = "Pascal";
-        public const string Nodejs = "Node.js";
+        public const string Nodejs = "JavaScript";
         public const string Java = "Java";
-        public static readonly string[] CompileNeededLanguages = new[] { C, Cxx, Cxx11, Cxx14, CSharp, Pascal, Java };
-        public static readonly string[] ScriptLanguages = new[] { Python, Nodejs };
-        public static string GetExtension(string language)
+        public const string FSharp = "F#";
+        public const string VB = "VB.NET";
+        public static readonly string[] SupportedLanguages = new[] { C, Cxx, CSharp, Pascal, Java, VB, FSharp, Python };
+        public static readonly string[] UnsupportedLanguages = new[] { Nodejs };
+        public static string GetSourceExtension(string language)
         {
             switch (language)
             {
@@ -22,10 +22,6 @@
                     return ".c";
                 case "C++":
                     return ".cpp";
-                case "C++ 11":
-                    return "11.cpp";
-                case "C++ 14":
-                    return "14.cpp";
                 case "Python":
                     return ".py";
                 case "C#":
@@ -36,8 +32,34 @@
                     return ".js";
                 case "Java":
                     return ".java";
+                case "F#":
+                    return ".fs";
+                case "VB.NET":
+                    return ".vb";
                 default:
                     return null;
+            }
+        }
+        public static string GetBinaryExtension(string language)
+        {
+            switch (language)
+            {
+                case "C":
+                case "C++":
+                case "Pascal":
+                    return ".out";
+                case "Python":
+                    return ".py";
+                case "C#":
+                case "F#":
+                case "VB.NET":
+                    return ".dll";
+                case "Node.js":
+                    return ".js";
+                case "Java":
+                    return ".class";
+                default:
+                    return ".out";
             }
         }
 

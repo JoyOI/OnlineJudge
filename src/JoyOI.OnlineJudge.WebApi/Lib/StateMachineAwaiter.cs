@@ -23,9 +23,9 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
 
         public ConcurrentDictionary<Guid, TaskCompletionSource<StateMachineInstanceOutputDto>> Semaphores { get; set; } = new ConcurrentDictionary<Guid, TaskCompletionSource<StateMachineInstanceOutputDto>>();
 
-        public async Task<StateMachineInstanceOutputDto> GetStateMachineResultAsync(Guid statemachineId, CancellationToken token)
+        public async Task<StateMachineInstanceOutputDto> GetStateMachineResultAsync(Guid statemachineId, bool forcePolling = false, CancellationToken token = default(CancellationToken))
         {
-            if (_configuration["ManagementService:Mode"] == "Polling")
+            if (_configuration["ManagementService:Mode"] == "Polling" || forcePolling)
             {
                 var retryCount = 30;
                 while (--retryCount >= 0)

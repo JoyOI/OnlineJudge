@@ -148,11 +148,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     else
                     {
                         var validatorCodeId = await MgmtSvc.PutBlobAsync("validator-" + problem.Id, Encoding.UTF8.GetBytes(problem.ValidatorCode), token);
-                        var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(validatorCodeId, "Main" + Constants.GetExtension(problem.ValidatorLanguage)) });
-                        var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, token);
+                        var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(validatorCodeId, "Main" + Constants.GetSourceExtension(problem.ValidatorLanguage)) });
+                        var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, true, token);
                         if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))
                         {
-                            problem.ValidatorBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name == "Main.out").Id;
+                            problem.ValidatorBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name.StartsWith("Main.")).Id;
                             problem.ValidatorError = null;
                         }
                         else
@@ -176,11 +176,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     else
                     {
                         var standardCodeId = await MgmtSvc.PutBlobAsync("standard-" + problem.Id, Encoding.UTF8.GetBytes(problem.ValidatorCode), token);
-                        var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(standardCodeId, "Main" + Constants.GetExtension(problem.StandardLanguage)) });
-                        var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, token);
+                        var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(standardCodeId, "Main" + Constants.GetSourceExtension(problem.StandardLanguage)) });
+                        var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, true, token);
                         if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))
                         {
-                            problem.StandardBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name == "Main.out").Id;
+                            problem.StandardBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name.StartsWith("Main.")).Id;
                             problem.StandardError = null;
                         }
                         else
@@ -204,11 +204,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     else
                     {
                         var rangeCodeId = await MgmtSvc.PutBlobAsync("range-" + problem.Id, Encoding.UTF8.GetBytes(problem.RangeCode), token);
-                        var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(rangeCodeId, "Main" + Constants.GetExtension(problem.RangeLanguage)) });
-                        var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, token);
+                        var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(rangeCodeId, "Main" + Constants.GetSourceExtension(problem.RangeLanguage)) });
+                        var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, true, token);
                         if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))
                         {
-                            problem.RangeBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name == "Main.out").Id;
+                            problem.RangeBlobId = result.StartedActors.Last().Outputs.Single(x => x.Name.StartsWith("Main.")).Id;
                             problem.RangeError = null;
                         }
                         else
@@ -277,7 +277,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             else
             {
                 // 如果用户上传了比较器代码
-                if (Constants.CompileNeededLanguages.Contains(problem.ValidatorLanguage))
+                if (Constants.SupportedLanguages.Contains(problem.ValidatorLanguage))
                 {
                     // 编译自定义比较器并缓存编译后的blob
                     await CompileAsync(id, problem.ValidatorCode, problem.ValidatorLanguage, token);
@@ -753,14 +753,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         private async Task CompileAsync(string id, string code, string language, CancellationToken token)
         {
             // 1. 上传code
-            var codeBlobId = await ManagementService.PutBlobAsync("Main" + Constants.GetExtension(language), Encoding.UTF8.GetBytes(code), token);
+            var codeBlobId = await ManagementService.PutBlobAsync("Main" + Constants.GetSourceExtension(language), Encoding.UTF8.GetBytes(code), token);
 
             // 2. 创建状态机
             var statemachineId = await ManagementService.PutStateMachineInstanceAsync(
                 Constants.CompileOnlyStateMachine,
                 Configuration["Host:Url"], new BlobInfo[]
                 {
-                        new BlobInfo(codeBlobId, "Main" + Constants.GetExtension(language), JsonConvert.SerializeObject(new { Id = id, Type = "Validator" }))
+                        new BlobInfo(codeBlobId, "Main" + Constants.GetSourceExtension(language), JsonConvert.SerializeObject(new { Id = id, Type = "Validator" }))
                 });
 
             // 3. 存储状态机ID
