@@ -243,7 +243,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     }
                 }
 
-                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", Config["ManagementService:CallBack"], blobs.SelectMany(x => x.Value), token);
+                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("JudgeStateMachine", Config["ManagementService:CallBack"], blobs.SelectMany(x => x.Value), await CalculatePriorityAsync(), token);
 
                 var substatuses = blobs
                     .Where(x => x.Key >= 0)
@@ -329,7 +329,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Tag = "Problem=" + problem.Id
                 };
 
-                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("VirtualJudgeStateMachine", Config["ManagementService:Callback"], new[] { metadataBlob }, token);
+                var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("VirtualJudgeStateMachine", Config["ManagementService:Callback"], new[] { metadataBlob }, await CalculatePriorityAsync(), token);
 
                 var status = new JudgeStatus
                 {
@@ -446,6 +446,23 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
                    && x.ClaimValue == problemId));
+
+        private async Task<int> CalculatePriorityAsync()
+        {
+            if (IsMasterOrHigher)
+            {
+                return 0;
+            }
+            else
+            {
+                const int basePRI = 1;
+                var count = await DB.JudgeStatuses
+                    .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.Now.AddMinutes(-15))
+                    .CountAsync();
+
+                return basePRI + count / 10;
+            }
+        }
         #endregion
     }
 }
