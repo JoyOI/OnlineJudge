@@ -80,7 +80,8 @@ var languages = [
     'C#',
     'Python',
     'Ruby',
-    'JavaScript'
+    'JavaScript',
+    'Java'
 ];
 
 var contestTypes = [
@@ -96,7 +97,8 @@ var syntaxHighlighter = {
     'Pascal': 'pascal',
     'Ruby': 'ruby',
     'Python': 'python',
-    'JavaScript': 'javascript'
+    'JavaScript': 'javascript',
+    'Java': 'java'
 };
 
 var testCaseType = {

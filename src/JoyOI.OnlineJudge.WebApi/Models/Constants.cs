@@ -11,7 +11,8 @@
         public const string CSharp = "C#";
         public const string Pascal = "Pascal";
         public const string Nodejs = "Node.js";
-        public static readonly string[] CompileNeededLanguages = new[] { C, Cxx, Cxx11, Cxx14, CSharp, Pascal };
+        public const string Java = "Java";
+        public static readonly string[] CompileNeededLanguages = new[] { C, Cxx, Cxx11, Cxx14, CSharp, Pascal, Java };
         public static readonly string[] ScriptLanguages = new[] { Python, Nodejs };
         public static string GetExtension(string language)
         {
@@ -33,6 +34,8 @@
                     return ".pas";
                 case "Node.js":
                     return ".js";
+                case "Java":
+                    return ".java";
                 default:
                     return null;
             }
