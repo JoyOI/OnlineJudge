@@ -242,7 +242,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             if (await DB.Problems.AnyAsync(x => x.Id == id, token))
             {
-                return Result(400, "The problem id is already exists.");
+                return Result(400, "The problem id is already exists, please pick another one.");
+            }
+
+            var reservedConfig = await DB.Configurations
+                .SingleOrDefaultAsync(x => x.Key == "reservedproblemidprefixes", token);
+
+            if (reservedConfig != null)
+            {
+                var reserved = JsonConvert.DeserializeObject<IEnumerable<string>>(reservedConfig.Value);
+                if (reserved.Any(x => id.ToLower().StartsWith(x)))
+                {
+                    return Result(400, "The problem id is already exists, please pick another one.");
+                }
             }
 
             var problem = PutEntity<Problem>(RequestBody).Entity;

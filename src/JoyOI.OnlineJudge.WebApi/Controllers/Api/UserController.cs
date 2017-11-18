@@ -46,7 +46,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Json(result);
         }
 
-        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        [HttpGet("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
         public async Task<IActionResult> Get(string username, CancellationToken token)
         {
             var user = await DB.Users.SingleOrDefaultAsync(x => x.UserName == username, token);
@@ -101,8 +101,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(ret);
         }
 
-        [HttpPost("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        [HttpPatch("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        [HttpPost("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        [HttpPatch("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
         public async Task<IActionResult> Patch(string username, CancellationToken token)
         {
             var user = await DB.Users.SingleOrDefaultAsync(x => x.UserName == username, token);
@@ -207,7 +207,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Blog
-        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/blog")]
+        [HttpGet("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}/blog")]
         public async Task<IActionResult> GetBlogUrl(
             [FromServices] ExternalApi XApi,
             string username,
@@ -219,7 +219,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Uploaded Problems
-        [HttpGet("{username:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/uploadedproblem")]
+        [HttpGet("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}/uploadedproblem")]
         public async Task<IActionResult> GetUploadedProblem(string username, CancellationToken token)
         {
             var user = await User.Manager.FindByNameAsync(username);
