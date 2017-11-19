@@ -456,11 +456,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             else
             {
                 const int basePRI = 1;
-                var count = await DB.JudgeStatuses
+
+                var count15 = await DB.JudgeStatuses
                     .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.Now.AddMinutes(-15))
+                    .CountAsync() + await DB.HackStatuses
+                    .Where(x => x.UserId == User.Current.Id && x.Time >= DateTime.Now.AddMinutes(-15))
                     .CountAsync();
 
-                return basePRI + count / 10;
+                var count60 = await DB.JudgeStatuses
+                    .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.Now.AddHours(-1))
+                    .CountAsync() + await DB.HackStatuses
+                    .Where(x => x.UserId == User.Current.Id && x.Time >= DateTime.Now.AddHours(-1))
+                    .CountAsync();
+
+                return basePRI + Math.Max(count15 / 10, count60 / 30);
             }
         }
         #endregion
