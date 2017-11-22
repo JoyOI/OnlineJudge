@@ -28,8 +28,7 @@
                         </td>
                         <td class="problem-list-title">
                             <router-link :to="{ name: '/problem/:id', path: '/problem/' + problem.id, params: { 'id': problem.id } }">{{ problem.title }}</router-link>
-                            <div 
-                                 class="problem-tag"
+                            <div class="problem-tag"
                                  v-on:click="triggerTag(tag)"
                                  v-for="tag in problem.tags ? problem.tags.split(',').map(x => x.trim()).sort() : []">{{ tag.split(':').slice(-1).pop() }}</div>
                         </td>
@@ -42,19 +41,19 @@
                     <tr>
                         <td colspan="7" class="tfoot-paging">
                             <div class="tfoot-paging-outer">
-                                <a class="tfoot-paging-item" v-on:click="toPage(1)">首页</a>
-                                <a class="tfoot-paging-item" v-on:click="toPage(Math.max(paging.current - 1, 1))">上一页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (1)">首页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.max(paging.current - 1, 1))">上一页</a>
                                 <div class="tfoot-paging-item" v-if="paging.current > 3">...</div>
                                 <a class="tfoot-paging-item"
                                    v-for="p in 5"
                                    v-if="paging.current + p - 3 >= 1 && paging.current + p - 3 <= paging.count"
-                                   v-on:click="toPage(paging.current + p - 3)"
+                                   v-on:click="paging.current = paging.current + p - 3"
                                    v-bind:class="{ 'current': paging.current + p - 3 === paging.current }">
                                     {{ paging.current + p - 3 }}
                                 </a>
                                 <div class="tfoot-paging-item" v-if="paging.current < paging.count - 2">...</div>
-                                <a class="tfoot-paging-item" v-on:click="toPage(Math.min(paging.current + 1, paging.count))">下一页</a>
-                                <a class="tfoot-paging-item" v-on:click="toPage(paging.count)">尾页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.min(paging.current + 1, paging.count))">下一页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (paging.count)">尾页</a>
                             </div>
                         </td>
                     </tr>

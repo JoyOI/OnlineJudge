@@ -24,21 +24,27 @@ component.data = function () {
 
 component.watch = {
     selectedStatus: function () {
+        this.paging.current = 1;
         this.loadStatuses();
     },
     selectedProblem: function () {
+        this.paging.current = 1;
         this.loadStatuses();
     },
     selectedSubmittor: function () {
+        this.paging.current = 1;
         this.loadStatuses();
     },
     selectedLanguage: function () {
+        this.paging.current = 1;
         this.loadStatuses();
     },
     selectedContest: function () {
+        this.paging.current = 1;
         this.loadStatuses();
     },
     selectedTime: function () {
+        this.paging.current = 1;
         this.loadStatuses();
     },
     'paging.current': function () {

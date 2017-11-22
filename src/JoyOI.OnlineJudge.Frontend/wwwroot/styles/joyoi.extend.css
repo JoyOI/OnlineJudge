@@ -1608,3 +1608,8 @@ dd {
         height: 160px;
     }
 }
+
+.problem-id {
+    color: #96a9b5;
+    font-size: 12px;
+}

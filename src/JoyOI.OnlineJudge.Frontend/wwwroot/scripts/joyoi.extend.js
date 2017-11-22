@@ -78,11 +78,9 @@ var languages = [
     'C++',
     'Pascal',
     'C#',
-    'F#',
     'VB.NET',
-    'Java',
     'Python',
-    'JavaScript'
+    'Java'
 ];
 
 var contestTypes = [

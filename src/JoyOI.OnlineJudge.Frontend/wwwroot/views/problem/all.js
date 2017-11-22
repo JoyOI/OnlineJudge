@@ -12,8 +12,7 @@ component.data = function () {
         },
         request: {
             tag: null,
-            title: null,
-            page: 1
+            title: null
         },
         view: null,
         result: []
@@ -25,26 +24,18 @@ component.watch = {
         value = value.filter(x => !value.some(y => x != y && y.indexOf(x) >= 0));
         this.request.tag = value.join(', ');
     },
-    request: {
-        handler: function (value) {
-            var self = this;
-
-            if (this.view) {
-                this.view.unsubscribe();
-            }
-
-            this.view = qv.createView('/api/problem/all', this.request)
-            this.view.fetch(x => {
-                self.paging.count = x.data.count;
-                self.paging.current = x.data.current;
-                self.paging.total = x.data.total;
-                self.result = x.data.result;
-                self.view.subscribe('problem-list');
-                $(window).scrollTop(0);
-            });
-        },
-        deep: true
-    }
+    'request.tag': function (value) {
+        this.paging.current = 1;
+        this.loadProblems();
+    },
+    'request.title': function (value) {
+        this.paging.current = 1;
+        this.loadProblems();
+    },
+    'paging.current': function (value) {
+        this.loadProblems();
+    },
+    deep: true
 };
 
 component.methods = {
@@ -68,9 +59,22 @@ component.methods = {
     setSearchTitle: function () {
         this.request.title = $('#txtSearchProblemTitle').val();
     },
-    toPage: function (p) {
-        this.paging.current = p;
-        this.request.page = p;
+    loadProblems: function () {
+        var self = this;
+
+        if (this.view) {
+            this.view.unsubscribe();
+        }
+
+        this.view = qv.createView('/api/problem/all', { tag: self.request.tag, title: self.request.title, page: self.paging.current })
+        this.view.fetch(x => {
+            self.paging.count = x.data.count;
+            self.paging.current = x.data.current;
+            self.paging.total = x.data.total;
+            self.result = x.data.result;
+            self.view.subscribe('problem-list');
+            $(window).scrollTop(0);
+        });
     }
 };
 
