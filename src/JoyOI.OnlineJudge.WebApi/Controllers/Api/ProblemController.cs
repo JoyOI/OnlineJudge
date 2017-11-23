@@ -34,21 +34,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             IQueryable<Problem> ret = DB.Problems;
 
-            if (User.Current != null && !await User.Manager.IsInAnyRolesAsync(User.Current, "Root, Master"))
+            if (User.Current != null)
             {
-                if (!await User.Manager.IsInAnyRolesAsync(User.Current, "Root, Master"))
+                if (!IsMasterOrHigher)
                 {
                     var editableProblemIds = await DB.UserClaims
                         .Where(x => x.UserId == User.Current.Id && x.ClaimType == Constants.ProblemEditPermission)
                         .Select(x => x.ClaimValue)
                         .ToListAsync(token);
 
-                    ret = ret.Where(x => x.IsVisiable || editableProblemIds.Contains(x.Id));
+                    ret = ret.Where(x => x.IsVisible || editableProblemIds.Contains(x.Id));
                 }
             }
             else
             {
-                ret = ret.Where(x => x.IsVisiable);
+                ret = ret.Where(x => x.IsVisible);
             }
 
             if (!string.IsNullOrWhiteSpace(title))
@@ -102,7 +102,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             this.HasOwnership = await HasPermissionToProblemAsync(id, token);
             var ret = await DB.Problems.SingleOrDefaultAsync(x => x.Id == id, token);
-            if (ret == null || !ret.IsVisiable && !this.HasOwnership)
+            if (ret == null || !ret.IsVisible && !this.HasOwnership)
             {
                 return Result<Problem>(404, "Not Found");
             }
@@ -228,7 +228,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 await DB.SaveChangesAsync(token);
 
                 hub.Clients.All.InvokeAsync("ItemUpdated", "problem", problem.Id);
-                if (fields.Any(x => x == nameof(Problem.Title)) || fields.Any(x => x == nameof(Problem.IsVisiable)))
+                if (fields.Any(x => x == nameof(Problem.Title)) || fields.Any(x => x == nameof(Problem.IsVisible)))
                 {
                     hub.Clients.All.InvokeAsync("ItemUpdated", "problem-list", problem.Id);
                 }
@@ -327,7 +327,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
             var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
-            if (problem == null || !problem.IsVisiable && !this.HasOwnership)
+            if (problem == null || !problem.IsVisible && !this.HasOwnership)
             {
                 return Result<Problem>(404, "Not Found");
             }
@@ -380,7 +380,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
             var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
-            if (problem == null || !problem.IsVisiable && !this.HasOwnership)
+            if (problem == null || !problem.IsVisible && !this.HasOwnership)
             {
                 return Result<Problem>(404, "Not Found");
             }
@@ -731,7 +731,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         private Task<bool> ProblemIsVisiableAsync(string problemId, CancellationToken token = default(CancellationToken))
-            => DB.Problems.AnyAsync(x => x.Id == problemId && x.IsVisiable, token);
+            => DB.Problems.AnyAsync(x => x.Id == problemId && x.IsVisible, token);
 
         private async Task<bool> HasPermissionToProblemAsync(string problemId, CancellationToken token = default(CancellationToken))
             => !(User.Current == null

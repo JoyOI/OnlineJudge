@@ -148,7 +148,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "The problem does not exist.");
             }
 
-            if (!problem.IsVisiable && string.IsNullOrWhiteSpace(request.contestId) && !await HasPermissionToProblemAsync(problem.Id, token))
+            if (!problem.IsVisible && string.IsNullOrWhiteSpace(request.contestId) && !await HasPermissionToProblemAsync(problem.Id, token))
             {
                 return Result(403, "You have no permission to the problem.");
             }
@@ -404,7 +404,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             var hasPermissionToProblem = await HasPermissionToProblemAsync(problem.Id, token);
 
-            if (!problem.IsVisiable && hasPermissionToProblem)
+            if (!problem.IsVisible && hasPermissionToProblem)
             {
                 return Result<JudgeStatus>(403, "No permission");
             }

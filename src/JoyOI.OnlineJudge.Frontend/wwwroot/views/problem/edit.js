@@ -57,7 +57,7 @@ component.created = function () {
             self.body = x.data.body;
             self.difficulty = x.data.difficulty;
             self.source = x.data.source;
-            self.isVisiable = x.data.isVisiable;
+            self.isVisible = x.data.isVisible;
             self.validator.code = x.data.validatorCode;
             self.validator.language = x.data.validatorLanguage || app.preferences.language;
             self.validator.error = x.data.validatorError;
@@ -109,7 +109,7 @@ component.methods = {
             memoryLimitationPerCaseInByte: this.memoryLimitationPerCaseInByte,
             difficulty: this.difficulty,
             body: this.body,
-            isVisiable: this.isVisiable
+            isVisible: this.isVisible
         })
             .then((x) => {
                 app.notification('succeeded', '题目编辑成功', x.msg);

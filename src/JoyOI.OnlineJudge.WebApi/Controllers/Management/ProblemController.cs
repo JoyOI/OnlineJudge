@@ -40,7 +40,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
                         Tags = "按题库:Bzoj",
                         TimeLimitationPerCaseInMs = model.TimeLimitInMs,
                         MemoryLimitationPerCaseInByte = model.MemoryLimitInByte,
-                        IsVisiable = true
+                        IsVisible = true
                     };
                     DB.Problems.Add(problem);
                 }
@@ -50,7 +50,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
                     problem.Body = model.Body;
                     problem.TimeLimitationPerCaseInMs = model.TimeLimitInMs;
                     problem.MemoryLimitationPerCaseInByte = model.MemoryLimitInByte;
-                    problem.IsVisiable = true;
+                    problem.IsVisible = true;
                 }
                 await DB.SaveChangesAsync();
             }
@@ -82,7 +82,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
                         Tags = "按题库:LeetCode",
                         TimeLimitationPerCaseInMs = model.TimeLimitInMs,
                         MemoryLimitationPerCaseInByte = model.MemoryLimitInByte,
-                        IsVisiable = true,
+                        IsVisible = true,
                         Template = JsonConvert.SerializeObject(model.CodeTemplate)
                     };
                     DB.Problems.Add(problem);
@@ -93,7 +93,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
                     problem.Body = model.Body;
                     problem.TimeLimitationPerCaseInMs = model.TimeLimitInMs;
                     problem.MemoryLimitationPerCaseInByte = model.MemoryLimitInByte;
-                    problem.IsVisiable = true;
+                    problem.IsVisible = true;
                 }
                 await DB.SaveChangesAsync();
             }
@@ -125,7 +125,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
                         Tags = "按题库:CodeVS",
                         TimeLimitationPerCaseInMs = model.TimeLimitInMs,
                         MemoryLimitationPerCaseInByte = model.MemoryLimitInByte,
-                        IsVisiable = true
+                        IsVisible = true
                     };
                     DB.Problems.Add(problem);
                 }
@@ -135,7 +135,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.ManagementServiceCallback
                     problem.Body = model.Body;
                     problem.TimeLimitationPerCaseInMs = model.TimeLimitInMs;
                     problem.MemoryLimitationPerCaseInByte = model.MemoryLimitInByte;
-                    problem.IsVisiable = true;
+                    problem.IsVisible = true;
                 }
                 await DB.SaveChangesAsync();
             }

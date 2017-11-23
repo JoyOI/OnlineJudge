@@ -224,7 +224,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             var user = await User.Manager.FindByNameAsync(username);
             var problems = DB.Problems
-                .Where(x => x.IsVisiable)
+                .Where(x => x.IsVisible)
                 .Where(x => DB.UserClaims.Any(y => y.UserId == user.Id && y.ClaimType == Constants.ProblemEditPermission && y.ClaimValue == x.Id))
                 .OrderBy(x => x.Id)
                 .Select(x => new

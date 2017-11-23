@@ -224,7 +224,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(401, "No permission to this contest");
             }
-            else if (!problem.IsVisiable && !await HasPermissionToProblemAsync(contestId, token))
+            else if (!problem.IsVisible && !await HasPermissionToProblemAsync(contestId, token))
             {
                 return Result(401, "No permission to this problem");
             }

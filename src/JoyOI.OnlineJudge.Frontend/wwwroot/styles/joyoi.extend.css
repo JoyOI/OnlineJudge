@@ -1613,3 +1613,7 @@ dd {
     color: #96a9b5;
     font-size: 12px;
 }
+
+.alpha-03 {
+    opacity: 0.3;
+}

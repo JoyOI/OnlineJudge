@@ -129,7 +129,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets a value indicating whether this <see cref="T:JoyOI.OnlineJudge.Models.Problem"/> is visiable.
         /// </summary>
         /// <value><c>true</c> if is visiable; otherwise, <c>false</c>.</value>
-        public bool IsVisiable { get; set; }
+        public bool IsVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the source.
