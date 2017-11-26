@@ -46,10 +46,13 @@
             notifications: [],
             notificationLock: false,
             userInfoView: null,
-            chatIframeUrl: null
+            chatIframeUrl: null,
+            chatInterval: null
         }
     },
     created: function () {
+        var self = this;
+
         /* Initialize host addresses */
         this.hosts.blog = 'http://{USERNAME}.blog.joyoi.net';
         this.hosts.forum = 'http://forum.joyoi.net';
@@ -67,7 +70,6 @@
         this.signalr.onlinejudge.connection.start()
 
         if (document.cookie.indexOf("AspNetCore") >= 0) {
-            var self = this;
             self.user.isSignedIn = true;
             self.control.userInfoView = qv.createView('/api/user/session/info');
             self.control.userInfoView.fetch((x) => {
@@ -77,12 +79,30 @@
                 self.user.tried = x.data.tried;
                 self.user.passed = x.data.passed;
                 self.user.chat = x.data.chat;
+                self.preferences.language = x.data.preferredLanguage;
                 self.control.chatIframeUrl = x.data.chat;
             });
         }
         else {
             this.user.isSignedIn = false;
         }
+
+        qv.createView('/api/user/message', null, 30000)
+            .fetch(x => {
+                if (x.data) {
+                    self.control.chatInterval = setInterval(function () {
+                        if ($('#back-to-top').hasClass('msg-alert'))
+                            $('#back-to-top').removeClass('msg-alert');
+                        else
+                            $('#back-to-top').addClass('msg-alert');
+                    }, 1000);
+                } else {
+                    if (self.control.chatInterval) {
+                        clearInterval(self.control.chatInterval);
+                        $('#back-to-top').removeClass('msg-alert');
+                    }
+                }
+            });
     },
     watch: {
         title: function (val) {
@@ -128,7 +148,11 @@
                     self.user.profile.username = x.data.username;
                     self.user.profile.role = x.data.role;
                     self.user.profile.id = x.data.id;
+                    self.user.tried = x.data.tried;
+                    self.user.passed = x.data.passed;
+                    self.user.chat = x.data.chat;
                     self.preferences.language = x.data.preferredLanguage;
+                    self.control.chatIframeUrl = x.data.chat;
                     self.notification("succeeded", "登录成功");
                     self.toggleLoginBox();
                 })

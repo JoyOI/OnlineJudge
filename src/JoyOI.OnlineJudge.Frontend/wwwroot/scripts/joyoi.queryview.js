@@ -255,9 +255,9 @@
         };
         
         if (interval) {
-            setTimeout(function () {
-                ret.fetch(ret._fetchFunc);
-            });
+            setInterval(function () {
+                ret.refresh();
+            }, interval);
         }
 
         return ret;

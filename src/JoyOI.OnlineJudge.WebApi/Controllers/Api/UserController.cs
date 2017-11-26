@@ -207,6 +207,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Message
+        [HttpGet("message")]
+        public async Task<IActionResult> Message([FromServices] JoyOIUC UC, CancellationToken token)
+        {
+            return Result(await UC.HasUnreadMessage(User.Current.OpenId));
+        }
+        #endregion
+
         #region Blog
         [HttpGet("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}/blog")]
         public async Task<IActionResult> GetBlogUrl(

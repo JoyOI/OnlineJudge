@@ -1635,3 +1635,7 @@ dd {
 .chat-iframe.active {
     margin-right: 0;
 }
+
+#back-to-top.msg-alert i {
+    background: rgb(255,128,128);
+}
