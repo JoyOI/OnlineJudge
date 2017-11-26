@@ -163,29 +163,8 @@
             </div>
         </footer>
         <!-- end footer -->
-        <a href="#" id="back-to-top"><i class="fa fa-chevron-up"></i></a>
-        <div class="search-popup">
-            <div class="close-button">
-                <i class="material-icons">&#xE5C9;</i>
-            </div>
-            <div class="container popup-inner">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <form>
-                            <div class="input-group">
-                                <input type="email" class="required" id="search-input">
-                                <span class="bar"></span>
-                                <label>Type to search</label>
-                            </div>
-                            <!-- <input type="text"  placeholder="" /> -->
-                        </form>
-                        <div id="search-results">
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a v-on:click="toggleChatBox" v-if="user.isSignedIn" id="back-to-top"><i class="fa fa-comment-o"></i></a>
 
         <!-- start login -->
         <div class="login-box-bg" v-bind:class="{ 'active': layout.loginBoxOpened }">
@@ -200,20 +179,18 @@
                     <p class="login-box-note">使用Joy OI通行证登录</p>
                     <label class="login-column">
                         用户名
-                        <input 
-                               id="username" 
-                               type="text" 
-                               v-on:focusin="loginFocusIn('#username')" 
-                               v-on:focusout="loginFocusOut('#username')" 
+                        <input id="username"
+                               type="text"
+                               v-on:focusin="loginFocusIn('#username')"
+                               v-on:focusout="loginFocusOut('#username')"
                                class="login-textbox" />
                     </label>
                     <label class="login-column">
                         密码
-                        <input 
-                               id="password" 
-                               type="password" 
-                               v-on:focusin="loginFocusIn('#password')" 
-                               v-on:focusout="loginFocusOut('#password')" 
+                        <input id="password"
+                               type="password"
+                               v-on:focusin="loginFocusIn('#password')"
+                               v-on:focusout="loginFocusOut('#password')"
                                class="login-textbox" />
                     </label>
                     <label class="login-column">
@@ -233,6 +210,10 @@
             <div class="notification-detail" v-if="control.currentNotification && control.currentNotification.detail">{{ control.currentNotification ? control.currentNotification.detail : null }}</div>
         </div>
         <!-- end notifications -->
+
+        <!-- start chat -->
+        <iframe v-bind:src="control.chatIframeUrl" class="chat-iframe"></iframe>
+        <!-- end chat -->
     </div>
 </body>
 </html>

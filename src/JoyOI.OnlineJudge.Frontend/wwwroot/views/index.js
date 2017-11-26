@@ -23,7 +23,8 @@
                 avatarUrl: null,
                 role: null,
                 tried: [],
-                passed: []
+                passed: [],
+                chat: null
             }
         },
         preferences: {
@@ -44,7 +45,8 @@
             currentNotification: null,
             notifications: [],
             notificationLock: false,
-            userInfoView: null
+            userInfoView: null,
+            chatIframeUrl: null
         }
     },
     created: function () {
@@ -74,6 +76,8 @@
                 self.user.profile.id = x.data.id;
                 self.user.tried = x.data.tried;
                 self.user.passed = x.data.passed;
+                self.user.chat = x.data.chat;
+                self.control.chatIframeUrl = x.data.chat;
             });
         }
         else {
@@ -157,6 +161,15 @@
         },
         toLocalTime: function (timeStr) {
             return moment(new Date(timeStr + 'Z')).format('YYYY-MM-DD HH:mm:ss');
+        },
+        toggleChatBox: function () {
+            if ($('.chat-iframe').hasClass('active')) {
+                $('.chat-iframe').removeClass('active');
+                $('#back-to-top').css('margin-right', 0);
+            } else {
+                $('.chat-iframe').addClass('active');
+                $('#back-to-top').css('margin-right', 350);
+            }
         },
         _showNotification: function () {
             var self = this;

@@ -13824,7 +13824,8 @@ pre {
 }
 
     .main-footer a {
-        color: #909090
+        color: #909090;
+        font-size:16px;
     }
 
         .main-footer a:hover {
@@ -14200,7 +14201,7 @@ pre {
         width: 42px;
         height: 42px;
         line-height: 42px;
-        font-size: 32px;
+        font-size: 18px;
         -webkit-border-radius: 50%;
         -moz-border-radius: 50%;
         border-radius: 50%;

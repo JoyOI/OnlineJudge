@@ -1617,3 +1617,21 @@ dd {
 .alpha-03 {
     opacity: 0.3;
 }
+
+.chat-iframe {
+    width: 350px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    outline: 0;
+    border: none;
+    margin-right: -350px;
+    transition: margin 0.2s linear;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    z-index: 99999;
+}
+
+.chat-iframe.active {
+    margin-right: 0;
+}

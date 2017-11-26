@@ -125,7 +125,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Session
         [HttpGet("session/info")]
-        public async Task<IActionResult> GetSessionInfo(CancellationToken token)
+        public async Task<IActionResult> GetSessionInfo([FromServices] JoyOIUC UC, CancellationToken token)
         {
             var ret = new Dictionary<string, object>();
             ret.Add("isSignedIn", User.Current != null);
@@ -138,6 +138,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret.Add("role", roles.Count > 0 ? roles.First() : "Member");
                 ret.Add("tried", User.Current.TriedProblems.Object);
                 ret.Add("passed", User.Current.PassedProblems.Object);
+                ret.Add("chat", UC.GenerateChatWindowUrl(User.Current.OpenId));
             }
             return Result<dynamic>(ret);
         }
