@@ -79,7 +79,7 @@
                 self.user.tried = x.data.tried;
                 self.user.passed = x.data.passed;
                 self.user.chat = x.data.chat;
-                self.preferences.language = x.data.preferredLanguage;
+                self.preferences.language = x.data.preferredLanguage || 'C++';
                 self.control.chatIframeUrl = x.data.chat;
             });
         }

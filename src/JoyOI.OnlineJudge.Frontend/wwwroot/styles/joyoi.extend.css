@@ -697,6 +697,7 @@
         z-index: 9999;
         opacity: 1;
         transform: scale(1);
+        min-width: 495px;
     }
 
 .problem-body.edit-mode {
