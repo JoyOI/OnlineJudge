@@ -139,6 +139,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret.Add("tried", User.Current.TriedProblems.Object);
                 ret.Add("passed", User.Current.PassedProblems.Object);
                 ret.Add("chat", UC.GenerateChatWindowUrl(User.Current.OpenId));
+                ret.Add("preferredLanguage", User.Current.PreferredLanguage);
             }
             return Result<dynamic>(ret);
         }

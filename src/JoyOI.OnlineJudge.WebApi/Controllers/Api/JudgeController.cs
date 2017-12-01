@@ -153,6 +153,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(403, "You have no permission to the problem.");
             }
 
+            if (!Constants.SupportedLanguages.Contains(request.language))
+            {
+                return Result(400, "The language has not been supported.");
+            }
+
             // TODO: Check contest permission
 
             if (!Constants.SupportedLanguages.Contains(request.language) && !Constants.UnsupportedLanguages.Contains(request.language) && problem.Source == ProblemSource.Local)
