@@ -102,11 +102,11 @@
                 <template v-if="isVisible">
                     <hr class="sidebar-hr" />
                     <a class="sidebar-section-button" v-if="$root.user.isSignedIn" target="_blank" v-bind:href="$root.hosts.blog.replace('{USERNAME}', $root.user.profile.username) + '/admin/createsolution/' + id">
-                        <i class="fa fa-flag-o"></i>
+                        <i class="fa fa-edit"></i>
                         <span>编写题解</span>
                     </a>
                     <a class="sidebar-section-button" v-bind:class="{ 'active': display === 'resolution' }" v-on:click="display = display === 'resolution' ? 'problem' : 'resolution'">
-                        <i class="fa fa-check-circle-o"></i>
+                        <i class="fa fa-flag-o"></i>
                         <span>{{ display === 'resolution' ? '返回题目' : '查看题解' }}</span>
                     </a>
                     <hr class="sidebar-hr" />

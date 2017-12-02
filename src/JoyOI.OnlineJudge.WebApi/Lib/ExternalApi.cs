@@ -34,7 +34,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
         {
             using (var client = new HttpClient { BaseAddress = new Uri(_config["JoyOI:BlogUrl"]) })
             {
-                var response = await client.GetAsync("/api/resolution/" + problemId, token);
+                var response = await client.GetAsync("/api/resolution/" + problemId + "?page=" + page, token);
                 var json = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
                 return new ApiResult<PagedResult<IEnumerable<object>>>
                 {

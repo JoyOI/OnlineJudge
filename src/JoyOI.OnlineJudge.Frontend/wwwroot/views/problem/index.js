@@ -111,17 +111,12 @@ component.watch = {
         app.title = this.title;
     },
     display: function (val) {
-        var self = this;
-        if (val === 'resolution' && !self.resolutionView) {
-            self.resolutionView = qv.createView('/api/problem/' + self.id + '/resolution', { page: self.resolution.paging.current })
-                .fetch(x =>
-                {
-                    self.resolution.paging.count = x.data.count;
-                    self.resolution.paging.current = x.data.current;
-                    self.resolution.paging.total = x.data.total;
-                    self.resolution.data = x.data.result;
-                });
+        if (val === 'resolution' && !this.resolutionView) {
+            this.loadResolutions();
         }
+    },
+    'resolution.paging.current': function () {
+        this.loadResolutions();
     },
     'form.language': function (val) {
         var self = this;
@@ -228,6 +223,17 @@ component.methods = {
         })
             .catch(err => {
                 app.notification('error', '提交评测失败', err.responseJSON.msg);
+            });
+    },
+    loadResolutions: function () {
+        var self = this;
+        self.resolutionView = qv.createView('/api/problem/' + self.id + '/resolution', { page: self.resolution.paging.current })
+            .fetch(x => {
+                self.resolution.paging.count = x.data.count;
+                self.resolution.paging.current = x.data.current;
+                self.resolution.paging.total = x.data.total;
+                self.resolution.data = x.data.result;
+                $(window).scrollTop(0);
             });
     }
 };
