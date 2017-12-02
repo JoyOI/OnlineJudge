@@ -1640,3 +1640,16 @@ dd {
 #back-to-top.msg-alert i {
     background: rgb(255,128,128);
 }
+
+.profile-table-inline {
+    margin: 0 -20px; 
+    width: calc(100% + 40px);
+    font-size: 12px;
+    line-height: 24px;
+}
+
+.paging-non-table {
+    border-top: 3px solid #ddd;
+    margin: 25px -25px -25px -25px;
+    text-align: center;
+}

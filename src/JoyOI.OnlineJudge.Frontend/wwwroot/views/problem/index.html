@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-9">
             <div class="area-outer problem-body" v-bind:class="{ 'edit-mode': control.isInEditMode }">
-                <div class="area-item">
+                <div class="area-item" v-if="display === 'problem'">
                     <h1 class="area-title">题目限制</h1>
                     <div>
                         <table class="limitation-table">
@@ -39,6 +39,40 @@
                         </table>
                     </div>
                 </div>
+                <div class="area-item" v-if="display === 'resolution'">
+                    <h1 class="area-title">题解列表</h1>
+                    <div class="thread-revert-padding">
+                        <div class="thread-outer" v-for="x in resolution.data" v-bind:class="{ 'highlight': x.highlight }">
+                            <div class="thread-avatar"><img v-bind:src="x.avatarUrl" /></div>
+                            <div class="thread-body">
+                                <a v-bind:href="'http://' + x.domain + '/post/' + x.url" target="_blank">{{ x.title }}</a>
+                                <div class="thread-body-subline">
+                                    <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
+                                        <div class="thread-body-plain"><i class="fa fa-user"></i> {{ x.username }}</div>
+                                    </router-link>
+                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> <span v-bind:datetime="x.time"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="paging-non-table">
+                        <div class="tfoot-paging-outer">
+                            <a class="tfoot-paging-item" v-on:click="resolution.paging.current = (1)">首页</a>
+                            <a class="tfoot-paging-item" v-on:click="resolution.paging.current = (Math.max(resolution.paging.current - 1, 1))">上一页</a>
+                            <div class="tfoot-paging-item" v-if="resolution.paging.current > 3">...</div>
+                            <a class="tfoot-paging-item"
+                               v-for="p in 5"
+                               v-if="resolution.paging.current + p - 3 >= 1 && resolution.paging.current + p - 3 <= resolution.paging.count"
+                               v-on:click="resolution.paging.current = resolution.paging.current + p - 3"
+                               v-bind:class="{ 'current': resolution.paging.current + p - 3 === resolution.paging.current }">
+                                {{ resolution.paging.current + p - 3 }}
+                            </a>
+                            <div class="tfoot-paging-item" v-if="resolution.paging.current < resolution.paging.count - 2">...</div>
+                            <a class="tfoot-paging-item" v-on:click="resolution.paging.current = (Math.min(resolution.paging.current + 1, resolution.paging.count))">下一页</a>
+                            <a class="tfoot-paging-item" v-on:click="resolution.paging.current = (resolution.paging.count)">尾页</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -65,16 +99,22 @@
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </router-link>
-                <hr class="sidebar-hr" />
-                <a class="sidebar-section-button" target="_blank" v-bind:href="$root.hosts.forum + '/Forum/problem-' + id">
-                    <i class="fa fa-commenting-o"></i>
-                    <span>跳转至讨论</span>
-                </a>
-                <router-link :to="{ name: '/problem/:id/resolution', path: '/problem/' + id + '/resolution', params: { }}"
-                             class="sidebar-section-button">
-                    <i class="fa fa-check-circle-o"></i>
-                    <span>跳转至题解</span>
-                </router-link>
+                <template v-if="isVisible">
+                    <hr class="sidebar-hr" />
+                    <a class="sidebar-section-button" v-if="$root.user.isSignedIn" target="_blank" v-bind:href="$root.hosts.blog.replace('{USERNAME}', $root.user.profile.username) + '/admin/createsolution/' + id">
+                        <i class="fa fa-flag-o"></i>
+                        <span>编写题解</span>
+                    </a>
+                    <a class="sidebar-section-button" v-bind:class="{ 'active': display === 'resolution' }" v-on:click="display = display === 'resolution' ? 'problem' : 'resolution'">
+                        <i class="fa fa-check-circle-o"></i>
+                        <span>{{ display === 'resolution' ? '返回题目' : '查看题解' }}</span>
+                    </a>
+                    <hr class="sidebar-hr" />
+                    <a class="sidebar-section-button" target="_blank" v-bind:href="$root.hosts.forum + '/Forum/problem-' + id">
+                        <i class="fa fa-commenting-o"></i>
+                        <span>跳转至讨论</span>
+                    </a>
+                </template>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
                 <router-link :to="{ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } }"
                              v-if="hasPermissionToEdit"

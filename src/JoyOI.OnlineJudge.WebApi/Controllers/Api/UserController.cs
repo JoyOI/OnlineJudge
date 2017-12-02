@@ -226,6 +226,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         {
             return Result(await XApi.GetUserBlogDomainAsync(username, token));
         }
+
+        [HttpGet("{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}/blog/posts")]
+        public async Task<IActionResult> GetBlogPosts(
+            [FromServices] ExternalApi XApi,
+            string username,
+            CancellationToken token
+        )
+        {
+            return Json(await XApi.GetUserResolutionsAsync(username, 1, token));
+        }
         #endregion
 
         #region Uploaded Problems

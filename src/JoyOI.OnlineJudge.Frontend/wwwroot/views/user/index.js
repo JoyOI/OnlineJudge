@@ -12,6 +12,8 @@ component.data = function () {
         topics: [],
         passedProblems: [],
         uploadedProblems: [],
+        posts: [],
+        postCount: 0,
         motto: null,
         tab: 'passed'
     };
@@ -19,7 +21,7 @@ component.data = function () {
 
 component.created = function () {
     var self = this;
-    qv.createView('/api/user/' + router.history.current.params.username, 300 * 1000)
+    qv.createView('/api/user/' + router.history.current.params.username, 600 * 1000)
         .fetch(x => {
             self.id = x.data.id;
             self.username = x.data.username;
@@ -51,6 +53,11 @@ component.created = function () {
         });
     qv.createView('/api/user' + router.history.current.params.username + '/uploadedproblem', 600 * 1000)
         .fetch(x => {
-            self.uploadedProblems = x.data;
+            self.uploadedProblems = x.data.result;
+        });
+    qv.createView('/api/user/' + router.history.current.params.username + '/blog/posts', 1800 * 1000)
+        .fetch(x => {
+            self.posts = x.data.result;
+            self.postCount = x.data.count;
         });
 };

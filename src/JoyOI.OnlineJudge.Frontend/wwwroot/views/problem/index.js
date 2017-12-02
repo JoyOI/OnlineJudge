@@ -13,6 +13,8 @@ component.data = function () {
         source: null,
         time: null,
         memory: null,
+        display: 'problem',
+        isVisible: null,
         isSpecialJudge: null,
         claims: [],
         control: {
@@ -32,6 +34,15 @@ component.data = function () {
             hint: null,
             substatuses: [],
             view: null
+        },
+        resolution: {
+            resolutionView: null,
+            data: [],
+            paging: {
+                current: 1,
+                count: 1,
+                total: 0
+            }
         }
     };
 };
@@ -75,6 +86,7 @@ component.created = function () {
             self.body = x.data.body;
             self.template = x.data.codeTemplate;
             self.source = x.data.source;
+            self.isVisible = x.data.isVisible;
             if (self.template) {
                 self.control.languages = Object.getOwnPropertyNames(x.data.codeTemplate).filter(x => x !== '__ob__');
             }
@@ -97,6 +109,19 @@ component.watch = {
     deep: true,
     title: function () {
         app.title = this.title;
+    },
+    display: function (val) {
+        var self = this;
+        if (val === 'resolution' && !self.resolutionView) {
+            self.resolutionView = qv.createView('/api/problem/' + self.id + '/resolution', { page: self.resolution.paging.current })
+                .fetch(x =>
+                {
+                    self.resolution.paging.count = x.data.count;
+                    self.resolution.paging.current = x.data.current;
+                    self.resolution.paging.total = x.data.total;
+                    self.resolution.data = x.data.result;
+                });
+        }
     },
     'form.language': function (val) {
         var self = this;

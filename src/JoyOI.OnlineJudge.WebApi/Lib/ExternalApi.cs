@@ -51,6 +51,27 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             }
         }
 
+        public async Task<ApiResult<PagedResult<IEnumerable<object>>>> GetUserResolutionsAsync(string userId, int page, CancellationToken token)
+        {
+            using (var client = new HttpClient { BaseAddress = new Uri(_config["JoyOI:BlogUrl"]) })
+            {
+                var response = await client.GetAsync("/api/userresolution/" + userId, token);
+                var json = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                return new ApiResult<PagedResult<IEnumerable<object>>>
+                {
+                    code = 200,
+                    data = new PagedResult<IEnumerable<object>>
+                    {
+                        count = json.pageCount,
+                        size = json.pageSize,
+                        current = page,
+                        result = json.data,
+                        total = json.total
+                    }
+                };
+            }
+        }
+
         public async Task<string> GetUserBlogDomainAsync(string username, CancellationToken token)
         {
             using (var client = new HttpClient { BaseAddress = new Uri(_config["JoyOI:BlogUrl"]) })
