@@ -9,7 +9,8 @@ component.data = function () {
         attendeeCount: 0,
         begin: null,
         end: null,
-        hasPermissionToEdit: false
+        type: null,
+        claims: []
     };
 };
 
@@ -35,6 +36,9 @@ component.computed = {
             return this.beginTimestamp;
         else
             return this.endTimestamp;
+    },
+    hasPermissionToEdit: function () {
+        return app.user.isSignedIn && (app.user.profile.role === 'Root' || app.user.profile.role === 'Master' || this.claims.some(x => x === app.user.profile.username));
     }
 };
 
@@ -47,10 +51,15 @@ component.methods = {
                 this.attendeeCount = x.data.CachedAttendeeCount;
                 this.begin = x.data.begin;
                 this.end = x.data.end;
+                this.type = x.data.type;
                 app.title = this.title;
             })
             .catch(err => {
                 app.notification('error', '获取比赛信息失败', err.responseJSON.msg);
+            });
+        qv.createView('/api/contest/' + this.id + '/claim/all')
+            .fetch(x => {
+                this.claims = x.data;
             });
     }
 };

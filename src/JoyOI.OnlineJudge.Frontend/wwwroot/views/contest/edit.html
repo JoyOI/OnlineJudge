@@ -1,1 +1,104 @@
-﻿
+﻿<div class="container" id="contest-edit">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="area-outer">
+                <div class="area-item" v-if="current === 'basic'">
+                    <div class="area-title">基本信息</div>
+                    <div>
+                        <p>
+                            <label>比赛ID (不可修改)</label>
+                        </p>
+                        <p>{{ id }}</p>
+                        <p>
+                            <label>赛制 (不可修改)</label>
+                        </p>
+                        <p>{{ type }}</p>
+                        <p>
+                            <label>比赛名称</label>
+                            <input type="text" class="form-control" v-model="title" />
+                        </p>
+                        <p>
+                            <label>比赛开始时间 (不可修改)</label>
+                            <input v-if="new Date(begin) > new Date()" type="text" class="form-control datetime" v-model="begin" />
+                        </p>
+                        <p v-if="new Date(begin) <= new Date()">{{ $root.toLocalTime(begin) }}</p>
+                        <p>
+                            <label>时长(小时:分钟:秒)</label>
+                            <input type="text" class="form-control" v-model="duration" />
+                        </p>
+                        <p>
+                            <label>
+                                比赛参与者设定
+                            </label>
+                            <select v-model="attendPermission" class="form-control">
+                                <option value="0">允许所有人参赛</option>
+                                <option value="1">输入密码参赛</option>
+                                <!--<option value="2">指定团队参赛</option>-->
+                            </select>
+                        </p>
+                        <p v-if="attendPermission == 1">
+                            <label>
+                                参赛密码
+                            </label>
+                            <input type="text" class="form-control" v-model="passwordOrTeamId" />
+                        </p>
+                        <p>
+                            <label>比赛介绍 (markdown)</label>
+                            <textarea class="markdown-textbox" v-model="description"></textarea>
+                        </p>
+                        <p>
+                            <a class="btn btn-default" v-on:click="saveBasic()"><i class="fa fa-save"></i> 保存</a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="area-item" v-if="current === 'problem'">
+                    <div class="area-title">比赛题目</div>
+                    <table class="table-inline">
+                        <thead>
+                            <tr>
+                                <th>编号</th>
+                                <th>题目</th>
+                                <th>分值</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="x in problems">
+                                <td>{{ x.number }}</td>
+                                <td>{{ x.problemTitle || x.problemId }}</td>
+                                <td>{{ x.point }}</td>
+                                <td><a v-on:click="removeProblem(x.problemId)" class="btn btn-danger">删除</a></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="form-control" id="txtNumber" placeholder="建议使用A, B, C或1, 2, 3" /></td>
+                                <td><a v-on:click="toggleProblemSelector" id="slProblem">{{ selectedProblem ? selectedProblem.title : '选择题目' }}</a></td>
+                                <td><input type="text" class="form-control" value="100" id="txtPoint" /></td>
+                                <td><a v-on:click="addProblem(x.problemId)" class="btn btn-default">添加</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 title-align">
+            <div class="sidebar-section all-buttons">
+                <a class="sidebar-section-button" v-on:click="current = 'basic'" v-bind:class="{ 'active': current === 'basic' }">
+                    <i class="fa fa-edit"></i>
+                    <span>编辑比赛信息</span>
+                </a>
+                <a class="sidebar-section-button" v-on:click="current = 'problem'" v-bind:class="{ 'active': current === 'problem' }">
+                    <i class="fa fa-edit"></i>
+                    <span>编辑比赛题目</span>
+                </a>
+                <hr class="sidebar-hr" />
+                <router-link :to="{ name: '/contest/:id', path: '/contest/' + id, params: { 'id': id } }"
+                             class="sidebar-section-button">
+                    <i class="fa fa-mail-reply"></i>
+                    <span>返回比赛</span>
+                </router-link>
+            </div>
+        </div>
+    </div>
+</div>

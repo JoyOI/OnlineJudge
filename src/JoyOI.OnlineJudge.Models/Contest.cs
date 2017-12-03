@@ -25,8 +25,8 @@ namespace JoyOI.OnlineJudge.Models
     public enum AttendPermission
     {
         Everyone,
-        Team,
-        Password
+        Password,
+        Team
     }
 
     /// <summary>
@@ -66,6 +66,7 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The type.</value>
         [WebApi(FilterLevel.PatchDisabled)]
+        [JsonConverter(typeof(StringEnumConverter))]
         public ContestType Type { get; set; }
 
         /// <summary>

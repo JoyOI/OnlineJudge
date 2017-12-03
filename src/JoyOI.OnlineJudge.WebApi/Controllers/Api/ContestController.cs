@@ -313,12 +313,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Claims
-        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
-        public async Task<IActionResult> GetClaims(string problemId, CancellationToken token)
+        [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
+        public async Task<IActionResult> GetClaims(string contestId, CancellationToken token)
         {
             var ret = await DB.UserClaims
-                .Where(x => x.ClaimType == Constants.ProblemEditPermission)
-                .Where(x => x.ClaimValue == problemId)
+                .Where(x => x.ClaimType == Constants.ContestEditPermission)
+                .Where(x => x.ClaimValue == contestId)
                 .ToListAsync(token);
             return Result(ret);
         }
