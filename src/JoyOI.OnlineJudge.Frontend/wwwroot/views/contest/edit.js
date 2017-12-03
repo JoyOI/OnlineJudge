@@ -30,9 +30,11 @@ component.methods = {
                 this.end = x.data.end;
                 this.type = x.data.type;
                 this.attendPermission = x.data.attendPermission;
-                $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.description);
                 app.links[1].text = x.data.title;
                 app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
+                try {
+                    $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.description);
+                } catch (ex) { }
             })
             .catch(err => {
                 app.notification('error', '获取比赛信息失败', err.responseJSON.msg);
