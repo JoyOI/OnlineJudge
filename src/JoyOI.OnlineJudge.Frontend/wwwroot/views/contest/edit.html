@@ -17,8 +17,12 @@
                             <label>比赛名称</label>
                             <input type="text" class="form-control" v-model="title" />
                         </p>
+                        <p v-if="$root.user.profile.role === 'Root' || $root.user.profile.role === 'Master'">
+                            <label>禁用模拟赛</label>
+                            <input type="checkbox" v-model="disableVirtual" />
+                        </p>
                         <p>
-                            <label>比赛开始时间 (不可修改)</label>
+                            <label>比赛开始时间</label>
                             <input v-if="new Date(begin) > new Date()" type="text" class="form-control datetime" v-model="begin" />
                         </p>
                         <p v-if="new Date(begin) <= new Date()">{{ $root.toLocalTime(begin) }}</p>

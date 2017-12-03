@@ -15,6 +15,7 @@ component.data = function () {
         duration: null,
         isHighlighted: null,
         type: null,
+        disableVirtual: null,
         claims: []
     };
 };
@@ -32,6 +33,7 @@ component.methods = {
                 this.type = x.data.type;
                 this.attendPermission = x.data.attendPermission;
                 this.isHighlighted = x.data.isHighlighted;
+                this.disableVirtual = x.data.disableVirtual;
                 app.links[1].text = x.data.title;
                 app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
                 try {
