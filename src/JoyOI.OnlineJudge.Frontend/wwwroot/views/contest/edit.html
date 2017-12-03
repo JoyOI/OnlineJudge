@@ -17,7 +17,7 @@
                             <label>比赛名称</label>
                             <input type="text" class="form-control" v-model="title" />
                         </p>
-                        <p v-if="$root.user.profile.role === 'Root' || $root.user.profile.role === 'Master'">
+                        <p>
                             <label>禁用模拟赛</label>
                             <input type="checkbox" v-model="disableVirtual" />
                         </p>
