@@ -135,6 +135,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 var fields = PatchEntity(problem, RequestBody);
 
+                // Check difficulty range
+                if (fields.Any(x => x == nameof(Problem.Difficulty)) && (problem.Difficulty < 0 || problem.Difficulty > 9))
+                {
+                    return Result(400, "The difficulty must be 0-9.");
+                }
+
                 // Update validator
                 if (fields.Any(x => x == nameof(Problem.ValidatorCode)) || fields.Any(x => x == nameof(Problem.ValidatorLanguage)))
                 {
