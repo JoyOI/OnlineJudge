@@ -137,7 +137,12 @@ component.watch = {
 component.methods = {
     goToEditMode: function () {
         if (!this.form.code && this.template) {
-            this.form.code = this.template[this.form.language];
+            if (this.template[this.form.language]) {
+                this.form.code = this.template[this.form.language];
+            } else {
+                this.form.language = Object.getOwnPropertyNames(this.template)[0];
+                this.form.code = this.template[Object.getOwnPropertyNames(this.template)[0]];
+            }
         }
         $('#code-editor')[0].editor.setValue(this.form.code);
         this.control.isInSubmitMode = false;
@@ -147,7 +152,12 @@ component.methods = {
     },
     goToSubmitMode: function () {
         if (!this.form.code && this.template) {
-            this.form.code = this.template[this.form.language];
+            if (this.template[this.form.language]) {
+                this.form.code = this.template[this.form.language];
+            } else {
+                this.form.language = Object.getOwnPropertyNames(this.template)[0];
+                this.form.code = this.template[Object.getOwnPropertyNames(this.template)[0]];
+            }
         }
         this.control.isInSubmitMode = true;
         $('#code-editor')[0].editor.setValue(this.form.code);
