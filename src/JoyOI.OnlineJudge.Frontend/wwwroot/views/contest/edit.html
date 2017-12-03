@@ -46,6 +46,10 @@
                             <label>比赛介绍 (markdown)</label>
                             <textarea class="markdown-textbox" v-model="description"></textarea>
                         </p>
+                        <p v-if="$root.user.profile.role === 'Root' || $root.user.profile.role === 'Master'">
+                            <label>设置为推荐的比赛</label>
+                            <input type="checkbox" v-model="isHighlighted" />
+                        </p>
                         <p>
                             <a class="btn btn-default" v-on:click="saveBasic()"><i class="fa fa-save"></i> 保存</a>
                         </p>
@@ -89,8 +93,12 @@
                     <span>编辑比赛信息</span>
                 </a>
                 <a class="sidebar-section-button" v-on:click="current = 'problem'" v-bind:class="{ 'active': current === 'problem' }">
-                    <i class="fa fa-edit"></i>
+                    <i class="fa fa-tasks"></i>
                     <span>编辑比赛题目</span>
+                </a>
+                <a class="sidebar-section-button" v-on:click="current = 'language'" v-bind:class="{ 'active': current === 'language' }">
+                    <i class="fa fa-times-circle-o"></i>
+                    <span>设置禁用语言</span>
                 </a>
                 <hr class="sidebar-hr" />
                 <router-link :to="{ name: '/contest/:id', path: '/contest/' + id, params: { 'id': id } }"

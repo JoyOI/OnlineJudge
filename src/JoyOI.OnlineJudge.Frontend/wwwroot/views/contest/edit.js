@@ -13,6 +13,7 @@ component.data = function () {
         begin: null,
         end: null,
         duration: null,
+        isHighlighted: null,
         type: null,
         claims: []
     };
@@ -30,6 +31,7 @@ component.methods = {
                 this.end = x.data.end;
                 this.type = x.data.type;
                 this.attendPermission = x.data.attendPermission;
+                this.isHighlighted = x.data.isHighlighted;
                 app.links[1].text = x.data.title;
                 app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
                 try {
