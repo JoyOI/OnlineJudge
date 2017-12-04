@@ -130,22 +130,24 @@ $(window).click(function (e) {
         box.addClass('active');
 
         if ($(window).width() >= 768) {
-            if (box.hasClass('submit-filter') || box.hasClass('language-filter')) {
-                box.css('left', box.parents('th').offset().left - box.parents('tr').offset().left + 15 - box.outerWidth() + box.parents('th').outerWidth());
-            } else {
-                box.css('left', box.parents('th').offset().left - box.parents('tr').offset().left + 15);
-            }
+            try {
+                if (box.hasClass('submit-filter') || box.hasClass('language-filter')) {
+                    box.css('left', box.parents('th').offset().left - box.parents('tr').offset().left + 15 - box.outerWidth() + box.parents('th').outerWidth());
+                } else {
+                    box.css('left', box.parents('th').offset().left - box.parents('tr').offset().left + 15);
+                }
 
-            if (box.hasClass('time-filter')) {
-                box.outerWidth(box.parents('th').outerWidth());
-            }
+                if (box.hasClass('time-filter')) {
+                    box.outerWidth(box.parents('th').outerWidth());
+                }
 
-            if (box.hasClass('problem-filter')) {
-                var width = box.parents('th').outerWidth();
-                if (width < 250)
-                    width = 250;
-                box.outerWidth(width);
-            }
+                if (box.hasClass('problem-filter')) {
+                    var width = box.parents('th').outerWidth();
+                    if (width < 250)
+                        width = 250;
+                    box.outerWidth(width);
+                }
+            } catch (ex) { }
         }
     }
 });

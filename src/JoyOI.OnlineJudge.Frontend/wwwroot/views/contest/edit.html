@@ -34,12 +34,13 @@
                             <label>
                                 比赛参与者设定
                             </label>
-                            <select v-model="attendPermission" class="form-control">
+                            <select v-if="new Date(begin) > new Date()" v-model="attendPermission" class="form-control">
                                 <option value="0">允许所有人参赛</option>
                                 <option value="1">输入密码参赛</option>
                                 <!--<option value="2">指定团队参赛</option>-->
                             </select>
                         </p>
+                        <p v-if="new Date(begin) <= new Date()">{{ attendPermission == 0 ? '允许所有人参赛' : '输入密码参赛' }}</p>
                         <p v-if="attendPermission == 1">
                             <label>
                                 参赛密码
@@ -74,15 +75,33 @@
                         <tbody>
                             <tr v-for="x in problems">
                                 <td>{{ x.number }}</td>
-                                <td>{{ x.problemTitle || x.problemId }}</td>
+                                <td>
+                                    <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
+                                </td>
                                 <td>{{ x.point }}</td>
-                                <td><a v-on:click="removeProblem(x.problemId)" class="btn btn-danger">删除</a></td>
+                                <td><a v-on:click="removeProblem(x.problemId)" class="color-danger">删除</a></td>
                             </tr>
                             <tr>
-                                <td><input type="text" class="form-control" id="txtNumber" placeholder="建议使用A, B, C或1, 2, 3" /></td>
-                                <td><a v-on:click="toggleProblemSelector" id="slProblem">{{ selectedProblem ? selectedProblem.title : '选择题目' }}</a></td>
-                                <td><input type="text" class="form-control" value="100" id="txtPoint" /></td>
-                                <td><a v-on:click="addProblem(x.problemId)" class="btn btn-default">添加</a></td>
+                                <td><input type="text" class="thin-textbox" id="txtNumber" placeholder="建议使用A, B, C或1, 2, 3" /></td>
+                                <td>
+                                    <a class="filter-button" id="slProblem" v-bind:class="{ 'color-primary': selectedProblem === null }">{{ selectedProblem ? selectedProblem.title : '选择题目' }}</a>
+                                    <div class="filter-outer problem-filter">
+                                        <p>
+                                            <input v-on:keyup="searchProblem()"
+                                                   type="text"
+                                                   class="form-control textbox-search-problem"
+                                                   placeholder="题目ID或名称" />
+                                        </p>
+                                        <div class="problem-filter-list">
+                                            <div class="problem-filter-list-item" v-for="x in problemSearchResult" v-on:click="selectProblem(x.id, x.title)">
+                                                <div class="problem-filter-list-item-title">{{ x.title }}</div>
+                                                <div class="problem-filter-list-item-id">ID: {{ x.id }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><input type="text" class="thin-textbox" value="100" id="txtPoint" /></td>
+                                <td><a v-on:click="addProblem(selectedProblem.id)" class="color-primary">添加</a></td>
                             </tr>
                         </tbody>
                     </table>

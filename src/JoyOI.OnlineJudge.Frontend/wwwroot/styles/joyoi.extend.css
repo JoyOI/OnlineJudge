@@ -437,6 +437,7 @@
     transform: scale(0.4);
     transition: all 0.2s ease-in-out;
     margin-top: 13px;
+    z-index: 10;
 }
 
     .filter-outer.active {
@@ -1652,4 +1653,18 @@ dd {
     border-top: 3px solid #ddd;
     margin: 25px -25px -25px -25px;
     text-align: center;
+}
+
+.color-danger {
+    color: #fb6666;
+}
+
+.color-primary {
+    color: #0074d9;
+}
+
+.thin-textbox {
+    height: 24px;
+    font-size: 10px;
+    padding: 0 5px;
 }

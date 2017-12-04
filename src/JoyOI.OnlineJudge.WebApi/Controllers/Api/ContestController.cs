@@ -93,6 +93,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
                
                 var fields = PatchEntity(contest, RequestBody);
+                if (fields.Any(x => x == nameof(contest.IsHighlighted)) && !IsMasterOrHigher)
+                {
+                    return Result(403, "You don't have the permission to set the contest highlight.");
+                }
+
                 if (fields.Contains(nameof(Contest.Begin)))
                 {
                     if (contest.Begin < DateTime.Now)
@@ -201,7 +206,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> PutContestProblem(string contestId, string problemId, [FromBody] string value, CancellationToken token)
+        public async Task<IActionResult> PutContestProblem(string contestId, string problemId, CancellationToken token)
         {
             var contest = await DB.Contests
                 .SingleOrDefaultAsync(x => x.Id == contestId, token);
@@ -234,7 +239,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
-                var contestProblem = PutEntity<ContestProblem>(value);
+                var contestProblem = PutEntity<ContestProblem>(RequestBody);
+                contestProblem.Entity.ContestId = contestId;
+                contestProblem.Entity.ProblemId = problemId;
+
                 if (contestProblem.Fields.Contains("Number"))
                 {
                     if (await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.Number == contestProblem.Entity.Number, token))
