@@ -163,13 +163,24 @@ component.methods = {
         })
             .then((x) => {
                 app.notification('succeeded', '比赛题目添加成功', x.msg);
-                $('#txtPoint').val('');
+                $('#txtPoint').val(100);
                 $('#txtNumber').val('')
                 this.selectedProblem = null;
                 this.problemView.refresh();
             })
             .catch(err => {
                 app.notification('error', '比赛题目添加失败', err.responseJSON.msg);
+            });
+    },
+    removeProblem: function (id) {
+        app.notification('pending', '正在删除比赛题目');
+        qv.delete('/api/contest/' + this.id + '/problem/' + id)
+            .then((x) => {
+                app.notification('succeeded', '比赛题目删除成功', x.msg);
+                this.problemView.refresh();
+            })
+            .catch(err => {
+                app.notification('error', '比赛题目删除失败', err.responseJSON.msg);
             });
     }
 };
