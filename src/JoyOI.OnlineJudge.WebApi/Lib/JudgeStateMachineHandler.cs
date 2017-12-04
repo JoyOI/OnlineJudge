@@ -182,6 +182,15 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             var problemId = status.ProblemId;
             var isSelfTest = status.IsSelfTest;
 
+            if (statemachine.Status == ManagementService.Model.Enums.StateMachineStatus.Failed)
+            {
+                _db.JudgeStatuses
+                    .Where(x => x.Id == statusId)
+                    .SetField(x => x.Hint).WithValue(statemachine.Exception)
+                    .SetField(x => x.Result).WithValue(JudgeResult.SystemError)
+                    .Update();
+            }
+
             _db.Problems
                 .Where(x => x.Id == problemId)
                 .SetField(x => x.CachedSubmitCount).Plus(1)
