@@ -22,6 +22,8 @@ component.data = function () {
         selectedProblem: null,
         problems: [],
         problemSearchResult: [],
+        allLanguages: languages,
+        languages: []
     };
 };
 
@@ -40,6 +42,7 @@ component.methods = {
                 this.attendPermission = x.data.attendPermission;
                 this.isHighlighted = x.data.isHighlighted;
                 this.disableVirtual = x.data.disableVirtual;
+                this.languages = x.data.bannedLanguagesArray;
                 app.links[1].text = x.data.title;
                 app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
                 try {
@@ -76,33 +79,6 @@ component.methods = {
                                         var impactedResults = self.problems.filter(a => a.problemId == z);
                                         for (var i in impactedResults) {
                                             impactedResults[i].problemTitle = app.lookup.problem[z];
-                                        }
-                                    }
-                                    self.$forceUpdate();
-                                });
-                        }
-
-                        var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
-                        var uncachedUsers = x.data.result.map(y => y.userId).filter(y => !cachedUsers.some(z => z == y));
-                        if (uncachedUsers.length) {
-                            qv.get('/api/user/role', { userids: uncachedUsers.toString() })
-                                .then(y => {
-                                    for (var z in y.data) {
-                                        app.lookup.user[z] = {
-                                            id: z.id,
-                                            avatar: y.data[z].avatarUrl,
-                                            name: y.data[z].username,
-                                            role: y.data[z].role,
-                                            class: ConvertUserRoleToCss(y.data[z].role)
-                                        };
-
-                                        app.lookup[y.data[z].id] = app.lookup.user[z];
-
-                                        var impactedResults = self.result.filter(a => a.userId == z);
-                                        for (var i in impactedResults) {
-                                            impactedResults[i].userName = app.lookup.user[z].name;
-                                            impactedResults[i].userRole = app.lookup.user[z].role;
-                                            impactedResults[i].roleClass = app.lookup.user[z].class;
                                         }
                                     }
                                     self.$forceUpdate();
@@ -181,6 +157,24 @@ component.methods = {
             })
             .catch(err => {
                 app.notification('error', '比赛题目删除失败', err.responseJSON.msg);
+            });
+    },
+    saveBanLang: function () {
+        var lang = [];
+        var doms = $('.language-ban-selector');
+        for (var i = 0; i < doms.length; i++) {
+            if ($(doms[i]).val() === 'deny') {
+                lang.push($(doms[i]).attr('data-value'));
+            }
+        }
+
+        app.notification('pending', '正在设置比赛语言');
+        qv.patch('/api/contest/' + this.id, { bannedLanguages: lang.toString() })
+            .then((x) => {
+                app.notification('succeeded', '比赛语言设置成功', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '比赛语言设置失败', err.responseJSON.msg);
             });
     }
 };

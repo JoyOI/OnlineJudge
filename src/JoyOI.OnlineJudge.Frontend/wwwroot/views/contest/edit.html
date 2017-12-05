@@ -106,6 +106,30 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="area-item" v-if="current === 'language'">
+                    <div class="area-title">语言控制</div>
+                    <table class="table-inline">
+                        <thead>
+                            <tr>
+                                <th>语言</th>
+                                <th>设置</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="x in allLanguages">
+                                <td>{{ x }}</td>
+                                <td>
+                                    <select class="language-ban-selector thin-textbox" v-bind:data-value="x">
+                                        <option value="allow" v-bind:selected="!languages.some(y => y === x)">允许</option>
+                                        <option value="deny" v-bind:selected="languages.some(y => y === x)">禁止</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div><input type="button" value="保存" class="btn btn-default" style="margin: 10px 0 -10px -10px" v-on:click="saveBanLang()" /></div>
+                </div>
             </div>
         </div>
 
@@ -121,7 +145,7 @@
                 </a>
                 <a class="sidebar-section-button" v-on:click="current = 'language'" v-bind:class="{ 'active': current === 'language' }">
                     <i class="fa fa-times-circle-o"></i>
-                    <span>设置禁用语言</span>
+                    <span>参赛语言控制</span>
                 </a>
                 <hr class="sidebar-hr" />
                 <router-link :to="{ name: '/contest/:id', path: '/contest/' + id, params: { 'id': id } }"

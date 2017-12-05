@@ -117,6 +117,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the banned languages.
         /// </summary>
         /// <value>The banned languages.</value>
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetSingleDisabled)]
         public string BannedLanguages { get; set; }
 
         /// <summary>
