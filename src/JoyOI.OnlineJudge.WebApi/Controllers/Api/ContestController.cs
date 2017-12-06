@@ -195,6 +195,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(400, "The contest has not started");
             }
+            else if (contest.End >= DateTime.Now && !await IsRegisteredToContest(contestId, token))
+            {
+                return Result<IEnumerable<ContestProblemViewModel>>(new ContestProblemViewModel[] { });
+            }
             else
             {
                 var ret = await DB.ContestProblems
@@ -655,6 +659,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
                    && x.ClaimValue == problemId));
+
+        private async Task<bool> IsRegisteredToContest(string contestId, CancellationToken token)
+            => User.IsSignedIn() && await DB.Attendees.AnyAsync(x => x.ContestId == contestId && x.UserId == User.Current.Id);
         #endregion
     }
 }
