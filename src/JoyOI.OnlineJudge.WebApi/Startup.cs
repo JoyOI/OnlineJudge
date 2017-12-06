@@ -87,7 +87,7 @@ namespace JoyOI.OnlineJudge.WebApi
             app.UseCors("OnlineJudge");
             app.UseCookieMiddleware();
             app.UseAuthentication();
-            app.UseErrorHandlingMiddleware();
+            //app.UseErrorHandlingMiddleware();
             app.UseSignalR(x =>
             {
                 x.MapHub<OnlineJudgeHub>("signalr/onlinejudge");

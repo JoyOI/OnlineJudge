@@ -183,15 +183,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> GetContestProblems(string contestId, CancellationToken token)
         {
             var contest = await DB.Contests
+                .Include(x => x.Problems)
                 .SingleOrDefaultAsync(x => x.Id == contestId, token);
 
             if (contest == null)
             {
-                return Result<IEnumerable<ContestProblem>>(404, "Contest not found");
+                return Result<IEnumerable<ContestProblemViewModel>>(404, "Contest not found");
             }
             else if (contest.Begin > DateTime.Now && !await HasPermissionToContestAsync(contestId, token))
             {
-                return Result<IEnumerable<ContestProblem>>(400, "The contest has not started");
+                return Result<IEnumerable<ContestProblemViewModel>>(400, "The contest has not started");
             }
             else
             {
@@ -199,9 +200,50 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     .Where(x => x.ContestId == contestId)
                     .OrderBy(x => x.Number)
                     .ThenBy(x => x.Point)
+                    .Select(x => new ContestProblemViewModel
+                    {
+                        problemId = x.ProblemId,
+                        number = x.Number,
+                        point = x.Point
+                    })
                     .ToListAsync(token);
 
-                return Result<IEnumerable<ContestProblem>>(ret);
+                if (User.IsSignedIn())
+                {
+                    foreach (var x in ret)
+                    {
+                        switch (contest.Type)
+                        {
+                            case ContestType.OI:
+                                if (contest.Status == ContestStatus.Pending)
+                                {
+                                    x.status = null;
+                                }
+                                else if (contest.Status == ContestStatus.Live)
+                                {
+                                    x.status = (await DB.JudgeStatuses.AnyAsync(y => y.UserId == User.Current.Id && y.ProblemId == x.problemId && y.ContestId == contestId) ? "Submitted" : null);
+                                }
+                                else
+                                {
+                                    var status = await DB.JudgeStatuses
+                                        .Include(y => y.SubStatuses)
+                                        .LastOrDefaultAsync(y => y.UserId == User.Current.Id && y.ProblemId == x.problemId && y.ContestId == contestId);
+                                    if (status != null)
+                                    {
+                                        var count = status.SubStatuses.Count;
+                                        var ac = status.SubStatuses.Count(y => y.Result == JudgeResult.Accepted);
+                                        var point = contest.Problems.Single(y => y.ProblemId == status.ProblemId).Point;
+                                        x.status = Convert.ToInt32((float)point * (float)ac / (float)count).ToString();
+                                    }
+                                }
+                                break;
+                            default:
+                                throw new NotImplementedException($"The contest type { contest.Type.ToString() } has not been supported.");
+                        }
+                    }
+                }
+
+                return Result<IEnumerable<ContestProblemViewModel>>(ret);
             }
         }
 

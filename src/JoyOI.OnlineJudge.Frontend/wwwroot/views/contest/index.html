@@ -6,6 +6,32 @@
                     <div v-html="$root.marked(body)"></div>
                 </div>
             </div>
+
+            <div class="area-outer" v-if="status !== 'Pending' && problems.length">
+                <div class="area-item">
+                    <div class="area-title">题目列表</div>
+                    <table class="table-inline">
+                        <thead>
+                            <tr>
+                                <th v-if="$root.user.isSignedIn">状态</th>
+                                <th>编号</th>
+                                <th>题目</th>
+                                <th>分值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="x in problems">
+                                <td v-if="$root.user.isSignedIn">{{ x.status }}</td>
+                                <td>{{ x.number }}</td>
+                                <td>
+                                    <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId + '?contest=' + id, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
+                                </td>
+                                <td>{{ x.point }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div class="col-md-3 title-align">

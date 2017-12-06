@@ -9,6 +9,16 @@ using Newtonsoft.Json.Converters;
 namespace JoyOI.OnlineJudge.Models
 {
     /// <summary>
+    /// Contest status.
+    /// </summary>
+    public enum ContestStatus
+    {
+        Pending,
+        Live,
+        Done
+    }
+
+    /// <summary>
     /// Contest type.
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
@@ -39,14 +49,14 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The identifier.</value>
         [MaxLength(128)]
-		public string Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the domain name.
         /// </summary>
         /// <value>The domain.</value>
 		[MaxLength(256)]
-		public string Domain { get; set; }
+        public string Domain { get; set; }
 
         /// <summary>
         /// Gets or sets the title.
@@ -88,6 +98,20 @@ namespace JoyOI.OnlineJudge.Models
         [NotMapped]
         public DateTime End => Begin.Add(Duration);
 
+        [NotMapped]
+        public ContestStatus Status
+        {
+            get
+            {
+                if (DateTime.Now < Begin)
+                    return ContestStatus.Pending;
+                else if (DateTime.Now < End)
+                    return ContestStatus.Live;
+                else
+                    return ContestStatus.Done;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the attend permission type.
         /// </summary>
@@ -126,7 +150,7 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The banned languages array.</value>
         public IEnumerable<string> BannedLanguagesArray
         {
-            get => BannedLanguages.Split(',').Select(x => x.Trim()); 
+            get => BannedLanguages == null ? null : BannedLanguages.Split(',').Select(x => x.Trim()); 
         }
 
         /// <summary>
@@ -139,5 +163,7 @@ namespace JoyOI.OnlineJudge.Models
         public virtual ICollection<JudgeStatus> JudgeStatuses { get; set; } = new List<JudgeStatus>();
 
         public virtual ICollection<HackStatus> HackStatuses { get; set; } = new List<HackStatus>();
+
+        public virtual ICollection<ContestProblem> Problems { get; set; } = new List<ContestProblem>();
     }
 }
