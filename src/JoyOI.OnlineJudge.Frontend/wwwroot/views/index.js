@@ -73,14 +73,18 @@
             self.user.isSignedIn = true;
             self.control.userInfoView = qv.createView('/api/user/session/info');
             self.control.userInfoView.fetch((x) => {
-                self.user.profile.username = x.data.username;
-                self.user.profile.role = x.data.role;
-                self.user.profile.id = x.data.id;
-                self.user.tried = x.data.tried;
-                self.user.passed = x.data.passed;
-                self.user.chat = x.data.chat;
-                self.preferences.language = x.data.preferredLanguage || 'C++';
-                self.control.chatIframeUrl = x.data.chat;
+                if (x.data.isSignedIn) {
+                    self.user.profile.username = x.data.username;
+                    self.user.profile.role = x.data.role;
+                    self.user.profile.id = x.data.id;
+                    self.user.tried = x.data.tried;
+                    self.user.passed = x.data.passed;
+                    self.user.chat = x.data.chat;
+                    self.preferences.language = x.data.preferredLanguage || 'C++';
+                    self.control.chatIframeUrl = x.data.chat;
+                } else {
+                    self.user.isSignedIn = false;
+                }
             });
         }
         else {
