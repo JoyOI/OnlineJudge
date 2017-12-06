@@ -177,7 +177,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 throw new KeyNotFoundException("Did not find the status which related to the statemachine " + statemachineId);
             }
             var statusId = statusStatemachineRelation.StatusId;
-            var status = await _db.JudgeStatuses.Where(x => x.Id == statusId).Select(x => new { x.ProblemId, x.UserId, x.IsSelfTest }).FirstOrDefaultAsync(token);
+            var status = await _db.JudgeStatuses.Where(x => x.Id == statusId).Select(x => new { x.ProblemId, x.UserId, x.IsSelfTest, x.ContestId }).FirstOrDefaultAsync(token);
             var userId = status.UserId;
             var problemId = status.ProblemId;
             var isSelfTest = status.IsSelfTest;
@@ -242,17 +242,20 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     if (finalResult == JudgeResult.Accepted)
                     {
                         isAccepted = true;
+                    }
+                }
 
+                if (!isSelfTest && string.IsNullOrEmpty(status.ContestId))
+                {
+                    UpdateUserProblemJson(userId, problem.Id, isAccepted);
+
+                    if (isAccepted)
+                    {
                         _db.Problems
                             .Where(x => x.Id == problemId)
                             .SetField(x => x.CachedAcceptedCount).Plus(1)
                             .Update();
                     }
-                }
-
-                if (!isSelfTest)
-                {
-                    UpdateUserProblemJson(userId, problem.Id, isAccepted);
                 }
             }
             #endregion
@@ -305,13 +308,17 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 }
                 _db.SaveChanges();
 
-                UpdateUserProblemJson(userId, problem.Id, judgeResult == JudgeResult.Accepted);
-                if (judgeResult == JudgeResult.Accepted)
+                if (string.IsNullOrEmpty(status.ContestId))
                 {
-                    _db.Problems
-                        .Where(x => x.Id == problemId)
-                        .SetField(x => x.CachedAcceptedCount).Plus(1)
-                        .Update();
+                    UpdateUserProblemJson(userId, problem.Id, judgeResult == JudgeResult.Accepted);
+
+                    if (judgeResult == JudgeResult.Accepted)
+                    {
+                        _db.Problems
+                            .Where(x => x.Id == problemId)
+                            .SetField(x => x.CachedAcceptedCount).Plus(1)
+                            .Update();
+                    }
                 }
             }
             #endregion
