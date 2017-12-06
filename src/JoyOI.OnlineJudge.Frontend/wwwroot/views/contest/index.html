@@ -44,7 +44,7 @@
             </div>
 
             <div class="sidebar-section all-buttons">
-                <template v-if="needRegister">
+                <template v-if="needRegister && ($root.ensureUTCTimeString(end) <= new Date()) || !disableVirtual">
                     <router-link :to="{ name: '/contest/:id/register', path: '/contest/' + id + '/register', params: { id: id }}"
                                  class="sidebar-section-button highlight">
                         <i class="fa fa-sign-in"></i>

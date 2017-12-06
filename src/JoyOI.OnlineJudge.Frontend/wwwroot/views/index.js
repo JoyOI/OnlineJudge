@@ -188,8 +188,14 @@
                 path = name;
             LazyRouting.RedirectTo(name, path, params);
         },
+        ensureUTCTimeString: function (timeStr) {
+            if (timeStr[timeStr.length - 1] !== 'Z')
+                return timeStr + 'Z';
+            else
+                return timeStr;
+        },
         toLocalTime: function (timeStr) {
-            return moment(new Date(timeStr + 'Z')).format('YYYY-MM-DD HH:mm:ss');
+            return moment(new Date(this.ensureUTCTimeString(timeStr))).format('YYYY-MM-DD HH:mm:ss');
         },
         toggleChatBox: function () {
             if ($('.chat-iframe').hasClass('active')) {

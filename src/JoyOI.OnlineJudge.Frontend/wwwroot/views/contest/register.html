@@ -4,7 +4,7 @@
             <div class="error-block-inner">
                 <h1 class="error-code"><span style="font-size:36px">参加{{ $root.links[1].text }}</span></h1>
                 <p class="message-manual" v-if="needPassword"><input class="textbox" type="password" id="txtPassword" placeholder="请输入参赛密码" /></p>
-                <a v-on:click="register(false)" class="btn btn-default">参加比赛</a>
+                <a v-if="!contestEnd" v-on:click="register(false)" class="btn btn-default">参加比赛</a>
                 <a v-on:click="register(true)" class="btn" v-if="!virtualDisabled">参加模拟赛</a>
             </div>
         </div>

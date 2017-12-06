@@ -6,7 +6,8 @@ component.data = function () {
         id: router.history.current.params.id,
         virtualDisabled: false,
         needPassword: false,
-        view: null
+        view: null,
+        contestEnd: false
     };
 };
 
@@ -41,6 +42,7 @@ component.created = function () {
         .fetch(x => {
             this.virtualDisabled = x.data.disableVirtual;
             this.needPassword = x.data.attendPermission === 1;
+            this.contestEnd = new Date(app.ensureUTCTimeString(x.data.end)) <= new Date();
             app.links[1].text = x.data.title;
             app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
         });

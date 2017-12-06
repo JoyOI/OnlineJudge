@@ -12,7 +12,8 @@ component.data = function () {
         type: null,
         claims: [],
         problems: [],
-        needRegister: false
+        needRegister: false,
+        disableVirtual: false
     };
 };
 
@@ -54,6 +55,7 @@ component.methods = {
                 this.begin = x.data.begin;
                 this.end = x.data.end;
                 this.type = x.data.type;
+                this.disableVirtual = x.data.disableVirtual;
                 app.title = this.title;
             })
             .catch(err => {
