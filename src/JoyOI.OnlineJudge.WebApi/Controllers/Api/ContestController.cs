@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
 
@@ -359,6 +360,94 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 return Result(200, "Delete succeeded");
             }
+        }
+        #endregion
+
+        #region Register
+        [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/register")]
+        public async Task<IActionResult> GetRegister(string contestId, CancellationToken token)
+        {
+            var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == contestId, token);
+            if (contest == null)
+            {
+                return Result(404, "The contest is not found");
+            }
+
+            var register = await DB.Attendees
+                .Where(x => x.ContestId == contestId)
+                .Where(x => x.UserId == User.Current.Id)
+                .SingleOrDefaultAsync(token);
+
+            if (register == null)
+            {
+                return Result(new
+                {
+                    isRegistered = false
+                });
+            }
+            else
+            {
+                return Result(new
+                {
+                    isRegistered = true,
+                    isVirtual = register.IsVirtual,
+                    time = register.RegisterTime
+                });
+            }
+        }
+
+        [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/register")]
+        public async Task<IActionResult> PutRegister(string contestId, CancellationToken token)
+        {
+            var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == contestId, token);
+            if (contest == null)
+            {
+                return Result(404, "The contest is not found");
+            }
+
+            var request = JsonConvert.DeserializeObject<ContestRegisterRequest>(RequestBody);
+
+            if (contest.DisableVirtual && request.isVirtual)
+            {
+                return Result(400, "This contest does not accept a virtual competitor");
+            }
+
+            if (contest.AttendPermission == AttendPermission.Password && request.password != contest.PasswordOrTeamId)
+            {
+                return Result(400, "This password is incorrect");
+            }
+
+            if (contest.AttendPermission == AttendPermission.Team && !(await DB.GroupMembers.AnyAsync(x => x.UserId == User.Current.Id && x.GroupId == contest.PasswordOrTeamId)))
+            {
+                return Result(400, $"You are not a member of team '{ contest.PasswordOrTeamId }'");
+            }
+
+            if (contest.End <= DateTime.Now && !request.isVirtual)
+            {
+                return Result(400, "The contest is end");
+            }
+
+            var register = await DB.Attendees
+                .Where(x => x.ContestId == contestId)
+                .Where(x => x.UserId == User.Current.Id)
+                .SingleOrDefaultAsync(token);
+
+            if (register != null)
+            {
+                return Result(400, "You have already registered this contest.");
+            }
+
+            register = new Attendee()
+            {
+                ContestId = contestId,
+                IsVirtual = request.isVirtual,
+                RegisterTime = DateTime.Now,
+                UserId = User.Current.Id
+            };
+            DB.Attendees.Add(register);
+            await DB.SaveChangesAsync(token);
+
+            return Result(200, "Register succeeded");
         }
         #endregion
 
