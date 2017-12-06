@@ -44,6 +44,14 @@
             </div>
 
             <div class="sidebar-section all-buttons">
+                <template v-if="needRegister">
+                    <router-link :to="{ name: '/contest/:id/register', path: '/contest/' + id + '/register', params: { id: id }}"
+                                 class="sidebar-section-button highlight">
+                        <i class="fa fa-sign-in"></i>
+                        <span>报名参赛</span>
+                    </router-link>
+                    <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
+                </template>
                 <a class="sidebar-section-button active">
                     <i class="fa fa-trophy"></i>
                     <span>比赛首页</span>

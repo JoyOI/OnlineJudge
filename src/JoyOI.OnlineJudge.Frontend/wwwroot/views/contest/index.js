@@ -11,7 +11,8 @@ component.data = function () {
         end: null,
         type: null,
         claims: [],
-        problems: []
+        problems: [],
+        needRegister: false
     };
 };
 
@@ -91,10 +92,19 @@ component.methods = {
         } else {
             this.problemView.refresh();
         }
+    },
+    getRegisterStatus: function () {
+        qv.createView('/api/contest/' + this.id + '/register')
+            .fetch(x => {
+                this.needRegister = !x.isRegistered;
+            });
     }
 };
 
 component.created = function () {
     this.loadContest();
     this.loadContestProblem();
+    if (app.user.isSignedIn) {
+        this.getRegisterStatus();
+    }
 };
