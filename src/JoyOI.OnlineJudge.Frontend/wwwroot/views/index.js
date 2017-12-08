@@ -183,10 +183,10 @@
             }
             this._showNotification();
         },
-        redirect: function (name, path, params) {
+        redirect: function (name, path, params, query) {
             if (name && !path)
                 path = name;
-            LazyRouting.RedirectTo(name, path, params);
+            LazyRouting.RedirectTo(name, path, params, query);
         },
         ensureUTCTimeString: function (timeStr) {
             if (timeStr[timeStr.length - 1] !== 'Z')

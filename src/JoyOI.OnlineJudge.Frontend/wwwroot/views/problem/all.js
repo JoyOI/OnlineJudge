@@ -4,7 +4,6 @@ app.links = [];
 component.data = function () {
     return {
         tags: [],
-        selected: [],
         paging: {
             current: 1,
             count: 1,
@@ -19,41 +18,53 @@ component.data = function () {
     };
 }
 
+component.computed = {
+    selected: function () {
+        if (this.request.tag) {
+            return this.request.tag.split(',');
+        } else {
+            return [];
+        }
+    }
+};
+
 component.watch = {
-    selected: function (value) {
-        value = value.filter(x => !value.some(y => x != y && y.indexOf(x) >= 0));
-        this.request.tag = value.join(', ');
+    'request.tag': function (value, old) {
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/problem', '/problem', {}, args);
     },
-    'request.tag': function (value) {
-        this.paging.current = 1;
-        this.loadProblems();
+    'request.title': function (value, old) {
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/problem', '/problem', {}, args);
     },
-    'request.title': function (value) {
-        this.paging.current = 1;
-        this.loadProblems();
-    },
-    'paging.current': function (value) {
-        this.loadProblems();
+    'paging.current': function (value, old) {
+        var args = this.generateQuery();
+        app.redirect('/problem', '/problem', {}, args);
     },
     deep: true
 };
 
 component.methods = {
     triggerTag: function (tag) {
+        var tags = this.selected;
         if (this.selected.some(x => x == tag)) {
             var subs = this.selected.filter(x => x.indexOf(tag) >= 0);
             for (var i = 0; i < subs.length; i++) {
-                this.selected.remove(subs[i]);
+                this.request.tag = tags.remove(subs[i]).join(',');
             }
         }
         else {
-            this.selected.push(tag);
+            var tags = this.selected;
+            tags.push(tag);
             if (tag.indexOf(':') >= 0 && tag.lastIndexOf(':') >= 0 && tag.indexOf(':') != tag.lastIndexOf(':')) {
                 var parent = tag.substr(0, tag.lastIndexOf(':'));
                 if (!this.selected.some(x => x == parent)) {
-                    this.selected.push(parent);
+                    tags.push(parent);
                 }
             }
+            this.request.tag = tags.join(',');;
         }
     },
     setSearchTitle: function () {
@@ -69,20 +80,33 @@ component.methods = {
         this.view = qv.createView('/api/problem/all', { tag: self.request.tag, title: self.request.title, page: self.paging.current })
         this.view.fetch(x => {
             self.paging.count = x.data.count;
-            self.paging.current = x.data.current;
             self.paging.total = x.data.total;
             self.result = x.data.result;
             self.view.subscribe('problem-list');
             $(window).scrollTop(0);
         });
+    },
+    generateQuery: function () {
+        var args = {};
+        if (this.paging.current && this.paging.current !== 1) {
+            args['paging.current'] = this.paging.current;
+        }
+        if (this.request.tag) {
+            args['request.tag'] = this.request.tag;
+        }
+        if (this.request.title) {
+            args['request.title'] = this.request.title;
+        }
+        return args;
     }
 };
 
 component.created = function () {
-    this.view = qv.createView('/api/problem/all', this.request);
+    var self = this;
+    console.log(self.request.tag, self.paging.current);
+    this.view = qv.createView('/api/problem/all', { tag: self.request.tag, title: self.request.title, page: self.paging.current });
     this.view.fetch(x => {
         this.paging.count = x.data.count;
-        this.paging.current = x.data.current;
         this.paging.total = x.data.total;
         this.result = x.data.result;
         this.view.subscribe('problem-list');
