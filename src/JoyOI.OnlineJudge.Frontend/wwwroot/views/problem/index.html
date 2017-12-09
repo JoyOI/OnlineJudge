@@ -39,7 +39,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="area-item" v-if="display === 'resolution'">
+                <div class="area-item" v-if="display === 'resolution' && !contest">
                     <h1 class="area-title">题解列表</h1>
                     <div class="thread-revert-padding">
                         <div class="thread-outer" v-for="x in resolution.data" v-bind:class="{ 'highlight': x.highlight }">
@@ -90,16 +90,16 @@
                     <i class="fa fa-key login"></i>
                     <span class="login">登录后提交</span>
                 </a>
-                <a class="sidebar-section-button" v-if="source === 'Local'">
+                <a class="sidebar-section-button" v-if="source === 'Local' && !contest">
                     <i class="fa fa-database"></i>
                     <span>查看测试数据</span>
                 </a>
-                <a v-on:click="$root.redirect('/judge', '/judge', {}, { 'selectedProblem.id': id, 'selectedProblem.title': title })"
+                <a v-on:click="$root.redirect('/judge', '/judge', {}, contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title })"
                              class="sidebar-section-button">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </a>
-                <template v-if="isVisible">
+                <template v-if="isVisible && !contest">
                     <hr class="sidebar-hr" />
                     <a class="sidebar-section-button" v-if="$root.user.isSignedIn" target="_blank" v-bind:href="$root.hosts.blog.replace('{USERNAME}', $root.user.profile.username) + '/admin/createsolution/' + id">
                         <i class="fa fa-edit"></i>
@@ -124,7 +124,7 @@
                 </router-link>
             </div>
 
-            <div class="sidebar-section">
+            <div class="sidebar-section" v-if="!contest">
                 <div class="sidebar-section-header">
                     <h1>评价题目</h1>
                 </div>
@@ -139,7 +139,7 @@
                 </div>
             </div>
 
-            <div class="problem-id">题目ID: {{ id }}</div>
+            <div class="problem-id" v-if="!contest">题目ID: {{ id }}</div>
         </div>
     </div>
 

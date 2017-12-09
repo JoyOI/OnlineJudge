@@ -6,6 +6,7 @@ component.data = function () {
         title: null,
         body: null,
         contest: null,
+        contestTitle: null,
         template: null,
         sampleData: [],
         source: null,
@@ -107,6 +108,7 @@ component.created = function () {
     if (this.contest) {
         qv.createView('/api/contest/' + this.contest)
             .fetch(x => {
+                this.contestTitle = x.data.title;
                 app.links = [{ text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + x.data.id, params: { id: x.data.id } } }];
             });
     }
