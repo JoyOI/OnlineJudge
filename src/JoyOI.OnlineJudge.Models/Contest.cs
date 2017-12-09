@@ -154,11 +154,18 @@ namespace JoyOI.OnlineJudge.Models
         }
 
         /// <summary>
-        /// Gets or sets the attendee count.
+        /// Gets or sets the total attendee count.
         /// </summary>
         /// <value>The attendee count</value>
         [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
         public long CachedAttendeeCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formal attendee count.
+        /// </summary>
+        /// <value>The attendee count</value>
+        [WebApi(FilterLevel.PatchDisabled | FilterLevel.PutDisabled)]
+        public long CachedFormalAttendeeCount { get; set; }
 
         public virtual ICollection<JudgeStatus> JudgeStatuses { get; set; } = new List<JudgeStatus>();
 

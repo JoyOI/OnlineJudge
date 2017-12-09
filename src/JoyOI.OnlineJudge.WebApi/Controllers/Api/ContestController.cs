@@ -454,6 +454,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             DB.Attendees.Add(register);
             await DB.SaveChangesAsync(token);
 
+            DB.Contests
+                .Where(x => x.Id == contestId)
+                .SetField(x => x.CachedAttendeeCount).Plus(1)
+                .SetField(x => x.CachedFormalAttendeeCount).Plus(register.IsVirtual ? 0 : 1)
+                .Update();
+
             return Result(200, "Register succeeded");
         }
         #endregion
