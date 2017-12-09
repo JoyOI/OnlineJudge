@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,8 +7,10 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using Swashbuckle.AspNetCore.Swagger;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Hubs;
@@ -79,6 +82,12 @@ namespace JoyOI.OnlineJudge.WebApi
 
             services.AddJudgeStateMachineHandler();
             services.AddExternalApi();
+
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("api", new Info() { Title = "JoyOI Online Judge" });
+                x.IncludeXmlComments((Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "JoyOI.OnlineJudge.WebApi.xml")));
+            });
         }
         
         public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -87,7 +96,12 @@ namespace JoyOI.OnlineJudge.WebApi
             app.UseCors("OnlineJudge");
             app.UseCookieMiddleware();
             app.UseAuthentication();
-            //app.UseErrorHandlingMiddleware();
+            app.UseErrorHandlingMiddleware();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+                c.SwaggerEndpoint("/swagger/swagger.json", "JoyOI Online Judge"));
+
             app.UseSignalR(x =>
             {
                 x.MapHub<OnlineJudgeHub>("signalr/onlinejudge");

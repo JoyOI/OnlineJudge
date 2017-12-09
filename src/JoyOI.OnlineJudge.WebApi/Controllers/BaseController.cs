@@ -18,6 +18,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
 {
     public class BaseController : BaseController<OnlineJudgeContext, User, Guid>
     {
+        [NonAction]
         public override void Prepare()
         {
             base.Prepare();
@@ -95,6 +96,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         [Inject]
         public ManagementServiceClient ManagementService { get; set; }
         
+        [NonAction]
         public static Expression<Func<T, bool>> ContainsWhere<T>(Expression<Func<T, string>> propSelector, IEnumerable<string> matches)
         {
             if (matches == null || matches.Count() < 1)
@@ -109,6 +111,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             return Expression.Lambda<Func<T, bool>>(body, propSelector.Parameters);
         }
 
+        [NonAction]
         public static MethodCallExpression MakeContains(Expression expression, Expression parameter)
         {
             var containsMethod = typeof(string).GetTypeInfo().GetMethod("Contains", new Type[] { typeof(string) });

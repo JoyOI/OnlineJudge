@@ -106,7 +106,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(403, "You don't have the permission to view this problem.");
             }
-            if (ret == null || !ret.IsVisible && !this.HasOwnership)
+            if ((ret == null || !ret.IsVisible && !this.HasOwnership) && string.IsNullOrEmpty(contestId))
             {
                 return Result(404, "Not Found");
             }
@@ -330,14 +330,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/all")]
         public async Task<IActionResult> GetTestCase(
             [FromServices] ManagementServiceClient MgmtSvc,
-            string problemId, 
+            string problemId,
+            string contestId,
             TestCaseType? type, 
             bool? showContent,
             CancellationToken token)
         {
             this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
             var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
-            if (problem == null || !problem.IsVisible && !this.HasOwnership)
+
+            if (!string.IsNullOrEmpty(contestId) && !await IsContestAttendeeAbleToAccessProblem(problemId, contestId, token))
+            {
+                return Result(403, "You don't have the permission to view this problem.");
+            }
+            if ((problem == null || !problem.IsVisible && !this.HasOwnership) && string.IsNullOrEmpty(contestId))
             {
                 return Result<Problem>(404, "Not Found");
             }
@@ -815,7 +821,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return false;
         }
 
-        public async Task<bool> IsContestProblem(string problemId, string contestId, CancellationToken token)
+        private async Task<bool> IsContestProblem(string problemId, string contestId, CancellationToken token)
         {
             if (string.IsNullOrEmpty(problemId) || string.IsNullOrEmpty(contestId))
                 return false;
@@ -823,7 +829,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
         }
 
-        public async Task<bool> IsContestAttendeeAbleToAccessProblem(string problemId, string contestId, CancellationToken token)
+        private async Task<bool> IsContestAttendeeAbleToAccessProblem(string problemId, string contestId, CancellationToken token)
         {
             return await IsContestProblem(problemId, contestId, token) && await IsAttendeeActive(contestId, token);
         }
