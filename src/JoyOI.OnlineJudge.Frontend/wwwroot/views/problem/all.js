@@ -1,7 +1,4 @@
-﻿app.title = '题目列表';
-app.links = [];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         tags: [],
         paging: {
@@ -102,6 +99,9 @@ component.methods = {
 };
 
 component.created = function () {
+    app.title = '题目列表';
+    app.links = [];
+
     var self = this;
     this.view = qv.createView('/api/problem/all', { tag: self.request.tag, title: self.request.title, page: self.paging.current });
     this.view.fetch(x => {

@@ -1,7 +1,4 @@
-﻿app.title = '首页';
-app.links = [];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         contests: [],
         threads: []
@@ -9,6 +6,9 @@ component.data = function () {
 }
 
 component.created = function () {
+    app.title = '首页';
+    app.links = [];
+
     this.loadContests();
     this.loadThreads();
 }

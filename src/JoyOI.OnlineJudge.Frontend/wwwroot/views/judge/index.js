@@ -1,7 +1,4 @@
-﻿app.title = '评测结果'
-app.links = [{ text: '评测', to: '/judge' }];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         control: {
             statuses: statuses,
@@ -21,6 +18,9 @@ component.data = function () {
 };
 
 component.created = function () {
+    app.title = '评测结果'
+    app.links = [{ text: '评测', to: '/judge' }];
+
     this.id = router.history.current.params.id;
     var self = this;
     self.view = qv.createView('/api/judge/' + this.id);

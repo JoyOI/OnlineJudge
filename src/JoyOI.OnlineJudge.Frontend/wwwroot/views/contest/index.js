@@ -1,7 +1,4 @@
-﻿app.title = '比赛';
-app.links = [{ text: '比赛列表', to: '/contest' }];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         id: router.history.current.params.id,
         title: null,
@@ -104,6 +101,9 @@ component.methods = {
 };
 
 component.created = function () {
+    app.title = '比赛';
+    app.links = [{ text: '比赛列表', to: '/contest' }];
+
     this.loadContest();
     this.loadContestProblem();
     if (app.user.isSignedIn) {

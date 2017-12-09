@@ -1,7 +1,4 @@
-﻿app.title = '比赛';
-app.links = [];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         paging: {
             current: 1,
@@ -17,6 +14,8 @@ component.data = function () {
 }
 
 component.created = function () {
+    app.title = '比赛';
+    app.links = [];
     this.loadContests();
 }
 

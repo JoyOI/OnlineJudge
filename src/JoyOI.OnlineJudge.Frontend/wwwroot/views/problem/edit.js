@@ -1,7 +1,4 @@
-﻿app.title = '编辑题目';
-app.links = [{ text: '题目列表', to: '/problem' }, { text: '未知题目', to: '/problem' }];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         id: router.history.current.params.id,
         title: null,
@@ -46,8 +43,10 @@ component.data = function () {
 };
 
 component.created = function () {
-    var self = this;
+    app.title = '编辑题目';
+    app.links = [{ text: '题目列表', to: '/problem' }, { text: '未知题目', to: '/problem' }];
 
+    var self = this;
     qv.createView('/api/problem/' + router.history.current.params.id).fetch(x => {
             self.title = x.data.title;
             app.links[1].text = x.data.title;

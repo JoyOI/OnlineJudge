@@ -1,8 +1,5 @@
 ﻿var __ace_style;
 
-app.title = '题目';
-app.links = [{ text: '题目列表', to: '/problem' }];
-
 component.data = function () {
     return {
         id: router.history.current.params.id,
@@ -72,6 +69,9 @@ component.computed = {
 };
 
 component.created = function () {
+    app.title = '题目';
+    app.links = [{ text: '题目列表', to: '/problem' }];
+
     var self = this;
     qv.createView('/api/problem/' + router.history.current.params.id + '/testCase/all', { type: 'Sample' }).fetch(x => {
         self.sampleData = x;

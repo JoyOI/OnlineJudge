@@ -1,7 +1,4 @@
-﻿app.title = '编辑比赛';
-app.links = [{ text: '比赛列表', to: '/contest' }, { text: '未知比赛', to: '/contest' }];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         id: router.history.current.params.id,
         current: 'basic',
@@ -180,6 +177,9 @@ component.methods = {
 };
 
 component.created = function () {
+    app.title = '编辑比赛';
+    app.links = [{ text: '比赛列表', to: '/contest' }, { text: '未知比赛', to: '/contest' }];
+
     this.loadContest();
     this.loadContestProblem();
 };

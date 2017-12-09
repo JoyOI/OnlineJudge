@@ -1,7 +1,4 @@
-﻿app.title = '评测记录';
-app.links = [];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         paging: {
             current: 1,
@@ -69,6 +66,9 @@ component.watch = {
 };
 
 component.created = function () {
+    app.title = '评测记录';
+    app.links = [];
+
     $('.datetime').datetimepicker();
     this.loadStatuses();
 };

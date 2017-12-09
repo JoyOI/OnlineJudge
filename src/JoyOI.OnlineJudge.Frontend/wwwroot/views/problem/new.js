@@ -1,7 +1,4 @@
-﻿app.title = '新建题目';
-app.links = [{ text: '题目列表', to: '/problem' }];
-
-component.methods = {
+﻿component.methods = {
     newProblem: function () {
         var id = $('#txtProblemId').val();
         app.notification('pending', '正在创建题目...');
@@ -16,4 +13,9 @@ component.methods = {
                 app.notification('error', '题目创建失败', err.responseJSON.msg);
             });
     }
+};
+
+component.created = function () {
+    app.title = '新建题目';
+    app.links = [{ text: '题目列表', to: '/problem' }];
 };

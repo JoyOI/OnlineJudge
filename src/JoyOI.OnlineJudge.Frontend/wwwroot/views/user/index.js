@@ -1,7 +1,4 @@
-﻿app.title = '用户资料';
-app.links = [];
-
-component.data = function () {
+﻿component.data = function () {
     return {
         id: null,
         role: null,
@@ -20,6 +17,9 @@ component.data = function () {
 };
 
 component.created = function () {
+    app.title = '用户资料';
+    app.links = [];
+
     var self = this;
     qv.createView('/api/user/' + router.history.current.params.username, 600 * 1000)
         .fetch(x => {
