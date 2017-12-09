@@ -24,7 +24,7 @@
                                 <td v-if="$root.user.isSignedIn">{{ x.status }}</td>
                                 <td>{{ x.number }}</td>
                                 <td>
-                                    <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId + '?contest=' + id, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
+                                    <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId }, status === 'Live' ? { contest: id } : null)">{{ x.problemTitle || x.problemId }}</a>
                                 </td>
                                 <td>{{ x.point }}</td>
                             </tr>

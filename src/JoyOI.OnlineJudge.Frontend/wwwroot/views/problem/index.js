@@ -5,6 +5,7 @@ component.data = function () {
         id: router.history.current.params.id,
         title: null,
         body: null,
+        contest: null,
         template: null,
         sampleData: [],
         source: null,
@@ -73,10 +74,7 @@ component.created = function () {
     app.links = [{ text: '题目列表', to: '/problem' }];
 
     var self = this;
-    qv.createView('/api/problem/' + router.history.current.params.id + '/testCase/all', { type: 'Sample' }).fetch(x => {
-        self.sampleData = x;
-    });
-    var problemView = qv.createView('/api/problem/' + router.history.current.params.id);
+    var problemView = qv.createView('/api/problem/' + router.history.current.params.id, { contestId: this.contest });
     problemView
         .fetch(x => {
             app.title = x.data.title;
@@ -91,16 +89,33 @@ component.created = function () {
                 self.control.languages = Object.getOwnPropertyNames(x.data.codeTemplate).filter(x => x !== '__ob__');
             }
             problemView.subscribe('problem', x.data.id);
+        })
+        .catch(err => {
+            app.notification('error', '获取题目信息失败', err.responseJSON.msg);
         });
-    var sampleView = qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true })
-    sampleView.fetch(x => {
-        self.sampleData = x.data.map(x => { return { input: x.input, output: x.output } });
-        sampleView.subscribe('problem-sample-data', self.id);
-    });
+
+    var sampleView = qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true, contestId: this.contest })
+    sampleView
+        .fetch(x => {
+            self.sampleData = x.data.map(x => { return { input: x.input, output: x.output } });
+            sampleView.subscribe('problem-sample-data', self.id);
+        })
+        .catch(err => {
+            app.notification('error', '获取样例数据失败', err.responseJSON.msg);
+        });
+
+    if (this.contest) {
+        qv.createView('/api/contest/' + this.contest)
+            .fetch(x => {
+                app.links = [{ text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + x.data.id, params: { id: x.data.id } } }];
+            });
+    }
+
     qv.get('/api/problem/' + router.history.current.params.id + '/claim/all')
         .then((x) => {
             self.claims = x.data.map(x => x.userId);
         });
+
     this.isSpecialJudge = false;
     this.form.language = app.preferences.language;
 
