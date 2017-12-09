@@ -98,13 +98,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> Get(string id, CancellationToken token)
+        public async Task<IActionResult> Get(string id, string contestId, CancellationToken token)
         {
             this.HasOwnership = await HasPermissionToProblemAsync(id, token);
             var ret = await DB.Problems.SingleOrDefaultAsync(x => x.Id == id, token);
+            if (!string.IsNullOrEmpty(contestId) && !await IsContestAttendeeAbleToAccessProblem(id, contestId, token))
+            {
+                return Result(403, "You don't have the permission to view this problem.");
+            }
             if (ret == null || !ret.IsVisible && !this.HasOwnership)
             {
-                return Result<Problem>(404, "Not Found");
+                return Result(404, "Not Found");
             }
             else
             {
@@ -778,6 +782,50 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             });
 
             await DB.SaveChangesAsync(token);
+        }
+
+        private async Task<bool> IsContestAttendee(string contestId, CancellationToken token)
+        {
+            if (!User.IsSignedIn())
+                return false;
+
+            if (string.IsNullOrEmpty(contestId))
+                return false;
+
+            return await DB.Attendees.AnyAsync(x => x.ContestId == contestId && x.UserId == User.Current.Id, token);
+        }
+
+        private async Task<bool> IsAttendeeActive(string contestId, CancellationToken token)
+        {
+            if (!await IsContestAttendee(contestId, token))
+                return false;
+
+            if (string.IsNullOrEmpty(contestId))
+                return false;
+
+            var attendee = await DB.Attendees.SingleAsync(x => x.UserId == User.Current.Id && x.ContestId == contestId, token);
+            var contest = await DB.Contests.SingleAsync(x => x.Id == contestId, token);
+            if (contest.Status == ContestStatus.Pending)
+                return false;
+            if (!attendee.IsVirtual && contest.Status == ContestStatus.Live)
+                return true;
+            else if (!contest.DisableVirtual && attendee.IsVirtual && attendee.RegisterTime.Add(contest.Duration) > DateTime.Now)
+                return true;
+            else
+                return false;
+        }
+
+        public async Task<bool> IsContestProblem(string problemId, string contestId, CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(problemId) || string.IsNullOrEmpty(contestId))
+                return false;
+
+            return await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
+        }
+
+        public async Task<bool> IsContestAttendeeAbleToAccessProblem(string problemId, string contestId, CancellationToken token)
+        {
+            return await IsContestProblem(problemId, contestId, token) && await IsAttendeeActive(contestId, token);
         }
         #endregion
     }
