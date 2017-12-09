@@ -256,5 +256,12 @@ component.watch = {
             var editor = $('.spjEditor')[0].editor;
             editor.session.setMode('ace/mode/' + syntaxHighlighter[val]);
         }
+    },
+    active: function (val) {
+        if (val === 'basic') {
+            app.redirect('/problem/:id/edit', '/problem/' + this.id + '/edit', { id: this.id });
+        } else {
+            app.redirect('/problem/:id/edit', '/problem/' + this.id + '/edit', { id: this.id }, { active: val });
+        }
     }
 };

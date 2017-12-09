@@ -61,3 +61,13 @@ component.created = function () {
             self.postCount = x.data.count;
         });
 };
+
+component.watch = {
+    tab: function (val) {
+        if (val === 'passed') {
+            app.redirect('/user/:username', '/user/' + this.id, { id: this.id });
+        } else {
+            app.redirect('/user/:username', '/user/' + this.id, { id: this.id }, { tab: val });
+        }
+    }
+};

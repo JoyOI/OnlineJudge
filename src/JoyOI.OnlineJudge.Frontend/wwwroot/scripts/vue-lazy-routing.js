@@ -200,7 +200,7 @@ LazyRouting._loadComponentAsync = function (rule, map) {
                 var self = this;
                 setTimeout(function () {
                     self.__initFinished = true;
-                }, 1000);
+                }, 500);
             };
 
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
