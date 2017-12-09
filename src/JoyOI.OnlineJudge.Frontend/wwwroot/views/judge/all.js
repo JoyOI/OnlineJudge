@@ -56,7 +56,6 @@ component.watch = {
         app.redirect('/judge', '/judge', {}, args);
     },
     'paging.current': function (newVal, oldVal) {
-        console.log(newVal, oldVal, 'xxxxxx', this.__initFinished);
         var args = this.generateQuery();
         app.redirect('/judge', '/judge', {}, args);
     },
