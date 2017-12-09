@@ -103,6 +103,10 @@ component.created = function () {
         });
     this.isSpecialJudge = false;
     this.form.language = app.preferences.language;
+
+    if (this.display === 'resolution') {
+        this.loadResolutions();
+    }
 };
 
 component.watch = {
@@ -110,13 +114,12 @@ component.watch = {
     title: function () {
         app.title = this.title;
     },
-    display: function (val) {
-        if (val === 'resolution' && !this.resolutionView) {
-            this.loadResolutions();
+    'resolution.paging.current': function (val) {
+        var args = { display: 'resolution' };
+        if (val && val !== 1) {
+            args['resolution.paging.current'] = val;
         }
-    },
-    'resolution.paging.current': function () {
-        this.loadResolutions();
+        app.redirect('/problem/:id', '/problem/' + this.id, { id: this.id }, args);
     },
     'form.language': function (val) {
         var self = this;
@@ -131,6 +134,13 @@ component.watch = {
     'result.view': function (newVal, oldVal) {
         if (oldVal)
             oldVal.unsubscribe();
+    },
+    display: function (val) {
+        if (val === 'problem') {
+            app.redirect('/problem/:id', '/problem/' + this.id);
+        } else {
+            app.redirect('/problem/:id', '/problem/' + this.id, {}, { display: val });
+        }
     }
 };
 
