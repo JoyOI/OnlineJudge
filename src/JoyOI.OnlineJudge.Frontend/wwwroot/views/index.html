@@ -84,9 +84,9 @@
                         <div class="columns">
                             <div class="location-path">
                                 / <router-link to="/">Joy OI</router-link> /
-                                <span v-for="link in links">
-                                    <router-link v-bind:to="link.to">{{ link.text }}</router-link> /
-                                </span>
+                                <template v-for="link in links">
+                                    <a v-on:click="redirect(typeof link.to === 'string' ? link.to : link.to.name, typeof link.to === 'string' ? link.to : link.to.path, typeof link.to === 'string' ? undefined : link.to.params), typeof link.to === 'string' ? undefined : link.to.query">{{ link.text }}</a> /
+                                </template>
                             </div>
                             <h1 class="location-current" data-emoji-enabled="">{{ title }}</h1>
                         </div>

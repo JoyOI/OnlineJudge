@@ -97,7 +97,7 @@ LazyRouting._hideQueryString = function (path) {
 }
 
 LazyRouting._parseQueryString = function (dataFunc, query) {
-    var data = dataFunc();
+    var data = dataFunc ? dataFunc() : { };
     if (query) {
         for (var x in query) {
             try {
@@ -248,6 +248,9 @@ $(window).click(async function (e) {
         var name = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.name;
         var path = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.path;
         var params = e.target.__vue__.$options.propsData.to.params;
+        if (LazyRouting.__routeMap[name] || LazyRouting.__mirror.some(x => x.src === name) && LazyRouting.__routeMap[LazyRouting.__mirror.filter(x => x.src === name)[0].dest]) {
+            return true;
+        }
         e.target.lazyload = true;
         await LazyRouting.RedirectTo(name, path, params);
         return false;

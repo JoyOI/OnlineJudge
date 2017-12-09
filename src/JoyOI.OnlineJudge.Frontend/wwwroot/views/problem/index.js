@@ -109,7 +109,7 @@ component.created = function () {
         qv.createView('/api/contest/' + this.contest)
             .fetch(x => {
                 this.contestTitle = x.data.title;
-                app.links = [{ text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + x.data.id, params: { id: x.data.id } } }];
+                app.links = [{ text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + this.contest, params: { id: this.contest } } }];
             });
     }
 

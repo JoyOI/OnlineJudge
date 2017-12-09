@@ -74,7 +74,42 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(ret);
             }
         }
-        
+
+        [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/session")]
+        public async Task<IActionResult> GetSession(string id, CancellationToken token)
+        {
+            var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == id, token);
+            if (contest == null)
+            {
+                return Result(404, "The contest is not found");
+            }
+            if (!User.IsSignedIn())
+            {
+                return Result(401, "Not authorized");
+            }
+
+            var attendee = await DB.Attendees.SingleOrDefaultAsync(x => x.ContestId == id && x.UserId == User.Current.Id, token);
+            if (attendee == null)
+            {
+                return Result(new
+                {
+                    isRegistered = false
+                });
+            }
+            else
+            {
+                return Result(new
+                {
+                    isRegistered = true,
+                    isVirtual = attendee.IsVirtual,
+                    begin = attendee.IsVirtual ? attendee.RegisterTime : contest.Begin,
+                    end = attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration),
+                    isBegan = DateTime.Now > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
+                    isEnded = DateTime.Now > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration))
+                });
+            }
+        }
+
         [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<IActionResult> Patch(string id, CancellationToken token)
@@ -368,38 +403,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Register
-        [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/register")]
-        public async Task<IActionResult> GetRegister(string contestId, CancellationToken token)
-        {
-            var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == contestId, token);
-            if (contest == null)
-            {
-                return Result(404, "The contest is not found");
-            }
-
-            var register = await DB.Attendees
-                .Where(x => x.ContestId == contestId)
-                .Where(x => x.UserId == User.Current.Id)
-                .SingleOrDefaultAsync(token);
-
-            if (register == null)
-            {
-                return Result(new
-                {
-                    isRegistered = false
-                });
-            }
-            else
-            {
-                return Result(new
-                {
-                    isRegistered = true,
-                    isVirtual = register.IsVirtual,
-                    time = register.RegisterTime
-                });
-            }
-        }
-
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/register")]
         public async Task<IActionResult> PutRegister(string contestId, CancellationToken token)
         {

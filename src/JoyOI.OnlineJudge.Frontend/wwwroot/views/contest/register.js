@@ -26,6 +26,7 @@ component.methods = {
             .then((x) => {
                 app.notification('succeeded', '报名参赛成功', x.msg);
                 this.view.refresh();
+                qv.createView('/api/contest/' + this.id + '/session').refresh();
                 app.redirect('/contest/:id', '/contest/' + this.id, { id: this.id });
             })
             .catch(err => {

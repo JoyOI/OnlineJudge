@@ -9,7 +9,11 @@
         type: null,
         claims: [],
         problems: [],
-        needRegister: false,
+        session: {
+            isRegistered: false,
+            isBegan: true,
+            isEnded: true
+        },
         disableVirtual: false
     };
 };
@@ -92,10 +96,10 @@ component.methods = {
             this.problemView.refresh();
         }
     },
-    getRegisterStatus: function () {
-        qv.createView('/api/contest/' + this.id + '/register')
+    getContestSession: function () {
+        qv.createView('/api/contest/' + this.id + '/session')
             .fetch(x => {
-                this.needRegister = !x.isRegistered;
+                this.session = x.data;
             });
     }
 };
@@ -107,6 +111,6 @@ component.created = function () {
     this.loadContest();
     this.loadContestProblem();
     if (app.user.isSignedIn) {
-        this.getRegisterStatus();
+        this.getContestSession();
     }
 };
