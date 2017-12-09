@@ -101,7 +101,8 @@ LazyRouting._parseQueryString = function (dataFunc, query) {
     if (query) {
         for (var x in query) {
             try {
-                if (!isNaN(parseInt(query[x])) || !isNaN(parseFloat(query[x]))) {
+                LazyRouting._liftCreate(data, x);
+                if (!isNaN(parseInt(query[x])) && parseInt(query[x]).toString() === query[x] || !isNaN(parseFloat(query[x] && parseFloat(query[x]).toString() === query[x]))) {
                     eval('data.' + x + '=' + query[x] + ';');
                 } else {
                     eval('data.' + x + '=query[x];');
@@ -199,7 +200,7 @@ LazyRouting._loadComponentAsync = function (rule, map) {
                 var self = this;
                 setTimeout(function () {
                     self.__initFinished = true;
-                }, 500);
+                }, 1000);
             };
 
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
@@ -227,6 +228,9 @@ LazyRouting._convertToViewNameBase = function(path) {
 }
 
 LazyRouting.RedirectTo = async function (name, path, params, query) {
+    var current = LazyRouting.GetCurrentComponent();
+    if (current)
+        delete current.__initFinished;
     if (LazyRouting.__mirror.some(x => x.src == path)) {
         if (!LazyRouting.__routeMap[name]) {
             var dest = LazyRouting.__mirror.filter(x => x.src == path)[0].dest;

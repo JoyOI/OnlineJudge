@@ -18,7 +18,7 @@
                             <div class="filter-outer status-filter">
                                 <ul class="filter-list">
                                     <li v-for="status in statuses">
-                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue', 'judge-purple': status.color === 'purple' }" v-on:click="filterStatus(status.value)" class="filter-item">
+                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue', 'judge-purple': status.color === 'purple', 'active': selectedStatus === status.value }" v-on:click="selectedStatus = selectedStatus === status.value ? null : status.value" class="filter-item">
                                             <i class="fa" v-bind:class="{ 'fa-question': status.color === 'blue', 'fa-check': status.color === 'green', 'fa-eye-slash': status.color === 'purple', 'fa-exclamation': status.color === 'orange', 'fa-remove': status.color === 'red' }"></i>
                                             {{ status.display }}
                                         </a>
@@ -62,7 +62,7 @@
                             <div class="filter-outer language-filter">
                                 <ul class="filter-list">
                                     <li v-for="language in languages">
-                                        <a v-bind:data-value="language" v-on:click="filterLanguage(language)" class="filter-item">
+                                        <a v-bind:data-value="language" v-bind:class="{ 'active': selectedLanguage === language }" v-on:click="selectedLanguage = selectedLanguage === language ? null : language" class="filter-item">
                                             {{ language }}
                                         </a>
                                     </li>
@@ -70,10 +70,10 @@
                             </div>
                         </th>
                         <th>
-                            <a class="filter-button">{{ selectedTime ? (( selectedTime.begin ? selectedTime.begin : '' ) + (  selectedTime.end ? selectedTime.end + ' ~ ' : '' )) : '提交时间' }} <i class="fa fa-filter"></i></a>
+                            <a class="filter-button">{{ selectedTime ? (( selectedTime && selectedTime.begin ? selectedTime.begin + (selectedTime && selectedTime.end ? '~' : '') : '' ) + (  selectedTime && selectedTime.end ? selectedTime.end : '' )) : '提交时间' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer time-filter">
-                                <p><input type="text" class="form-control datetime time-range-begin" placeholder="起始时间" /></p>
-                                <p><input type="text" class="form-control datetime time-range-end" placeholder="结束时间" /></p>
+                                <p><input type="text" class="form-control datetime time-range-begin" v-bind:value="selectedTime && selectedTime.begin ? selectedTime.begin : ''" placeholder="起始时间" /></p>
+                                <p><input type="text" class="form-control datetime time-range-end" v-bind:value="selectedTime && selectedTime.end ? selectedTime.end : ''" placeholder="结束时间" /></p>
                                 <p><a class="sidebar-button" v-on:click="selectTimeRange()"><i class="fa fa-filter"></i> 过滤</a></p>
                                 <p><a class="sidebar-button" v-on:click="clearTimeRange()"><i class="fa fa-ban"></i> 清除</a></p>
                             </div>

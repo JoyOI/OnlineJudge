@@ -5,7 +5,8 @@ component.data = function () {
     return {
         paging: {
             current: 1,
-            count: 1
+            count: 1,
+            total: 0
         },
         statuses: statuses,
         result: [],
@@ -24,31 +25,40 @@ component.data = function () {
 
 component.watch = {
     selectedStatus: function () {
-        this.paging.current = 1;
-        this.loadStatuses();
+        $('.status-filter').removeClass('active');
+        var args = this.generateQuery();
+        app.redirect('/judge', '/judge', {}, args);
     },
     selectedProblem: function () {
-        this.paging.current = 1;
-        this.loadStatuses();
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/judge', '/judge', {}, args);
     },
     selectedSubmittor: function () {
-        this.paging.current = 1;
-        this.loadStatuses();
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/judge', '/judge', {}, args);
     },
     selectedLanguage: function () {
-        this.paging.current = 1;
-        this.loadStatuses();
+        $('.language-filter').removeClass('active');
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/judge', '/judge', {}, args);
     },
     selectedContest: function () {
-        this.paging.current = 1;
-        this.loadStatuses();
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/judge', '/judge', {}, args);
     },
     selectedTime: function () {
-        this.paging.current = 1;
-        this.loadStatuses();
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/judge', '/judge', {}, args);
     },
-    'paging.current': function () {
-        this.loadStatuses();
+    'paging.current': function (newVal, oldVal) {
+        console.log(newVal, oldVal, 'xxxxxx', this.__initFinished);
+        var args = this.generateQuery();
+        app.redirect('/judge', '/judge', {}, args);
     },
     view: function (newVal, oldVal) {
         var fields = getFields(newVal.__cacheInfo.params);
@@ -60,39 +70,16 @@ component.watch = {
 };
 
 component.created = function () {
+    $('.datetime').datetimepicker();
     this.loadStatuses();
 };
 
 component.methods = {
-    filterStatus: function (status) {
-        $('[data-value="' + this.selectedStatus + '"]').removeClass('active');
-        if (this.selectedStatus !== null && this.selectedStatus === status) {
-            this.selectedStatus = null;
-        } else {
-            this.selectedStatus = status;
-            $('[data-value="' + this.selectedStatus + '"]').addClass('active');
-        }
-        setTimeout(function () {
-            $('.filter-outer').removeClass('active');
-        }, 300);
-    },
-    filterLanguage: function (language) {
-        $('[data-value="' + this.selectedLanguage + '"]').removeClass('active');
-        if (this.selectedLanguage && this.selectedLanguage == language) {
-            this.selectedLanguage = null;
-        } else {
-            this.selectedLanguage = language;
-            $('[data-value="' + this.selectedLanguage + '"]').addClass('active');
-        }
-        setTimeout(function () {
-            $('.filter-outer').removeClass('active');
-        }, 300);
-    },
-    filterTime: function (start, end) {
-        if (!start && !end) {
+    filterTime: function (begin, end) {
+        if (!begin && !end) {
             this.selectedTime = null;
         } else {
-            this.selectedTime = { start: start, end: end };
+            this.selectedTime = { begin: begin, end: end };
         }
     },
     searchSubmittor: function () {
@@ -176,7 +163,6 @@ component.methods = {
         $('.time-filter').removeClass('active');
     },
     loadStatuses: function () {
-        $(window).scrollTop(0);
         var self = this;
         if (self.view) {
             self.view.unsubscribe();
@@ -206,7 +192,6 @@ component.methods = {
             }
 
             self.paging.count = x.data.count;
-            self.paging.current = x.data.current;
             self.result = x.data.result.map(y =>
             {
                 var ret = clone(y);
@@ -267,5 +252,39 @@ component.methods = {
 
             self.view.subscribe('judge');
         });
+    },
+    generateQuery: function () {
+        var args = {};
+        if (this.paging.current && this.paging.current !== 1) {
+            args['paging.current'] = this.paging.current;
+        }
+        if (this.selectedStatus !== null) {
+            args['selectedStatus'] = this.selectedStatus;
+        }
+        if (this.selectedProblem) {
+            if (this.selectedProblem.id)
+                args['selectedProblem.id'] = this.selectedProblem.id;
+            if (this.selectedProblem.title)
+                args['selectedProblem.title'] = this.selectedProblem.title;
+        }
+        if (this.selectedSubmittor) {
+            args['selectedSubmittor'] = this.selectedSubmittor;
+        }
+        if (this.selectedLanguage) {
+            args['selectedLanguage'] = this.selectedLanguage;
+        }
+        if (this.selectedContest) {
+            if (this.selectedContest.title)
+                args['selectedContest.title'] = this.selectedContest.title;
+            if (this.selectedContest.id)
+                args['selectedContest.id'] = this.selectedContest.id;
+        }
+        if (this.selectedTime) {
+            if (this.selectedTime.begin)
+                args['selectedTime.begin'] = this.selectedTime.begin;
+            if (this.selectedTime.end)
+                args['selectedTime.end'] = this.selectedTime.end;
+        }
+        return args;
     }
 };

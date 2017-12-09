@@ -103,7 +103,6 @@ component.methods = {
 
 component.created = function () {
     var self = this;
-    console.log(self.request.tag, self.paging.current);
     this.view = qv.createView('/api/problem/all', { tag: self.request.tag, title: self.request.title, page: self.paging.current });
     this.view.fetch(x => {
         this.paging.count = x.data.count;
