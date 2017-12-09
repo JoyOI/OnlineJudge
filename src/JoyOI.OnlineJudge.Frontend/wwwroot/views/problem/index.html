@@ -95,7 +95,8 @@
                     <span>查看测试数据</span>
                 </a>
                 <a v-on:click="$root.redirect('/judge', '/judge', {}, contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title })"
-                             class="sidebar-section-button">
+                   v-bind:href="$root.resolveUrl({ name: '/judge', path: '/judge', params: {}, query: contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title } })"          
+                   class="sidebar-section-button vue-resolved">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </a>

@@ -100,7 +100,7 @@
                 </div>
                 <div class="sidebar-section-body">
                     <p>{{ paging.total }} 道题目</p>
-                    <p v-if="$root.user.isSignedIn"><a v-on:click="$root.redirect('/problem/new')">我要创建题目</a></p>
+                    <p v-if="$root.user.isSignedIn"><a class="vue-resolved" v-bind:href="$root.resolveUrl('/problem/new')" v-on:click="$root.redirect('/problem/new')">我要创建题目</a></p>
                 </div>
             </div>
         </div>

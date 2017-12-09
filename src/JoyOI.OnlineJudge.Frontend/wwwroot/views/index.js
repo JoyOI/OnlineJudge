@@ -206,6 +206,20 @@
                 $('#back-to-top').css('margin-right', 350);
             }
         },
+        resolveUrl: function (to) {
+            if (typeof to === 'string')
+                return to;
+            if (to.name && !to.path)
+                return to.name;
+            if (to.path.indexOf('?') >= 0 || !to.path.query)
+                return to.path;
+            var baseUrl = to.path + "?";
+            var args = [];
+            for (var x in to.query) {
+                args.push(x + '=' + encodeURIComponent(to.query[x]));
+            }
+            return baseUrl += args.join('&');
+        },
         _showNotification: function () {
             var self = this;
             if (!this.control.notificationLock && this.control.notifications.length) {

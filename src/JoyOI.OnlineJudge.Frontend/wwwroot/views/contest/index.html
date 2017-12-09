@@ -24,7 +24,9 @@
                                 <td v-if="$root.user.isSignedIn">{{ x.status }}</td>
                                 <td>{{ x.number }}</td>
                                 <td>
-                                    <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId }, (session.isRegistered && !session.isEnded) ? { contest: id } : null)">{{ x.problemTitle || x.problemId }}</a>
+                                    <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId }, (session.isRegistered && !session.isEnded) ? { contest: id } : undefined)"
+                                       v-bind:href="$root.resolveUrl({ name: '/problem/:id', path: '/problem/' + x.problemId, params: { id: x.problemId }, query: (session.isRegistered && !session.isEnded) ? { contest: id } : undefined })"
+                                       class="vue-resolved">{{ x.problemTitle || x.problemId }}</a>
                                 </td>
                                 <td>{{ x.point }}</td>
                             </tr>
@@ -65,7 +67,8 @@
                     <span>比赛答疑</span>
                 </a>
                 <a v-on:click="$root.redirect('/judge', '/judge', {}, { 'selectedContest.id': id, 'selectedContest.title': title });"
-                             class="sidebar-section-button">
+                   v-bind:href="$root.resolveUrl({ name: '/judge', path: '/judge', params: {}, query: { 'selectedContest.id': id, 'selectedContest.title': title } })"
+                   class="sidebar-section-button vue-resolved">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </a>

@@ -244,6 +244,10 @@ LazyRouting.RedirectTo = async function (name, path, params, query) {
 }
 
 $(window).click(async function (e) {
+    if ($(e.target).hasClass('vue-resolved')) {
+        e.preventDefault();
+        return false;
+    }
     if (e.target.__vue__ && !e.target.lazyload) {
         var name = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.name;
         var path = typeof (e.target.__vue__.$options.propsData.to) === "string" ? e.target.__vue__.$options.propsData.to : e.target.__vue__.$options.propsData.to.path;
