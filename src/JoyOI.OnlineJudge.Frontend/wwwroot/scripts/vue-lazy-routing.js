@@ -11,7 +11,9 @@ var router = new VueRouter({
 router.beforeEach(function (to, from, next) {
     if (to.name && !LazyRouting.__routeMap[to.name] && !LazyRouting.__mirror.some(x => x.src == to.path))
         LazyRouting._loadComponentAsync(to.name, LazyRouting.__mirror.filter(x => x.src == router.history.current.fullPath && x.dest == to.name))
-            .then(() => { next(); });
+            .then(() => {
+                next();
+            });
     else
         next();
 })
@@ -202,7 +204,7 @@ LazyRouting._loadComponentAsync = function (rule, map) {
                     self.__initFinished = true;
                 }, 500);
             };
-
+            
             LazyRouting.__routeMap[rule] = { path: rule, name: rule, component: component };
             router.addRoutes([LazyRouting.__routeMap[rule]]);
             if (map && map.length > 0)
@@ -241,6 +243,12 @@ LazyRouting.RedirectTo = async function (name, path, params, query) {
         await LazyRouting._loadComponentAsync(name, LazyRouting.__mirror.filter(y => y.src == router.history.current.fullPath && y.dest == name));
     }
     router.push({ name: name, path: path, params: params, query: query });
+}
+
+LazyRouting._sleep = function (time) {
+    var promise = new Promise((res, rej) => {
+        setTimeout(function () { res() }, time);
+    });
 }
 
 $(window).click(async function (e) {

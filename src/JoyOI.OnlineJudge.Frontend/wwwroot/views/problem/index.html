@@ -117,12 +117,13 @@
                     </a>
                 </template>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
-                <router-link :to="{ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } }"
+                <a v-on:click="$root.redirect('/problem/:id/edit', '/problem/' + id + '/edit')"
+                   v-bind:href="$root.resolveUrl({ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } })"
                              v-if="hasPermissionToEdit"
-                             class="sidebar-section-button">
+                             class="sidebar-section-button vue-resolved">
                     <i class="fa fa-cog"></i>
                     <span>管理题目</span>
-                </router-link>
+                </a>
             </div>
 
             <div class="sidebar-section" v-if="!contest">

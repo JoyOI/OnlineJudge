@@ -73,12 +73,13 @@
                     <span>提交记录</span>
                 </a>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
-                <router-link v-if="hasPermissionToEdit"
-                             :to="{ name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id } }"
-                             class="sidebar-section-button">
+                <a v-if="hasPermissionToEdit"
+                    v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id })"
+                    v-bind:href="$root.resolveUrl({ name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id } })"
+                    class="sidebar-section-button vue-resolved">
                     <i class="fa fa-cog"></i>
                     <span>管理比赛</span>
-                </router-link>
+                </a>
             </div>
         </div>
     </div>
