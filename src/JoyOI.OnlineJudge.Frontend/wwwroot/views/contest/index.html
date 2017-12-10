@@ -58,7 +58,9 @@
                     <i class="fa fa-trophy"></i>
                     <span>比赛首页</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/contest/:id/standings', '/contest/' + id + '/standings', { id: id })"
+                   v-bind:href="$root.resolveUrl({ name: '/contest/:id/standings', path: '/contest/' + id + '/standings', params: { id: id } })">
                     <i class="fa fa-flag"></i>
                     <span>比赛排名</span>
                 </a>

@@ -1668,3 +1668,25 @@ dd {
     font-size: 10px;
     padding: 0 5px;
 }
+
+.standings-list tr td:nth-child(1), .standings-list tr td:nth-child(2), .standings-list tr td:nth-child(3), .standings-list tr th:nth-child(1), .standings-list tr th:nth-child(2) {
+    text-align: left;
+}
+
+.standings-list .point-column, .standings-list .problem-column {
+    border-left: 1px solid #ddd!important;
+}
+
+.standings-avatar {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+}
+
+.standings-list tr td:nth-child(2) {
+    padding-right: 0;
+}
+
+.standings-list td {
+    line-height: 16px;
+}

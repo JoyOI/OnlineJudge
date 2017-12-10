@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JoyOI.OnlineJudge.Models;
 
@@ -31,6 +32,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public virtual bool AllowJudgeFinishedPushNotification => true;
 
         public virtual bool AllowHackFinishedPushNotification => true;
+
+        public virtual IDictionary<string, string> PointColumnDefinations => new Dictionary<string, string>();
 
         public virtual void OnShowHackResult(HackStatus status)
         {
@@ -66,6 +69,14 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public virtual bool IsAvailableToGetStandings(string username = null)
         {
             return true;
+        }
+
+        public virtual void GenerateTotalScoreDisplayText(Attendee src)
+        {
+        }
+
+        public virtual void GenerateProblemScoreDisplayText(Attendee src)
+        {
         }
     }
 }

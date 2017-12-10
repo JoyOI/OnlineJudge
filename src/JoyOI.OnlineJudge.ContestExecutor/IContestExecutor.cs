@@ -1,10 +1,12 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using JoyOI.OnlineJudge.Models;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
 {
     public interface IContestExecutor
     {
+        IDictionary<string, string> PointColumnDefinations { get; }
+
         string ContestId { get; set; }
 
         bool AllowFilterByJudgeResult { get; }
@@ -26,5 +28,9 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         void OnJudgeCompleted(JudgeStatus status);
 
         void OnHackCompleted(HackStatus status);
+
+        void GenerateTotalScoreDisplayText(Attendee src);
+
+        void GenerateProblemScoreDisplayText(Attendee src);
     }
 }

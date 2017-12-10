@@ -8,6 +8,12 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 {
     public class OlympicInformationContestExecutor : DefaultContestExecutor
     {
+        public override IDictionary<string, string> PointColumnDefinations => new Dictionary<string, string>
+        {
+            { "Point", "Score" },
+            { "Point3", "Time" }
+        };
+
         public override bool AllowFilterByJudgeResult => false;
 
         public override bool AllowJudgeFinishedPushNotification => false;
@@ -65,6 +71,20 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 return false;
             else
                 return true;
+        }
+
+        public override void GenerateProblemScoreDisplayText(Attendee src)
+        {
+            foreach (var x in src.detail.Values)
+            {
+                x.display = x.point.ToString();
+            }
+        }
+
+        public override void GenerateTotalScoreDisplayText(Attendee src)
+        {
+            src.pointDisplay = src.point.ToString();
+            src.point3Display = src.point3 + " ms";
         }
     }
 }

@@ -445,7 +445,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "You have already registered this contest.");
             }
 
-            register = new Attendee()
+            register = new OnlineJudge.Models.Attendee()
             {
                 ContestId = contestId,
                 IsVirtual = request.isVirtual,
@@ -548,7 +548,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var problems = DB.ContestProblems
                 .Where(x => x.ContestId == contestId)
                 .OrderBy(x => x.Number)
-                .Select(x => new StandingsProblemViewModel
+                .Select(x => new ContestExecutor.Problem
                 {
                     number = x.Number,
                     point = x.Point,
@@ -567,12 +567,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var attendees = (await query
                 .GroupBy(x => new { x.UserId, x.IsVirtual })
                 .ToListAsync(token))
-                .Select(x => new StandingsAttendeeViewModel
+                .Select(x => new ContestExecutor.Attendee
                 {
                     userId = x.Key.UserId,
                     isVirtual = x.Key.IsVirtual,
                     detail = x.GroupBy(y => y.ProblemId)
-                        .Select(y => new StandingsProblemDetailViewModel {
+                        .Select(y => new Detail {
                             problemId = y.Key,
                             isAccepted = y.First().IsAccepted,
                             point = y.First().Point,
@@ -590,9 +590,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .ThenBy(x => x.timeSpan2)
                 .ToList();
 
-            return Result(new StandingsViewModel {
+            foreach (var x in attendees)
+            {
+                ce.GenerateProblemScoreDisplayText(x);
+                ce.GenerateTotalScoreDisplayText(x);
+            }
+
+            return Result(new Standings {
                 id = contestId,
                 title = contest.Title,
+                columnDefinations = ce.PointColumnDefinations,
                 problems = problems,
                 attendees = attendees
             });
@@ -612,12 +619,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .Where(x => x.UserId == userId)
                 .ToListAsync(token);
 
-            var ret = new StandingsAttendeeViewModel
+            var ret = new ContestExecutor.Attendee
             {
                 userId = userId,
                 detail = statuses
                     .GroupBy(x => x.ProblemId)
-                    .Select(x => new StandingsProblemDetailViewModel {
+                    .Select((IGrouping<string, ContestProblemLastStatus> x) => new Detail
+                    {
                         isAccepted = x.First().IsAccepted,
                         point = x.First().Point,
                         point2 = x.First().Point2,
@@ -628,6 +636,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     })
                     .ToDictionary(x => x.problemId)
             };
+
+            ce.GenerateTotalScoreDisplayText(ret);
+            ce.GenerateProblemScoreDisplayText(ret);
 
             return Result(ret);
         }
