@@ -1,12 +1,6 @@
 ﻿<div class="container" id="contest">
     <div class="row">
         <div class="col-md-9">
-            <div class="area-outer problem-body">
-                <div class="area-item">
-                    <div v-html="$root.marked(body)"></div>
-                </div>
-            </div>
-
             <div class="area-outer" v-if="problems.length">
                 <div class="area-item">
                     <div class="area-title">题目列表</div>
@@ -35,6 +29,12 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div class="area-outer problem-body">
+                <div class="area-item">
+                    <div v-html="$root.marked(body)"></div>
                 </div>
             </div>
         </div>

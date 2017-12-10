@@ -6,6 +6,7 @@
                     <div class="area-title">参加{{ $root.links[1].text }}</div>
                     <div>
                         <p v-if="!contestEnd">您可以选择正式参加比赛，正式比赛选手将遵循比赛规定的时间答题，官方举办的比赛将计入Rating。</p>
+                        <p v-if="contestEnd">比赛已经结束，您无法以正式选手身份参赛。</p>
                         <p v-if="!virtualDisabled && contestBegin">点击“参加模拟赛”为自己举办一场模拟赛，从现在开始进行一场完整的模拟比赛。比赛成绩将与正式参赛的选手区分开，官方赛不计Rating。</p>
                         <p class="message-manual" v-if="needPassword"><input class="textbox" type="password" id="txtPassword" placeholder="请输入参赛密码" /></p>
                         <a v-if="!contestEnd" v-on:click="register(false)" class="btn btn-default">参加比赛</a>

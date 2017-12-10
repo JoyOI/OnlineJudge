@@ -89,7 +89,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 foreach (var x in result.data.result.Where(x => !string.IsNullOrWhiteSpace(x.ContestId)))
                 {
                     var ce = cef.Create(x.ContestId);
-                    var isContestInProgress = ce.IsContestInProgress(User.Current?.UserName);
+                    var submittorUsername = DB.Users.Single(y => y.Id == x.UserId).UserName;
+                    var isContestInProgress = ce.IsContestInProgress(User.Current?.UserName) || ce.IsContestInProgress(submittorUsername);
                     if (isContestInProgress && !await HasPermissionToContestAsync(x.ContestId, token) && !await HasPermissionToProblemAsync(x.ProblemId, token))
                     {
                         if (!ce.AllowFilterByJudgeResult && !status.HasValue)
@@ -402,11 +403,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> Get(Guid id, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var ret = await DB.JudgeStatuses
+                .Include(x => x.User)
                 .Include(x => x.SubStatuses)
                 .Include(x => x.Problem)
                 .SingleOrDefaultAsync(x => x.Id == id, token);
 
             var problem = ret.Problem;
+            var username = ret.User.UserName;
             ret.Problem = null;
             ret.User = null;
 
@@ -424,7 +427,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 if (!await HasPermissionToContestAsync(ret.ContestId) && !await HasPermissionToProblemAsync(ret.ProblemId))
                 {
                     var ce = cef.Create(contest.Id);
-                    ce.OnShowJudgeResult(ret);
+                    if (ce.IsContestInProgress(User.Current?.UserName) || ce.IsContestInProgress(username))
+                    {
+                        ce.OnShowJudgeResult(ret);
+                    }
                 }
 
                 ret.Contest = null;
