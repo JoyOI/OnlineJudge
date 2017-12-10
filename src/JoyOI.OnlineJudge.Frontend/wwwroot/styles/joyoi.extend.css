@@ -1226,7 +1226,7 @@ dd {
         border-color: #5590ae;
     }
 
-.login-column input[type="checkbox"] {
+.login-column input[type="checkbox"], .checkbox {
     box-sizing: border-box;
     padding: 0;
     -webkit-appearance: none;
@@ -1247,12 +1247,12 @@ dd {
     float: left;
 }
 
-    .login-column input[type="checkbox"]:checked {
+    .login-column input[type="checkbox"]:checked, .checkbox:checked {
         background: #5590ae;
         border-color: #5590ae;
     }
 
-    .login-column input[type="checkbox"]:after {
+    .login-column input[type="checkbox"]:after, .checkbox:after {
         content: "";
         width: 18px;
         height: 11px;

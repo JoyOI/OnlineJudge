@@ -15,10 +15,20 @@ component.data = function () {
     };
 };
 
+component.watch = {
+    excludeVirtual: function (val) {
+        if (val) {
+            app.redirect('/contest/:id/standings', '/contest/' + this.id + '/standings', { id: this.id }, { 'excludeVirtual': this.excludeVirtual.toString() });
+        } else {
+            app.redirect('/contest/:id/standings', '/contest/' + this.id + '/standings', { id: this.id });
+        }
+    }
+};
+
 component.methods = {
     loadStandings: function () {
         var self = this;
-        this.view = qv.createView('/api/contest/' + this.id + '/standings/all', { includingVirtual: !this.excludeVirtual }, 60000);
+        this.view = qv.createView('/api/contest/' + this.id + '/standings/all', { includingVirtual: this.excludeVirtual ? false : true }, 60000);
         this.view.fetch(x => {
             this.problems = x.data.problems;
             this.attendees = x.data.attendees;
