@@ -12,7 +12,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th colspan="2"><a v-on:click="excludeVirtual = !excludeVirtual">{{ excludeVirtual ? '正式选手' : '全部选手' }}</a></th>
+                        <th colspan="2"><a v-on:click="excludeVirtual = !excludeVirtual">{{ excludeVirtual ? '正式选手' : '全部选手' }} <i class="fa fa-filter"></i></a></th>
                         <th v-for="x in columns" class="point-column">{{ x }}</th>
                         <th v-for="x in problems" class="problem-column">{{ x.number }}</th>
                     </tr>
