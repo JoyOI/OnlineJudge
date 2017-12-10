@@ -98,28 +98,13 @@ component.methods = {
                     }
                 }).slice(0, 5);
 
-                var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
-                var uncachedUsers = self.submittorSearchResult.map(y => y.username).filter(y => !cachedUsers.some(z => z == y));
-                if (uncachedUsers.length) {
-                    qv.get('/api/user/role', { usernames: self.submittorSearchResult.map(y => y.username).toString() }).then(y => {
-                        for (var z in y.data) {
-                            app.lookup.user[z] = {
-                                id: z.id,
-                                avatar: y.data[z].avatarUrl,
-                                name: y.data[z].username,
-                                role: y.data[z].role,
-                                class: ConvertUserRoleToCss(y.data[z].role)
-                            };
-
-                            app.lookup[y.data[z].username] = app.lookup.user[z];
-
-                            var impactedResults = self.submittorSearchResult.filter(r => r.username == z);
-                            for (var i in impactedResults) {
-                                impactedResults[i].roleClass = app.lookup.user[z].class;
-                            }
+                app.lookupUsers({ usernames: self.submittorSearchResult.map(y => y.username) })
+                    .then(() => {
+                        for (var i = 0; i < self.submittorSearchResult.length; i++) {
+                            self.submittorSearchResult[i].roleClass = app.lookup.user[self.submittorSearchResult[i].username].class;
                         }
+                        this.$forceUpdate();
                     });
-                }
             });
         }
     },
@@ -205,48 +190,23 @@ component.methods = {
             });
 
             if (self.result.length) {
-                var cachedProblems = Object.getOwnPropertyNames(app.lookup.problem);
-                var uncachedProblems = x.data.result.map(y => y.problemId).filter(y => !cachedProblems.some(z => z == y));
-                if (uncachedProblems.length) {
-                    qv.get('/api/problem/title', { problemids: uncachedProblems.toString() })
-                        .then(y => {
-                            for (var z in y.data) {
-                                app.lookup.problem[z] = y.data[z].title;
-                                var impactedResults = self.result.filter(a => a.problemId == z);
-                                for (var i in impactedResults) {
-                                    impactedResults[i].problemTitle = app.lookup.problem[z];
-                                }
-                            }
-                            self.$forceUpdate();
-                        });
-                }
+                app.lookupProblems(x.data.result.map(y => y.problemId))
+                    .then(() => {
+                        for (var i in self.result) {
+                            self.result[i].problemTitle = app.lookup.problem[self.result[i].problemId];
+                        }
+                        self.$forceUpdate();
+                    });
 
-                var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
-                var uncachedUsers = x.data.result.map(y => y.userId).filter(y => !cachedUsers.some(z => z == y));
-                if (uncachedUsers.length) {
-                    qv.get('/api/user/role', { userids: uncachedUsers.toString() })
-                        .then(y => {
-                            for (var z in y.data) {
-                                app.lookup.user[z] = {
-                                    id: z.id,
-                                    avatar: y.data[z].avatarUrl,
-                                    name: y.data[z].username,
-                                    role: y.data[z].role,
-                                    class: ConvertUserRoleToCss(y.data[z].role)
-                                };
-
-                                app.lookup[y.data[z].id] = app.lookup.user[z];
-
-                                var impactedResults = self.result.filter(a => a.userId == z);
-                                for (var i in impactedResults) {
-                                    impactedResults[i].userName = app.lookup.user[z].name;
-                                    impactedResults[i].userRole = app.lookup.user[z].role;
-                                    impactedResults[i].roleClass = app.lookup.user[z].class;
-                                }
-                            }
-                            self.$forceUpdate();
-                        });
-                }
+                app.lookupUsers({ userIds: x.data.result.map(y => y.userId) })
+                    .then(() => {
+                        for (var i = 0; i < self.result.length; i ++) {
+                            self.result[i].userName = app.lookup.user[self.result[i].userId].name;
+                            self.result[i].userRole = app.lookup.user[self.result[i].userId].role;
+                            self.result[i].roleClass = app.lookup.user[self.result[i].userId].class;
+                        }
+                        this.$forceUpdate();
+                    });
             }
 
             self.view.subscribe('judge');

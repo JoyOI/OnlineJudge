@@ -26,32 +26,15 @@ component.methods = {
             app.links[1].text = x.data.title;
             app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
 
-            var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
-            var uncachedUsers = self.attendees.map(y => y.userId).filter(y => !cachedUsers.some(z => z == y));
-            if (uncachedUsers.length) {
-                qv.get('/api/user/role', { userIds: self.attendees.map(y => y.userId).toString() }).then(y => {
-                    for (var z in y.data) {
-                        app.lookup.user[z] = {
-                            id: z.id,
-                            avatar: y.data[z].avatarUrl,
-                            name: y.data[z].username,
-                            role: y.data[z].role,
-                            class: ConvertUserRoleToCss(y.data[z].role)
-                        };
-
-                        app.lookup[y.data[z].username] = app.lookup.user[z];
-
-                        var impactedResults = self.attendees.filter(r => r.userId == z);
-                        for (var i in impactedResults) {
-                            impactedResults[i].roleClass = app.lookup.user[z].class;
-                            impactedResults[i].avatarUrl = app.lookup.user[z].avatar;
-                            impactedResults[i].username = app.lookup.user[z].name;
-                        }
-
-                        self.$forceUpdate();
+            app.lookupUsers({ userIds: x.data.attendees.map(y => y.userId) })
+                .then(() => {
+                    for (var i = 0; i < self.attendees.length; i++) {
+                        self.attendees[i].roleClass = app.lookup.user[self.attendees[i].userId].class;
+                        self.attendees[i].avatarUrl = app.lookup.user[self.attendees[i].userId].avatar;
+                        self.attendees[i].username = app.lookup.user[self.attendees[i].userId].name;
                     }
+                    this.$forceUpdate();
                 });
-            }
         });
     }
 };

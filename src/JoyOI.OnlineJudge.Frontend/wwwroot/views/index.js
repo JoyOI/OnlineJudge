@@ -237,6 +237,51 @@
                     }, 250);
                 }, 4000);
             }
+        },
+        lookupUsers: function (query) {
+            var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
+            var uncachedUsers = (query.userIds ? query.userIds : query.usernames).filter(x => !cachedUsers.some(y => y == x));
+            if (uncachedUsers.length) {
+                return qv.get('/api/user/role', query.userIds ? { userIds: query.userIds.toString() } : { usernames: query.usernames.toString() })
+                    .then(result => {
+                        for (var i in result.data) {
+                            var x = result.data[i];
+                            app.lookup.user[x.id] = {
+                                id: x.id,
+                                avatar: x.avatarUrl,
+                                name: x.username,
+                                role: x.role,
+                                class: ConvertUserRoleToCss(x.role)
+                            };
+                            app.lookup.user[x.username] = app.lookup.user[x.id];
+                        }
+                        return Promise.resolve();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    });
+            } else {
+                return Promise.resolve();
+            }
+        },
+        lookupProblems: function (problemIds) {
+            var cachedProblems = Object.getOwnPropertyNames(app.lookup.problem);
+            var uncachedProblems = problemIds.filter(x => !cachedProblems.some(y => y == x));
+            if (uncachedProblems.length) {
+                return qv.get('/api/problem/title', { problemids: uncachedProblems.toString() })
+                    .then(result => {
+                        for (var i in result.data) {
+                            var x = result.data[i];
+                            app.lookup.problem[i] = x.title;
+                        }
+                        return Promise.resolve();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    });
+            } else {
+                return Promise.resolve();
+            }
         }
     }
 });

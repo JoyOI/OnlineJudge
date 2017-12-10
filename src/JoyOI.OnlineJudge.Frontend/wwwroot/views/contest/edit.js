@@ -64,23 +64,15 @@ component.methods = {
             this.problemView = qv.createView('/api/contest/' + this.id + '/problem/all');
             this.problemView
                 .fetch(x => {
-                    this.problems = x.data;
+                    self.problems = x.data;
                     if (x.data.length) {
-                        var cachedProblems = Object.getOwnPropertyNames(app.lookup.problem);
-                        var uncachedProblems = x.data.map(y => y.problemId).filter(y => !cachedProblems.some(z => z == y));
-                        if (uncachedProblems.length) {
-                            qv.get('/api/problem/title', { problemids: uncachedProblems.toString() })
-                                .then(y => {
-                                    for (var z in y.data) {
-                                        app.lookup.problem[z] = y.data[z].title;
-                                        var impactedResults = self.problems.filter(a => a.problemId == z);
-                                        for (var i in impactedResults) {
-                                            impactedResults[i].problemTitle = app.lookup.problem[z];
-                                        }
-                                    }
-                                    self.$forceUpdate();
-                                });
-                        }
+                        app.lookupProblems(x.data.map(y => y.problemId))
+                            .then(() => {
+                                for (var i = 0; i < self.problems.length; i++) {
+                                    self.problems[i].problemTitle = app.lookup.problem[self.problems[i].problemId];
+                                }
+                                self.$forceUpdate();
+                            });
                     }
                 });
         } else {
