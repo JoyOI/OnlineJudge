@@ -114,7 +114,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     end = attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
                     isEnded = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration)),
-                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName)
+                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName) || await HasPermissionToContestAsync(contest.Id, token)
                 });
             }
         }
