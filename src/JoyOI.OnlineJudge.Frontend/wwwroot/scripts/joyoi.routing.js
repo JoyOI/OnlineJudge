@@ -8,6 +8,7 @@
     '/contest/all': null,
     '/contest/:id/edit': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/contest/:id/register': { id: '[a-zA-Z0-9-_]{4,128}' },
+    '/contest/:id/standings': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/contest/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/judge/all': null,
     '/judge/:id': { id: '[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}' },
