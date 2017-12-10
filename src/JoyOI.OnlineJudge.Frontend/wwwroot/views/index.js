@@ -211,9 +211,9 @@
                 return to;
             if (to.name && !to.path)
                 return to.name;
-            if (to.path.indexOf('?') >= 0 || !to.path.query)
+            if (!to.query)
                 return to.path;
-            var baseUrl = to.path + "?";
+            var baseUrl = to.path + (to.path.indexOf('?') >= 0 ? '&' : '?');
             var args = [];
             for (var x in to.query) {
                 args.push(x + '=' + encodeURIComponent(to.query[x]));

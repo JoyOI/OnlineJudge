@@ -18,11 +18,11 @@
                     <div class="profile-tabs-outer">
                         <div class="profile-tabs">
                             <ul class="profile-tabs-ul">
-                                <li class="profile-tabs-item" v-on:click="tab = 'passed'" v-bind:class="{ 'active': tab === 'passed' }">通过题目</li>
-                                <li class="profile-tabs-item" v-on:click="tab = 'upload'" v-bind:class="{ 'active': tab === 'upload' }">上传题目</li>
-                                <li class="profile-tabs-item" v-on:click="tab = 'topic'" v-bind:class="{ 'active': tab === 'topic' }">论坛主题</li>
-                                <li class="profile-tabs-item" v-on:click="tab = 'blog'" v-bind:class="{ 'active': tab === 'blog' }">发表题解</li>
-                                <li class="profile-tabs-item" v-on:click="tab = 'org'" v-bind:class="{ 'active': tab === 'org' }">加入组织</li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'passed'" v-bind:class="{ 'active': tab === 'passed' }"><a class="vue-resolved" v-bind:href="$root.resolveUrl({ name: '/user/:username', path: '/user/' + username, params: {} })">通过题目</a></li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'upload'" v-bind:class="{ 'active': tab === 'upload' }"><a class="vue-resolved" v-bind:href="$root.resolveUrl({ name: '/user/:username', path: '/user/' + username, params: {}, query: { 'active': 'upload' } })">上传题目</a></li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'topic'" v-bind:class="{ 'active': tab === 'topic' }"><a class="vue-resolved" v-bind:href="$root.resolveUrl({ name: '/user/:username', path: '/user/' + username, params: {}, query: { 'active': 'topic' } })">论坛主题</a></li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'blog'" v-bind:class="{ 'active': tab === 'blog' }"><a class="vue-resolved" v-bind:href="$root.resolveUrl({ name: '/user/:username', path: '/user/' + username, params: {}, query: { 'active': 'blog' } })">发表题解</a></li>
+                                <li class="profile-tabs-item" v-on:click="tab = 'org'" v-bind:class="{ 'active': tab === 'org' }"><a class="vue-resolved" v-bind:href="$root.resolveUrl({ name: '/user/:username', path: '/user/' + username, params: {}, query: { 'active': 'org' } })">加入组织</a></li>
                             </ul>
                         </div>
                     </div>

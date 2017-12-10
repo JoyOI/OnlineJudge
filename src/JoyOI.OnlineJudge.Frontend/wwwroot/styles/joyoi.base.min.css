@@ -15623,11 +15623,20 @@ td i {
     font-weight: 400
 }
 
+    .profile-tabs-item a {
+        text-decoration: none;
+        color: hsla(0,0%,100%,.9);
+    }
+
     .profile-tabs-item.active {
         background: #fff;
         color: #666;
         box-shadow: 0 0 10px rgba(0,0,0,.3)
     }
+
+        .profile-tabs-item.active a {
+            color: #666;
+        }
 
 .profile-tabs-outer {
     position: relative;
