@@ -1,0 +1,72 @@
+﻿ <div class="container" id="contest-new">
+    <div class="row">
+        <div class="col-md-offset-2 col-offset col-md-8">
+            <div class="area-outer">
+                <div class="area-item">
+                    <div class="area-title">基本信息</div>
+                    <div>
+                        <p>
+                            <label>比赛ID (创建后不可修改)</label>
+                        </p>
+                        <p>
+                            <input type="text" class="form-control" v-model="id" />
+                        </p>
+                        <p>
+                            <label>比赛名称</label>
+                            <input type="text" class="form-control" v-model="title" />
+                        </p>
+                        <p>
+                            <label>比赛开始时间</label>
+                            <input type="text" class="form-control datetime" v-model="begin" />
+                        </p>
+                        <p>
+                            <label>时长(小时:分钟:秒)</label>
+                            <input type="text" class="form-control" v-model="duration" />
+                        </p>
+                        <p>
+                            <label>
+                                比赛参与者设定
+                            </label>
+                            <select v-model="attendPermission" class="form-control">
+                                <option value="0">允许所有人参赛</option>
+                                <option value="1">输入密码参赛</option>
+                                <!--<option value="2">指定团队参赛</option>-->
+                            </select>
+                        </p>
+                        <p v-if="attendPermission == 1">
+                            <label>
+                                参赛密码
+                            </label>
+                            <input type="text" class="form-control" v-model="passwordOrTeamId" />
+                        </p>
+                    </div>
+                </div>
+
+                <div class="area-item">
+                    <div class="area-title">赛制选择</div>
+                    <div>
+                        <div class="contest-icon-outer">
+                            <div><img src="/images/oi.png" class="contest-icon" v-bind:class="{ 'active': type === 0 }" v-on:click="type = 0" /></div>
+                            <div><input type="radio" v-model="type" value="0" />OI赛制</div>
+                        </div>
+                        <div class="contest-icon-outer">
+                            <div><img src="/images/icpc.png" class="contest-icon" v-bind:class="{ 'active': type === 1 }" v-on:click="type = 1" /></div>
+                            <div><input type="radio" v-model="type" value="1" />ACM/ICPC赛制</div>
+                        </div>
+                        <div class="contest-icon-outer">
+                            <div><img src="/images/cf.png" class="contest-icon" v-bind:class="{ 'active': type === 2 }" v-on:click="type = 2" /></div>
+                            <div><input type="radio" v-model="type" value="2" />Codeforces赛制</div>
+                        </div>
+                        <div class="contest-icon-outer">
+                            <div><img src="/images/openoi.png" class="contest-icon" v-bind:class="{ 'active': type === 3 }" v-on:click="type = 3" /></div>
+                            <div><input type="radio" v-model="type"  value="3" />Open OI赛制</div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+
+                <p><input type="button" id="btnCreateContest" value="创建比赛" class="btn btn-default" /></p>
+            </div>
+        </div>
+    </div>
+</div>

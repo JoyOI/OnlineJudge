@@ -1690,3 +1690,24 @@ dd {
 .standings-list td {
     line-height: 16px;
 }
+
+.contest-icon {
+    width: 180px;
+    filter: grayscale(100%);
+    transition: all 0.2s linear;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.contest-icon-outer {
+    width: 50%;
+    float: left;
+    text-align: center;
+    height: 120px;
+    margin-bottom: 30px;
+}
+
+.contest-icon:hover, .contest-icon.active {
+    filter: grayscale(0);
+    opacity: 1;
+}

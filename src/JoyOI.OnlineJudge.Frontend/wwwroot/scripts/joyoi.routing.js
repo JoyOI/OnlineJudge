@@ -6,6 +6,7 @@
     '/problem/:id/resolution': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/problem/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/contest/all': null,
+    '/contest/new': null,
     '/contest/:id/edit': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/contest/:id/register': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/contest/:id/standings': { id: '[a-zA-Z0-9-_]{4,128}' },
