@@ -49,7 +49,7 @@
             </div>
 
             <div class="sidebar-section all-buttons">
-                <template v-if="!session.isRegistered && (($root.ensureUTCTimeString(end) <= new Date()) || !disableVirtual)">
+                <template v-if="$root.user.isSignedIn && (!session.isRegistered && (($root.ensureUTCTimeString(end) <= new Date()) || !disableVirtual))">
                     <a v-on:click="$root.redirect('/contest/:id/register', '/contest/' + id + '/register', { id: id })"
                        v-bind:href="$root.resolveUrl({ name: '/contest/:id/register', path: '/contest/' + id + '/register', params: { id: id }})"
                        class="sidebar-section-button highlight vue-resolved">

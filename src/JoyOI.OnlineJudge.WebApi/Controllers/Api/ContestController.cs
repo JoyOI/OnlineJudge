@@ -87,7 +87,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             var ce = cef.Create(contest.Id);
 
-            var attendee = await DB.Attendees.SingleOrDefaultAsync(x => x.ContestId == id && x.UserId == User.Current.Id, token);
+            JoyOI.OnlineJudge.Models.Attendee attendee = null;
+            if (User.IsSignedIn())
+            {
+                attendee = await DB.Attendees.SingleOrDefaultAsync(x => x.ContestId == id && x.UserId == User.Current.Id, token);
+            }
             if (attendee == null)
             {
                 return Result(new

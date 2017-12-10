@@ -113,7 +113,5 @@ component.created = function () {
 
     this.loadContest();
     this.loadContestProblem();
-    if (app.user.isSignedIn) {
-        this.getContestSession();
-    }
+    this.getContestSession();
 };
