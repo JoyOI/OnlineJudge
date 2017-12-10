@@ -529,9 +529,26 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/standings/all")]
         public async Task<IActionResult> GetStandings(string contestId, bool? includingVirtual, CancellationToken token)
         {
-            // TODO: Hide OI standings
+            var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == contestId, token);
+            if (contest == null)
+            {
+                return Result(404, "Not found");
+            }
+
             if (!includingVirtual.HasValue)
                 includingVirtual = true;
+
+            var problems = DB.ContestProblems
+                .Where(x => x.ContestId == contestId)
+                .OrderBy(x => x.Number)
+                .Select(x => new StandingsProblemViewModel
+                {
+                    number = x.Number,
+                    point = x.Point,
+                    id = x.ProblemId
+                })
+                .ToList();
+
             var exceptNestedQuery = DB.Attendees
                 .Where(x => x.ContestId == contestId)
                 .Where(x => x.IsVirtual)
@@ -540,26 +557,38 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .Where(x => x.ContestId == contestId);
             if (!includingVirtual.Value)
                 query = query.Where(x => !exceptNestedQuery.Contains(x.UserId));
-            dynamic ret = await query
-                .GroupBy(x => x.UserId)
-                .Select(x => new Standings
+            var attendees = (await query
+                .GroupBy(x => new { x.UserId, x.IsVirtual })
+                .ToListAsync(token))
+                .Select(x => new StandingsAttendeeViewModel
                 {
-                    UserId = x.Key,
-                    Point = x.Count() > 0 ? x.Sum(y => y.Point) : 0,
-                    Point2 = x.Count() > 0 ? x.Sum(y => y.Point2) : 0,
-                    Point3 = x.Count() > 0 ? x.Sum(y => y.Point3) : 0,
-                    TimeSpan = x.Count() > 0 ? new TimeSpan(x.Sum(y => y.TimeSpan.Ticks)) : new TimeSpan(),
-                    TimeSpan2 = x.Count() > 0 ? new TimeSpan(x.Sum(y => y.TimeSpan2.Ticks)) : new TimeSpan(),
-                    Statuses = x.ToList()
+                    userId = x.Key.UserId,
+                    isVirtual = x.Key.IsVirtual,
+                    detail = x.GroupBy(y => y.ProblemId)
+                        .Select(y => new StandingsProblemDetailViewModel {
+                            problemId = y.Key,
+                            isAccepted = y.First().IsAccepted,
+                            point = y.First().Point,
+                            point2 = y.First().Point2,
+                            point3 = y.First().Point3,
+                            timeSpan = y.First().TimeSpan,
+                            timeSpan2 = y.First().TimeSpan2
+                        })
+                        .ToDictionary(y => y.problemId)
                 })
-                .OrderByDescending(x => x.Point)
-                .ThenByDescending(x => x.Point2)
-                .ThenBy(x => x.Point3)
-                .ThenBy(x => x.TimeSpan)
-                .ThenBy(x => x.TimeSpan2)
-                .ToListAsync(token);
+                .OrderByDescending(x => x.point)
+                .ThenByDescending(x => x.point2)
+                .ThenBy(x => x.point3)
+                .ThenBy(x => x.timeSpan)
+                .ThenBy(x => x.timeSpan2)
+                .ToList();
 
-            return Result(ret);
+            return Result(new StandingsViewModel {
+                id = contestId,
+                title = contest.Title,
+                problems = problems,
+                attendees = attendees
+            });
         }
 
         [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/standings/{userId:Guid}")]
@@ -571,15 +600,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .Where(x => x.UserId == userId)
                 .ToListAsync(token);
 
-            var ret = new Standings
+            var ret = new StandingsAttendeeViewModel
             {
-                UserId = userId,
-                Point = statuses.Count > 0 ? statuses.Sum(x => x.Point) : 0,
-                Point2 = statuses.Count > 0 ? statuses.Sum(x => x.Point2) : 0,
-                Point3 = statuses.Count > 0 ? statuses.Sum(x => x.Point3) : 0,
-                TimeSpan = statuses.Count > 0 ? new TimeSpan(statuses.Sum(x => x.TimeSpan.Ticks)) : new TimeSpan(),
-                TimeSpan2 = statuses.Count > 0 ? new TimeSpan(statuses.Sum(x => x.TimeSpan2.Ticks)) : new TimeSpan(),
-                Statuses = statuses.ToList()
+                userId = userId,
+                detail = statuses
+                    .GroupBy(x => x.ProblemId)
+                    .Select(x => new StandingsProblemDetailViewModel {
+                        isAccepted = x.First().IsAccepted,
+                        point = x.First().Point,
+                        point2 = x.First().Point2,
+                        point3 = x.First().Point3,
+                        timeSpan = x.First().TimeSpan,
+                        timeSpan2 = x.First().TimeSpan2,
+                        problemId = x.First().ProblemId
+                    })
+                    .ToDictionary(x => x.problemId)
             };
 
             return Result(ret);

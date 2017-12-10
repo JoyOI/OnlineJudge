@@ -334,7 +334,9 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             if (!string.IsNullOrEmpty(status.ContestId))
             {
                 var ce = _cef.Create(status.ContestId);
-                ce.OnJudgeCompleted(_db.JudgeStatuses.Single(x => x.Id == status.Id));
+                ce.OnJudgeCompleted(_db.JudgeStatuses
+                    .Include(x => x.SubStatuses)
+                    .Single(x => x.Id == status.Id));
 
                 if (ce.AllowJudgeFinishedPushNotification)
                     _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);

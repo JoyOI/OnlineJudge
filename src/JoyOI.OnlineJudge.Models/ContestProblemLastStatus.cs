@@ -102,6 +102,18 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value><c>true</c> if is locked; otherwise, <c>false</c>.</value>
         public bool IsLocked { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether is virtual attendee
+        /// </summary>
+        /// <value><c>true</c> if is virtual; otherwise, <c>false</c>.</value>
+        public bool IsVirtual { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this is an accepted result
+        /// </summary>
+        /// <value><c>true</c> if is virtual; otherwise, <c>false</c>.</value>
+        public bool IsAccepted { get; set; }
         #endregion
     }
 }

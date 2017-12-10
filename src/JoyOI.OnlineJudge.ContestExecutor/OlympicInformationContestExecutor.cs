@@ -31,6 +31,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override void OnJudgeCompleted(JudgeStatus status)
         {
+            var attendee = DB.Attendees.Single(x => x.ContestId == status.ContestId && x.UserId == status.UserId);
             var cpls = DB.ContestProblemLastStatuses.SingleOrDefault(x => x.ProblemId == status.ProblemId && x.UserId == status.UserId && x.ContestId == status.ContestId);
             var contestProblem = DB.ContestProblems.Single(x => x.ContestId == status.ContestId && x.ProblemId == status.ProblemId);
             if (cpls == null)
@@ -42,7 +43,9 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     UserId = status.UserId,
                     StatusId = status.Id,
                     Point = status.SubStatuses == null ? 0 : status.SubStatuses.Count(x => x.Result == JudgeResult.Accepted) * contestProblem.Point / status.SubStatuses.Count,
-                    Point3 = status.TimeUsedInMs
+                    Point3 = status.TimeUsedInMs,
+                    IsAccepted = status.Result == JudgeResult.Accepted,
+                    IsVirtual = attendee.IsVirtual
                 };
                 DB.ContestProblemLastStatuses.Add(cpls);
             }
@@ -51,6 +54,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 cpls.StatusId = status.Id;
                 cpls.Point = status.SubStatuses == null ? 0 : status.SubStatuses.Count(x => x.Result == JudgeResult.Accepted) * contestProblem.Point / status.SubStatuses.Count;
                 cpls.Point3 = status.TimeUsedInMs;
+                cpls.IsAccepted = status.Result == JudgeResult.Accepted;
             }
             DB.SaveChanges();
         }
