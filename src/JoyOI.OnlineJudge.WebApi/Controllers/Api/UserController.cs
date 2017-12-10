@@ -186,7 +186,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
 
                 await SignInManager.SignInAsync(user, true);
-                user.LastLoginTime = DateTime.Now;
+                user.LastLoginTime = DateTime.UtcNow;
                 DB.SaveChanges();
 
                 var cookie = HttpContext.Response.Headers["Set-Cookie"].ToString();
@@ -212,7 +212,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpGet("message")]
         public async Task<IActionResult> Message([FromServices] JoyOIUC UC, CancellationToken token)
         {
-            return Result(await UC.HasUnreadMessage(User.Current.OpenId));
+            if (User.IsSignedIn())
+                return Result(await UC.HasUnreadMessage(User.Current.OpenId));
+            return Result(false);
         }
         #endregion
 

@@ -5,22 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
-using System.IO.Compression;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
 using JoyOI.ManagementService.SDK;
-using JoyOI.ManagementService.Model.Dtos;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
 using JoyOI.OnlineJudge.WebApi.Hubs;
+using JoyOI.OnlineJudge.ContestExecutor;
 using Microsoft.AspNetCore.SignalR;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
@@ -39,6 +35,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             DateTime? begin, 
             DateTime? end,
             string judgeIds,
+            [FromServices] ContestExecutorFactory cef,
             CancellationToken token)
         {
             IQueryable<JudgeStatus> ret = DB.JudgeStatuses;
@@ -91,24 +88,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var pendingRemove = new ConcurrentBag<JudgeStatus>();
                 foreach (var x in result.data.result.Where(x => !string.IsNullOrWhiteSpace(x.ContestId)))
                 {
-                    tasks.Add(new Task(async () => {
-                        var isOiInProgress = await DB.Contests.AnyAsync(y => y.Id == x.ContestId && y.Type == ContestType.OI && y.Begin >= DateTime.Now && y.End < DateTime.Now);
-                        if (isOiInProgress && !await HasPermissionToContestAsync(x.ContestId, token) && !await HasPermissionToProblemAsync(x.ProblemId, token))
+                    var ce = cef.Create(x.ContestId);
+                    var isContestInProgress = ce.IsContestInProgress(User.Current?.UserName);
+                    if (isContestInProgress && !await HasPermissionToContestAsync(x.ContestId, token) && !await HasPermissionToProblemAsync(x.ProblemId, token))
+                    {
+                        if (!ce.AllowFilterByJudgeResult && !status.HasValue)
                         {
-                            if (!status.HasValue)
-                            {
-                                x.Result = JudgeResult.Hidden;
-                                x.TimeUsedInMs = 0;
-                                x.MemoryUsedInByte = 0;
-                            }
-                            else
-                            {
-                                pendingRemove.Add(x);
-                            }
+                            ce.HandleJudgeResult(x);
                         }
-                    }));
+                        else
+                        {
+                            pendingRemove.Add(x);
+                        }
+                    }
+                    x.Contest = null;
                 }
-                await Task.WhenAll(tasks);
                 foreach (var x in pendingRemove)
                 {
                     (result.data.result as List<JudgeStatus>).Remove(x);
@@ -136,6 +130,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             [FromServices] StateMachineAwaiter awaiter,
             [FromServices] ManagementServiceClient MgmtSvc,
             [FromServices] IHubContext<OnlineJudgeHub> hub,
+            [FromServices] ContestExecutorFactory cef,
             CancellationToken token)
         {
             var request = JsonConvert.DeserializeObject<JudgeRequest>(RequestBody);
@@ -158,7 +153,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "The language has not been supported.");
             }
 
-            // TODO: Check contest permission
+            if (!string.IsNullOrEmpty(request.contestId))
+            {
+                var ce = cef.Create(request.contestId);
+                if (!ce.IsContestInProgress(User.Current?.UserName))
+                {
+                    return Result(400, "The contest is inactive.");
+                }
+            }
 
             if (!Constants.SupportedLanguages.Contains(request.language) && !Constants.UnsupportedLanguages.Contains(request.language) && problem.Source == ProblemSource.Local)
             {
@@ -266,7 +268,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     Code = request.code,
                     Language = request.language,
                     Result = JudgeResult.Pending,
-                    CreatedTime = DateTime.Now,
+                    CreatedTime = DateTime.UtcNow,
                     ContestId = request.contestId,
                     SubStatuses = substatuses,
                     ProblemId = problem.Id,
@@ -278,7 +280,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         {
                             StateMachine = new StateMachine
                             {
-                                CreatedTime = DateTime.Now,
+                                CreatedTime = DateTime.UtcNow,
                                 Name = "JudgeStateMachine",
                                 Id = stateMachineId
                             },
@@ -349,7 +351,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         new JudgeStatusStateMachine {
                             StateMachine = new StateMachine
                             {
-                                CreatedTime = DateTime.Now,
+                                CreatedTime = DateTime.UtcNow,
                                 Name = "JudgeStateMachine",
                                 Id = stateMachineId
                             },
@@ -396,7 +398,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken token)
+        public async Task<IActionResult> Get(Guid id, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var ret = await DB.JudgeStatuses
                 .Include(x => x.SubStatuses)
@@ -418,8 +420,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 var contest = DB.Contests
                     .Single(x => x.Id == ret.ContestId);
+                if (!await HasPermissionToContestAsync(ret.ContestId) && !await HasPermissionToProblemAsync(ret.ProblemId))
+                {
+                    var ce = cef.Create(contest.Id);
+                    ce.HandleJudgeResult(ret);
+                }
 
-                // TODO: Handle contest status display
+                ret.Contest = null;
             }
 
             if (User.Current != null && User.Current.Id == ret.UserId)
@@ -463,19 +470,63 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 const int basePRI = 1;
 
                 var count15 = await DB.JudgeStatuses
-                    .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.Now.AddMinutes(-15))
+                    .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.UtcNow.AddMinutes(-15))
                     .CountAsync() + await DB.HackStatuses
-                    .Where(x => x.UserId == User.Current.Id && x.Time >= DateTime.Now.AddMinutes(-15))
+                    .Where(x => x.UserId == User.Current.Id && x.Time >= DateTime.UtcNow.AddMinutes(-15))
                     .CountAsync();
 
                 var count60 = await DB.JudgeStatuses
-                    .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.Now.AddHours(-1))
+                    .Where(x => x.UserId == User.Current.Id && x.CreatedTime >= DateTime.UtcNow.AddHours(-1))
                     .CountAsync() + await DB.HackStatuses
-                    .Where(x => x.UserId == User.Current.Id && x.Time >= DateTime.Now.AddHours(-1))
+                    .Where(x => x.UserId == User.Current.Id && x.Time >= DateTime.UtcNow.AddHours(-1))
                     .CountAsync();
 
                 return basePRI + Math.Max(count15 / 10, count60 / 30);
             }
+        }
+
+        private async Task<bool> IsContestAttendee(string contestId, CancellationToken token)
+        {
+            if (!User.IsSignedIn())
+                return false;
+
+            if (string.IsNullOrEmpty(contestId))
+                return false;
+
+            return await DB.Attendees.AnyAsync(x => x.ContestId == contestId && x.UserId == User.Current.Id, token);
+        }
+
+        private async Task<bool> IsAttendeeActive(string contestId, CancellationToken token)
+        {
+            if (!await IsContestAttendee(contestId, token))
+                return false;
+
+            if (string.IsNullOrEmpty(contestId))
+                return false;
+
+            var attendee = await DB.Attendees.SingleAsync(x => x.UserId == User.Current.Id && x.ContestId == contestId, token);
+            var contest = await DB.Contests.SingleAsync(x => x.Id == contestId, token);
+            if (contest.Status == ContestStatus.Pending)
+                return false;
+            if (!attendee.IsVirtual && contest.Status == ContestStatus.Live)
+                return true;
+            else if (!contest.DisableVirtual && attendee.IsVirtual && attendee.RegisterTime.Add(contest.Duration) > DateTime.UtcNow)
+                return true;
+            else
+                return false;
+        }
+
+        private async Task<bool> IsContestProblem(string problemId, string contestId, CancellationToken token)
+        {
+            if (string.IsNullOrEmpty(problemId) || string.IsNullOrEmpty(contestId))
+                return false;
+
+            return await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
+        }
+
+        private async Task<bool> IsContestAttendeeAbleToAccessProblem(string problemId, string contestId, CancellationToken token)
+        {
+            return await IsContestProblem(problemId, contestId, token) && await IsAttendeeActive(contestId, token);
         }
         #endregion
     }

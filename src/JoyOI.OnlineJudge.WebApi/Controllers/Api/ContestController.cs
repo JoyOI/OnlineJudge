@@ -104,8 +104,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     isVirtual = attendee.IsVirtual,
                     begin = attendee.IsVirtual ? attendee.RegisterTime : contest.Begin,
                     end = attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration),
-                    isBegan = DateTime.Now > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
-                    isEnded = DateTime.Now > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration))
+                    isBegan = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
+                    isEnded = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration))
                 });
             }
         }
@@ -136,7 +136,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 if (fields.Contains(nameof(Contest.Begin)))
                 {
-                    if (contest.Begin < DateTime.Now)
+                    if (contest.Begin < DateTime.UtcNow)
                     {
                         return Result(400, "Invalid begin time");
                     }
@@ -163,7 +163,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             else
             {
                 var contest = PutEntity<Contest>(RequestBody).Entity;
-                if (contest.Begin < DateTime.Now)
+                if (contest.Begin < DateTime.UtcNow)
                 {
                     return Result(400, "The begin time is invalid.");
                 }
@@ -197,7 +197,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(404, "Contest not found");
                 }
-                else if (contest.Begin <= DateTime.Now)
+                else if (contest.Begin <= DateTime.UtcNow)
                 {
                     return Result(400, "Cannot remove a started contest.");
                 }
@@ -226,11 +226,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(404, "Contest not found");
             }
-            else if (contest.Begin > DateTime.Now && !await HasPermissionToContestAsync(contestId, token))
+            else if (contest.Begin > DateTime.UtcNow && !await HasPermissionToContestAsync(contestId, token))
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(400, "The contest has not started");
             }
-            else if (contest.End >= DateTime.Now && !await IsRegisteredToContest(contestId, token))
+            else if (contest.End >= DateTime.UtcNow && !await IsRegisteredToContest(contestId, token))
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(new ContestProblemViewModel[] { });
             }
@@ -429,7 +429,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, $"You are not a member of team '{ contest.PasswordOrTeamId }'");
             }
 
-            if (contest.End <= DateTime.Now && !request.isVirtual)
+            if (contest.End <= DateTime.UtcNow && !request.isVirtual)
             {
                 return Result(400, "The contest is end");
             }
@@ -448,7 +448,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 ContestId = contestId,
                 IsVirtual = request.isVirtual,
-                RegisterTime = DateTime.Now,
+                RegisterTime = DateTime.UtcNow,
                 UserId = User.Current.Id
             };
             DB.Attendees.Add(register);

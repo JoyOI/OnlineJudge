@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.0
+VisualStudioVersion = 15.0.27110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E126AED6-457B-468D-B51A-C6B1C8461BF7}"
 EndProject
@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A66ED214-7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.WebApi.Tests", "test\JoyOI.OnlineJudge.WebApi.Tests\JoyOI.OnlineJudge.WebApi.Tests.csproj", "{C5A5C94B-3076-4F8B-81BA-861E73080159}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.Frontend", "src\JoyOI.OnlineJudge.Frontend\JoyOI.OnlineJudge.Frontend.csproj", "{F93EEBAD-5319-49EF-9772-B78E07C93E63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JoyOI.OnlineJudge.Frontend", "src\JoyOI.OnlineJudge.Frontend\JoyOI.OnlineJudge.Frontend.csproj", "{F93EEBAD-5319-49EF-9772-B78E07C93E63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoyOI.OnlineJudge.ContestExecutor", "src\JoyOI.OnlineJudge.ContestExecutor\JoyOI.OnlineJudge.ContestExecutor.csproj", "{BC3F2F4E-85BB-4D67-9C6F-AB7B3F13E7BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{F93EEBAD-5319-49EF-9772-B78E07C93E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F93EEBAD-5319-49EF-9772-B78E07C93E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F93EEBAD-5319-49EF-9772-B78E07C93E63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC3F2F4E-85BB-4D67-9C6F-AB7B3F13E7BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3F2F4E-85BB-4D67-9C6F-AB7B3F13E7BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC3F2F4E-85BB-4D67-9C6F-AB7B3F13E7BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC3F2F4E-85BB-4D67-9C6F-AB7B3F13E7BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{38B57CB9-C24A-4DEB-8AC3-F8B26296C4CF} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
 		{C5A5C94B-3076-4F8B-81BA-861E73080159} = {A66ED214-78F2-4494-A971-F9957A87A504}
 		{F93EEBAD-5319-49EF-9772-B78E07C93E63} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
+		{BC3F2F4E-85BB-4D67-9C6F-AB7B3F13E7BC} = {E126AED6-457B-468D-B51A-C6B1C8461BF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {637C8887-F52D-46D0-9DE6-E766C71A46C3}

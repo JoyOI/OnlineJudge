@@ -22,7 +22,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var f = new
                 {
                     Id = id,
-                    Time = DateTime.Now,
+                    Time = DateTime.UtcNow,
                     ContentType = file.ContentType,
                     ContentLength = file.Length,
                     FileName = file.GetFileName(),
@@ -39,7 +39,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var f = new
                 {
                     Id = id,
-                    Time = DateTime.Now,
+                    Time = DateTime.UtcNow,
                     ContentType = blob.ContentType,
                     ContentLength = blob.Base64String.Length,
                     FileName = "file",

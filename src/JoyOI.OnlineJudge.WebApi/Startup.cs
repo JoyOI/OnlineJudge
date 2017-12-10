@@ -82,6 +82,7 @@ namespace JoyOI.OnlineJudge.WebApi
 
             services.AddJudgeStateMachineHandler();
             services.AddExternalApi();
+            services.AddContestExecutorFactory();
 
             services.AddSwaggerGen(x =>
             {
@@ -96,11 +97,11 @@ namespace JoyOI.OnlineJudge.WebApi
             app.UseCors("OnlineJudge");
             app.UseCookieMiddleware();
             app.UseAuthentication();
-            app.UseErrorHandlingMiddleware();
+            //app.UseErrorHandlingMiddleware();
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-                c.SwaggerEndpoint("/swagger/swagger.json", "JoyOI Online Judge"));
+            //app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //    c.SwaggerEndpoint("/swagger/swagger.json", "JoyOI Online Judge"));
 
             app.UseSignalR(x =>
             {

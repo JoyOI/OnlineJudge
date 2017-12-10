@@ -652,7 +652,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     DB.TestCasePurchases.Add(new TestCasePurchase
                     {
                         TestCaseId = id,
-                        CreatedTime = DateTime.Now,
+                        CreatedTime = DateTime.UtcNow,
                         UserId = User.Current.Id
                     });
                     await DB.SaveChangesAsync(token);
@@ -783,7 +783,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             DB.StateMachines.Add(new StateMachine
             {
                 Id = statemachineId,
-                CreatedTime = DateTime.Now,
+                CreatedTime = DateTime.UtcNow,
                 Name = Constants.CompileOnlyStateMachine
             });
 
@@ -815,7 +815,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return false;
             if (!attendee.IsVirtual && contest.Status == ContestStatus.Live)
                 return true;
-            else if (!contest.DisableVirtual && attendee.IsVirtual && attendee.RegisterTime.Add(contest.Duration) > DateTime.Now)
+            else if (!contest.DisableVirtual && attendee.IsVirtual && attendee.RegisterTime.Add(contest.Duration) > DateTime.UtcNow)
                 return true;
             else
                 return false;

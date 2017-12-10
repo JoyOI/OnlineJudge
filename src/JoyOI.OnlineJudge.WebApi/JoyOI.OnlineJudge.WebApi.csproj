@@ -8,7 +8,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;4014;1591</NoWarn>
     <DocumentationFile>bin\Debug\netcoreapp2.0\JoyOI.OnlineJudge.WebApi.xml</DocumentationFile>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\JoyOI.OnlineJudge.ContestExecutor\JoyOI.OnlineJudge.ContestExecutor.csproj" />
     <ProjectReference Include="..\JoyOI.OnlineJudge.Models\JoyOI.OnlineJudge.Models.csproj" />
   </ItemGroup>
 

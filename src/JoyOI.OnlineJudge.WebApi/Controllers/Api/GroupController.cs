@@ -85,7 +85,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             DB.GroupMembers.Add(new GroupMember
             {
-                CreatedTime = DateTime.Now,
+                CreatedTime = DateTime.UtcNow,
                 GroupId = group.Id,
                 Status = GroupMemberStatus.Approved,
                 UserId = User.Current.Id
@@ -163,7 +163,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     groupMember.UserId = User.Current.Id;
                 }
 
-                groupMember.CreatedTime = DateTime.Now;
+                groupMember.CreatedTime = DateTime.UtcNow;
                 DB.GroupMembers.Add(groupMember);
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Put Succeeded");

@@ -17,9 +17,9 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
         public string AvatarUrl { get; set; }
         
-        public DateTime ActiveTime { get; set; } = DateTime.Now;
+        public DateTime ActiveTime { get; set; } = DateTime.UtcNow;
         
-        public DateTime LastLoginTime { get; set; } = DateTime.Now;
+        public DateTime LastLoginTime { get; set; } = DateTime.UtcNow;
 
         public dynamic PassedProblems { get; set; }
 

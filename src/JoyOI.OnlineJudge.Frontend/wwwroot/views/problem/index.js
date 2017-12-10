@@ -236,7 +236,8 @@ component.methods = {
             isSelfTest: self.form.data.length > 0,
             code: $('#code-editor')[0].editor.getValue(),
             language: self.form.language,
-            data: self.form.data.length > 0 ? self.form.data : null
+            data: self.form.data.length > 0 ? self.form.data : null,
+            contestId: this.contest
         })
         .then(x =>
         {
