@@ -58,5 +58,13 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             }
             DB.SaveChanges();
         }
+
+        public override bool IsAvailableToGetStandings(string username = null)
+        {
+            if (IsContestInProgress(username))
+                return false;
+            else
+                return true;
+        }
     }
 }

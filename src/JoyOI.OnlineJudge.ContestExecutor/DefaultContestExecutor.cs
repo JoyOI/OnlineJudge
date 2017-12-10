@@ -62,5 +62,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         {
             throw new NotImplementedException();
         }
+
+        public virtual bool IsAvailableToGetStandings(string username = null)
+        {
+            return true;
+        }
     }
 }

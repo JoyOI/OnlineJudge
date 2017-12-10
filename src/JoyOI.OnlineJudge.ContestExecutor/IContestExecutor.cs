@@ -17,6 +17,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         bool IsContestInProgress(string username = null);
 
+        bool IsAvailableToGetStandings(string username = null);
+
         void OnShowJudgeResult(JudgeStatus status);
 
         void OnShowHackResult(HackStatus status);

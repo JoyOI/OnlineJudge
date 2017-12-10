@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using JoyOI.OnlineJudge.ContestExecutor;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
 
@@ -527,8 +528,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Standings
         [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/standings/all")]
-        public async Task<IActionResult> GetStandings(string contestId, bool? includingVirtual, CancellationToken token)
+        public async Task<IActionResult> GetStandings(string contestId, bool? includingVirtual, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
+            var ce = cef.Create(contestId);
+            if (!ce.IsAvailableToGetStandings(User.Current?.UserName) && !await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission");
+            }
+
             var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == contestId, token);
             if (contest == null)
             {
@@ -592,9 +599,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/standings/{userId:Guid}")]
-        public async Task<IActionResult> GetStandings(string contestId, Guid userId, CancellationToken token)
+        public async Task<IActionResult> GetStandings(string contestId, Guid userId, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
-            // TODO: Hide OI standings
+            var ce = cef.Create(contestId);
+            if (!ce.IsAvailableToGetStandings(User.Current?.UserName) && !await HasPermissionToContestAsync(contestId, token))
+            {
+                return Result(401, "No permission");
+            }
+
             var statuses = await DB.ContestProblemLastStatuses
                 .Where(x => x.ContestId == contestId)
                 .Where(x => x.UserId == userId)
