@@ -77,17 +77,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/session")]
-        public async Task<IActionResult> GetSession(string id, CancellationToken token)
+        public async Task<IActionResult> GetSession(string id, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var contest = await DB.Contests.SingleOrDefaultAsync(x => x.Id == id, token);
             if (contest == null)
             {
                 return Result(404, "The contest is not found");
             }
-            if (!User.IsSignedIn())
-            {
-                return Result(401, "Not authorized");
-            }
+
+            var ce = cef.Create(contest.Id);
 
             var attendee = await DB.Attendees.SingleOrDefaultAsync(x => x.ContestId == id && x.UserId == User.Current.Id, token);
             if (attendee == null)
@@ -98,7 +96,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     begin = contest.Begin,
                     end = contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > contest.Begin,
-                    isEnded = DateTime.UtcNow > contest.Begin.Add(contest.Duration)
+                    isEnded = DateTime.UtcNow > contest.Begin.Add(contest.Duration),
+                    isStandingsAvailable = ce.IsAvailableToGetStandings() || await HasPermissionToContestAsync(contest.Id, token)
                 });
             }
             else
@@ -110,7 +109,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     begin = attendee.IsVirtual ? attendee.RegisterTime : contest.Begin,
                     end = attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
-                    isEnded = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration))
+                    isEnded = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration)),
+                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName)
                 });
             }
         }
@@ -168,6 +168,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             else
             {
                 var contest = PutEntity<Contest>(RequestBody).Entity;
+                contest.Id = id;
                 if (contest.Begin < DateTime.UtcNow)
                 {
                     return Result(400, "The begin time is invalid.");
@@ -175,6 +176,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 if (!string.IsNullOrWhiteSpace(contest.Domain) && await DB.Contests.AnyAsync(x => x.Domain == contest.Domain, token))
                 {
                     return Result(400, "The domain is already existed.");
+                }
+                if (contest.Type != ContestType.OI)
+                {
+                    return Result(400, $"The { contest.Type.ToString() } is not supported yet.");
                 }
 
                 DB.Contests.Add(contest);
@@ -221,7 +226,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Contest Problem
         [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/all")]
-        public async Task<IActionResult> GetContestProblems(string contestId, CancellationToken token)
+        public async Task<IActionResult> GetContestProblems(string contestId, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var contest = await DB.Contests
                 .Include(x => x.Problems)
@@ -235,7 +240,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(400, "The contest has not started");
             }
-            else if (contest.End >= DateTime.UtcNow && !await IsRegisteredToContest(contestId, token))
+            else if (contest.End >= DateTime.UtcNow && !await IsRegisteredToContest(contestId, token) && !await HasPermissionToContestAsync(contestId, token))
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(new ContestProblemViewModel[] { });
             }
@@ -255,36 +260,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 if (User.IsSignedIn())
                 {
+                    var ce = cef.Create(contestId);
                     foreach (var x in ret)
                     {
-                        switch (contest.Type)
-                        {
-                            case ContestType.OI:
-                                if (contest.Status == ContestStatus.Pending)
-                                {
-                                    x.status = null;
-                                }
-                                else if (contest.Status == ContestStatus.Live)
-                                {
-                                    x.status = (await DB.JudgeStatuses.AnyAsync(y => y.UserId == User.Current.Id && y.ProblemId == x.problemId && y.ContestId == contestId) ? "Submitted" : null);
-                                }
-                                else
-                                {
-                                    var status = await DB.JudgeStatuses
-                                        .Include(y => y.SubStatuses)
-                                        .LastOrDefaultAsync(y => y.UserId == User.Current.Id && y.ProblemId == x.problemId && y.ContestId == contestId);
-                                    if (status != null)
-                                    {
-                                        var count = status.SubStatuses.Count;
-                                        var ac = status.SubStatuses.Count(y => y.Result == JudgeResult.Accepted);
-                                        var point = contest.Problems.Single(y => y.ProblemId == status.ProblemId).Point;
-                                        x.status = Convert.ToInt32((float)point * (float)ac / (float)count).ToString();
-                                    }
-                                }
-                                break;
-                            default:
-                                throw new NotImplementedException($"The contest type { contest.Type.ToString() } has not been supported.");
-                        }
+                        x.status = ce.GenerateProblemStatusText(User.Current.UserName, x.problemId);
                     }
                 }
 
@@ -437,6 +416,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (contest.End <= DateTime.UtcNow && !request.isVirtual)
             {
                 return Result(400, "The contest is end");
+            }
+
+            if (contest.Status == ContestStatus.Pending && request.isVirtual)
+            {
+                return Result(400, "You can only register as virtual after the contest began.");
             }
 
             var register = await DB.Attendees

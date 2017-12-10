@@ -26,7 +26,8 @@ namespace JoyOI.OnlineJudge.Models
     {
         OI,
         ACM,
-        Codeforces
+        Codeforces,
+        OpenOI
     }
 
     /// <summary>

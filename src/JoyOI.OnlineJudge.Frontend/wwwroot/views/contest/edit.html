@@ -12,7 +12,12 @@
                         <p>
                             <label>赛制 (不可修改)</label>
                         </p>
-                        <p>{{ type }}</p>
+                        <p>
+                            <div><img class="active contest-icon" v-if="type === 'OI'" src="/images/oi.png" /></div>
+                            <div><img class="active contest-icon" v-if="type === 'ACM'" src="/images/icpc.png" /></div>
+                            <div><img class="active contest-icon" v-if="type === 'Codeforces'" src="/images/cf.png" /></div>
+                            <div><img class="active contest-icon" v-if="type === 'OpenOI'" src="/images/openoi.png" /></div>
+                        </p>
                         <p>
                             <label>比赛名称</label>
                             <input type="text" class="form-control" v-model="title" />
@@ -23,7 +28,7 @@
                         </p>
                         <p>
                             <label>比赛开始时间</label>
-                            <input v-if="new Date(begin) > new Date()" type="text" class="form-control datetime" v-model="begin" />
+                            <input v-if="new Date(begin) > new Date()" type="text" class="form-control datetime" v-model="begin" id="txtBegin" />
                         </p>
                         <p v-if="new Date(begin) <= new Date()">{{ $root.toLocalTime(begin) }}</p>
                         <p>

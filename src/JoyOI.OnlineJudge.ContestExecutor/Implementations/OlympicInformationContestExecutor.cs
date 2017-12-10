@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JoyOI.OnlineJudge.Models;
 
@@ -85,6 +83,29 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         {
             src.pointDisplay = src.point.ToString();
             src.point3Display = src.point3 + " ms";
+        }
+
+        public override bool IsStandingsAvailable(string username = null)
+        {
+            return !IsContestInProgress(username) && Contest.Status != ContestStatus.Pending;
+        }
+
+        public override string GenerateProblemStatusText(string username, string problemId)
+        {
+            var cpls = DB.ContestProblemLastStatuses.SingleOrDefault(x => x.ContestId == ContestId && x.User.UserName == username && x.ProblemId == problemId);
+            if (cpls == null) {
+                return null;
+            } else
+            {
+                if (IsContestInProgress(username))
+                {
+                    return "Submitted";
+                }
+                else
+                {
+                    return cpls.Point.ToString();
+                }
+            }
         }
     }
 }

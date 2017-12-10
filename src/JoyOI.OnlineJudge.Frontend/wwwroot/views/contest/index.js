@@ -14,7 +14,8 @@
             end: null,
             isRegistered: false,
             isBegan: true,
-            isEnded: true
+            isEnded: true,
+            isStandingsAvailable: false
         },
         disableVirtual: false
     };
@@ -99,7 +100,7 @@ component.methods = {
         }
     },
     getContestSession: function () {
-        qv.createView('/api/contest/' + this.id + '/session')
+        qv.createView('/api/contest/' + this.id + '/session', 60000)
             .fetch(x => {
                 this.session = x.data;
             });

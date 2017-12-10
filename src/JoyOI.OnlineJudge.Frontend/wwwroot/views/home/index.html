@@ -16,7 +16,7 @@
                         <div class="contest-footer-icon" v-bind:class="contest.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ contest.status }}</div>
                         <div class="contest-footer-icon"><i class="fa fa-trophy"></i> {{ contest.type }}</div>
                         <div class="contest-footer-icon"><i class="fa fa-users"></i> {{ contest.cachedAttendeeCount }}</div>
-                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> {{ contest.begin }}</div>
+                        <div class="contest-footer-icon"><i class="fa fa-calendar"></i> {{ $root.toLocalTime(contest.begin) }}</div>
                         <div class="contest-footer-icon"><i class="fa fa-clock-o"></i> {{ contest.duration }}</div>
                     </div>
                 </div>

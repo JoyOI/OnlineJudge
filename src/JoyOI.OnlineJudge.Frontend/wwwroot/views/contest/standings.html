@@ -19,7 +19,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(x, index) in attendees">
-                        <td>{{ index + 1 }}</td>
+                        <td>{{ index + 1 }}<span v-if="x.isVirtual">(*)</span></td>
                         <td><img v-bind:src="x.avatarUrl" class="standings-avatar" /></td>
                         <td v-bind:class="x.roleClass">
                             <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">

@@ -341,6 +341,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var status = new JudgeStatus
                 {
                     Code = request.code,
+                    ContestId = request.contestId,
                     Language = request.language,
                     ProblemId = problem.Id,
                     IsSelfTest = false,

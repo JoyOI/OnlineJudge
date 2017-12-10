@@ -33,8 +33,8 @@ component.methods = {
                 this.description = x.data.description;
                 this.duration = x.data.duration;
                 this.attendeeCount = x.data.CachedAttendeeCount;
-                this.begin = x.data.begin;
-                this.end = x.data.end;
+                this.begin = app.toLocalTime(x.data.begin);
+                this.end = app.toLocalTime(x.data.end);
                 this.type = x.data.type;
                 this.attendPermission = x.data.attendPermission;
                 this.isHighlighted = x.data.isHighlighted;
@@ -108,7 +108,7 @@ component.methods = {
             description: this.description,
             duration: this.duration,
             attendPermission: this.attendPermission,
-            begin: this.begin,
+            begin: $('#txtBegin').length ? new Date($('#txtBegin').val()).toGMTString() : null,
             isHighlighted: this.isHighlighted,
             disableVirtual: this.disableVirtual
         })

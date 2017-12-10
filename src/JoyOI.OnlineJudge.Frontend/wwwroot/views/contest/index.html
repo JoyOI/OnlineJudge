@@ -11,10 +11,14 @@
                 <div class="area-item">
                     <div class="area-title">题目列表</div>
                     <table class="table-inline">
+                        <colgroup>
+                            <col v-if="$root.user.isSignedIn" style="width: 120px" />
+                            <col />
+                            <col />
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th v-if="$root.user.isSignedIn">状态</th>
-                                <th>编号</th>
                                 <th>题目</th>
                                 <th>分值</th>
                             </tr>
@@ -22,11 +26,10 @@
                         <tbody>
                             <tr v-for="x in problems">
                                 <td v-if="$root.user.isSignedIn">{{ x.status }}</td>
-                                <td>{{ x.number }}</td>
                                 <td>
                                     <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId }, (session.isRegistered && !session.isEnded) ? { contest: id } : undefined)"
                                        v-bind:href="$root.resolveUrl({ name: '/problem/:id', path: '/problem/' + x.problemId, params: { id: x.problemId }, query: (session.isRegistered && !session.isEnded) ? { contest: id } : undefined })"
-                                       class="vue-resolved">{{ x.problemTitle || x.problemId }}</a>
+                                       class="vue-resolved">{{ x.number }}:{{ x.problemTitle || x.problemId }}</a>
                                 </td>
                                 <td>{{ x.point }}</td>
                             </tr>
@@ -47,11 +50,12 @@
 
             <div class="sidebar-section all-buttons">
                 <template v-if="!session.isRegistered && (($root.ensureUTCTimeString(end) <= new Date()) || !disableVirtual)">
-                    <router-link :to="{ name: '/contest/:id/register', path: '/contest/' + id + '/register', params: { id: id }}"
-                                 class="sidebar-section-button highlight">
+                    <a v-on:click="$root.redirect('/contest/:id/register', '/contest/' + id + '/register', { id: id })"
+                       v-bind:href="$root.resolveUrl({ name: '/contest/:id/register', path: '/contest/' + id + '/register', params: { id: id }})"
+                       class="sidebar-section-button highlight vue-resolved">
                         <i class="fa fa-sign-in"></i>
                         <span>报名参赛</span>
-                    </router-link>
+                    </a>
                     <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
                 </template>
                 <a class="sidebar-section-button active">
@@ -59,15 +63,16 @@
                     <span>比赛首页</span>
                 </a>
                 <a class="sidebar-section-button vue-resolved"
+                   v-if="session.isStandingsAvailable"
                    v-on:click="$root.redirect('/contest/:id/standings', '/contest/' + id + '/standings', { id: id })"
                    v-bind:href="$root.resolveUrl({ name: '/contest/:id/standings', path: '/contest/' + id + '/standings', params: { id: id } })">
                     <i class="fa fa-flag"></i>
                     <span>比赛排名</span>
                 </a>
-                <a class="sidebar-section-button">
+                <!--<a class="sidebar-section-button">
                     <i class="fa fa-question-circle"></i>
                     <span>比赛答疑</span>
-                </a>
+                </a>-->
                 <a v-on:click="$root.redirect('/judge', '/judge', {}, { 'selectedContest.id': id, 'selectedContest.title': title });"
                    v-bind:href="$root.resolveUrl({ name: '/judge', path: '/judge', params: {}, query: { 'selectedContest.id': id, 'selectedContest.title': title } })"
                    class="sidebar-section-button vue-resolved">
@@ -76,9 +81,9 @@
                 </a>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
                 <a v-if="hasPermissionToEdit"
-                    v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id })"
-                    v-bind:href="$root.resolveUrl({ name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id } })"
-                    class="sidebar-section-button vue-resolved">
+                   v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id })"
+                   v-bind:href="$root.resolveUrl({ name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id } })"
+                   class="sidebar-section-button vue-resolved">
                     <i class="fa fa-cog"></i>
                     <span>管理比赛</span>
                 </a>

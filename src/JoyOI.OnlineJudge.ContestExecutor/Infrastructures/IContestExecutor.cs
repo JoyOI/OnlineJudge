@@ -21,6 +21,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         bool IsAvailableToGetStandings(string username = null);
 
+        bool IsStandingsAvailable(string username = null);
+
         void OnShowJudgeResult(JudgeStatus status);
 
         void OnShowHackResult(HackStatus status);
@@ -32,5 +34,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         void GenerateTotalScoreDisplayText(Attendee src);
 
         void GenerateProblemScoreDisplayText(Attendee src);
+
+        string GenerateProblemStatusText(string username, string problemId);
     }
 }

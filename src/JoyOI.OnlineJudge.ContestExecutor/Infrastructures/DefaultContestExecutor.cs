@@ -78,5 +78,15 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public virtual void GenerateProblemScoreDisplayText(Attendee src)
         {
         }
+
+        public virtual bool IsStandingsAvailable(string username = null)
+        {
+            return true;
+        }
+
+        public virtual string GenerateProblemStatusText(string username, string problemId)
+        {
+            return null;
+        }
     }
 }

@@ -17,7 +17,7 @@
                         </p>
                         <p>
                             <label>比赛开始时间</label>
-                            <input type="text" class="form-control datetime" v-model="begin" />
+                            <input type="text" class="form-control datetime" id="txtBegin" />
                         </p>
                         <p>
                             <label>时长(小时:分钟:秒)</label>
@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <p><input type="button" id="btnCreateContest" value="创建比赛" class="btn btn-default" /></p>
+                <p><input type="button" id="btnCreateContest" value="创建比赛" v-on:click="createContest" class="btn btn-default" /></p>
             </div>
         </div>
     </div>
