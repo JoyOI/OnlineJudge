@@ -6,7 +6,7 @@
                     <div class="area-title"
                          v-bind:class="{ 'judge-panel-color-green': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'green', 'judge-panel-color-blue': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'blue', 'judge-panel-color-orange': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'orange', 'judge-panel-color-red': this.control.statuses.filter(x => x.display === status).length && this.control.statuses.filter(x => x.display === status)[0].color === 'red' }">{{ status }}</div>
                     <div class="judge-panel-info" v-if="hint" v-bind:class="{ 'judge-panel-hint-bottom-no': status == 'Pending' || status == 'Running' || status == 'Compile Error' || status == 'Unkown Result' }" v-html="$root.marked(hint.replace(/\n/g, '\n\n'))"></div>
-                    <div class="judge-panel-table-outer-light" v-if="status != 'Pending' && status != 'Running' && status != 'Compile Error' && status != 'Unkown Result'">
+                    <div class="judge-panel-table-outer-light" v-if="status != 'Pending' && status != 'Running' && status != 'Compile Error' && status != 'Unkown Result' && status != 'Hidden'">
                         <table class="judge-panel-table">
                             <colgroup>
                                 <col style="width: 70px" />

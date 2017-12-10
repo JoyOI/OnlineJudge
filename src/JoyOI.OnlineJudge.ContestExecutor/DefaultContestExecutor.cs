@@ -4,7 +4,7 @@ using JoyOI.OnlineJudge.Models;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
 {
-    public class DefaultContestExecutor : IContestExecutor
+    public abstract class DefaultContestExecutor : IContestExecutor
     {
         public OnlineJudgeContext DB;
 
@@ -24,15 +24,19 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             }
         }
 
-        public virtual bool AllowFilterByJudgeResult { get => true; }
+        public virtual bool AllowFilterByJudgeResult => true;
 
-        public virtual bool AllowFilterByHackResult { get => true; }
+        public virtual bool AllowFilterByHackResult => true;
 
-        public virtual void HandleHackResult(HackStatus status)
+        public virtual bool AllowJudgeFinishedPushNotification => true;
+
+        public virtual bool AllowHackFinishedPushNotification => true;
+
+        public virtual void OnShowHackResult(HackStatus status)
         {
         }
 
-        public virtual void HandleJudgeResult(JudgeStatus status)
+        public virtual void OnShowJudgeResult(JudgeStatus status)
         {
         }
 
@@ -47,6 +51,16 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             {
                 return attendee.RegisterTime.Add(Contest.Duration) > DateTime.UtcNow;
             }
+        }
+
+        public virtual void OnJudgeCompleted(JudgeStatus status)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OnHackCompleted(HackStatus status)
+        {
+            throw new NotImplementedException();
         }
     }
 }

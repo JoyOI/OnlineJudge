@@ -94,7 +94,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     {
                         if (!ce.AllowFilterByJudgeResult && !status.HasValue)
                         {
-                            ce.HandleJudgeResult(x);
+                            ce.OnShowJudgeResult(x);
                         }
                         else
                         {
@@ -423,7 +423,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 if (!await HasPermissionToContestAsync(ret.ContestId) && !await HasPermissionToProblemAsync(ret.ProblemId))
                 {
                     var ce = cef.Create(contest.Id);
-                    ce.HandleJudgeResult(ret);
+                    ce.OnShowJudgeResult(ret);
                 }
 
                 ret.Contest = null;

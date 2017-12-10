@@ -176,7 +176,7 @@ namespace JoyOI.OnlineJudge.Models
 
             builder.Entity<ContestProblemLastStatus>(e =>
 			{
-                e.HasKey(x => new { x.ContestId, x.ProblemId, x.UserId, x.StatusId });
+                e.HasKey(x => new { x.ContestId, x.ProblemId, x.UserId });
 				e.HasIndex(x => x.Point);
 				e.HasIndex(x => x.Point2);
 				e.HasIndex(x => x.Point3);

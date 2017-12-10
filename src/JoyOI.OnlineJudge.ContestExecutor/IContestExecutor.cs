@@ -11,10 +11,18 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         bool AllowFilterByHackResult { get; }
 
+        bool AllowJudgeFinishedPushNotification { get; }
+
+        bool AllowHackFinishedPushNotification { get; }
+
         bool IsContestInProgress(string username = null);
 
-        void HandleJudgeResult(JudgeStatus status);
+        void OnShowJudgeResult(JudgeStatus status);
 
-        void HandleHackResult(HackStatus status);
+        void OnShowHackResult(HackStatus status);
+
+        void OnJudgeCompleted(JudgeStatus status);
+
+        void OnHackCompleted(HackStatus status);
     }
 }

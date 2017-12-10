@@ -199,7 +199,7 @@
             <div class="judge-panel-status judge-panel-color-blue"
                  v-if="!control.statuses.filter(x => x.display === judgeResult).length">Pending</div>
             <div class="judge-panel-summary-hint" v-if="result.hint" v-html="$root.marked(result.hint.replace(/\n/g, '\n\n'))"></div>
-            <div class="judge-panel-table-outer" v-if="judgeResult != 'Pending' && judgeResult != 'Running' && judgeResult != 'Compile Error' && judgeResult != 'Unkown Result'">
+            <div class="judge-panel-table-outer" v-if="judgeResult != 'Pending' && judgeResult != 'Running' && judgeResult != 'Compile Error' && judgeResult != 'Unkown Result' && judgeResult != 'Hidden'">
                 <table class="judge-panel-table">
                     <colgroup>
                         <col style="width: 70px" />

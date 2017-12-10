@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.ManagementService.SDK;
 using JoyOI.ManagementService.Model.Dtos;
+using JoyOI.OnlineJudge.ContestExecutor;
 using JoyOI.OnlineJudge.WebApi.Models;
 using JoyOI.OnlineJudge.WebApi.Hubs;
 using JoyOI.OnlineJudge.WebApi.Lib;
@@ -18,17 +19,20 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
 {
     public class JudgeStateMachineHandler
     {
-        private OnlineJudgeContext _db { get; set; }
+        private OnlineJudgeContext _db;
 
-        private IHubContext<OnlineJudgeHub> _hub { get; set; }
+        private IHubContext<OnlineJudgeHub> _hub;
 
-        private ManagementServiceClient _mgmt { get; set; }
+        private ManagementServiceClient _mgmt;
 
-        public JudgeStateMachineHandler(OnlineJudgeContext db, IHubContext<OnlineJudgeHub> hub, ManagementServiceClient mgmt)
+        private ContestExecutorFactory _cef;
+
+        public JudgeStateMachineHandler(OnlineJudgeContext db, IHubContext<OnlineJudgeHub> hub, ManagementServiceClient mgmt, ContestExecutorFactory cef)
         {
             _db = db;
             _hub = hub;
             _mgmt = mgmt;
+            _cef = cef;
         }
 
         private int GetStateMachineTestCaseCount(StateMachineInstanceOutputDto statemachine)
@@ -177,7 +181,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 throw new KeyNotFoundException("Did not find the status which related to the statemachine " + statemachineId);
             }
             var statusId = statusStatemachineRelation.StatusId;
-            var status = await _db.JudgeStatuses.Where(x => x.Id == statusId).Select(x => new { x.ProblemId, x.UserId, x.IsSelfTest, x.ContestId }).FirstOrDefaultAsync(token);
+            var status = await _db.JudgeStatuses
+                .AsNoTracking()
+                .Where(x => x.Id == statusId)
+                .Select(x => new { x.ProblemId, x.UserId, x.IsSelfTest, x.ContestId, x.Id })
+                .FirstOrDefaultAsync(token);
             var userId = status.UserId;
             var problemId = status.ProblemId;
             var isSelfTest = status.IsSelfTest;
@@ -322,7 +330,19 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 }
             }
             #endregion
-            _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
+
+            if (!string.IsNullOrEmpty(status.ContestId))
+            {
+                var ce = _cef.Create(status.ContestId);
+                ce.OnJudgeCompleted(_db.JudgeStatuses.Single(x => x.Id == status.Id));
+
+                if (ce.AllowJudgeFinishedPushNotification)
+                    _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
+            }
+            else
+            {
+                _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
+            }
         }
 
         private void UpdateUserProblemJson(Guid userId, string problemId, bool isAccepted)
