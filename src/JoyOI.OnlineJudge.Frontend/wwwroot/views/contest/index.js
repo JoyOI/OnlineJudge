@@ -10,6 +10,8 @@
         claims: [],
         problems: [],
         session: {
+            begin: null,
+            end: null,
             isRegistered: false,
             isBegan: true,
             isEnded: true

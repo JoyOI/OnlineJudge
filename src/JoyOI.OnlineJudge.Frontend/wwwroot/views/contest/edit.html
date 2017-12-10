@@ -142,17 +142,20 @@
                     <i class="fa fa-edit"></i>
                     <span>编辑比赛信息</span>
                 </a>
-                <a class="sidebar-section-button" 
+                <a class="sidebar-section-button vue-resolved" 
                    v-bind:href="$root.resolveUrl({name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id }, query: { current: 'problem' }})"
                    v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id }, { current: 'problem' })" 
                    v-bind:class="{ 'active': current === 'problem' }">
                     <i class="fa fa-tasks"></i>
                     <span>编辑比赛题目</span>
                 </a>
-                <a class="sidebar-section-button" v-on:click="current = 'language'" v-bind:class="{ 'active': current === 'language' }">
+                <!--<a class="sidebar-section-button vue-resolved" 
+                   v-bind:href="$root.resolveUrl({name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id }, query: { current: 'language' }})"
+                   v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id }, { current: 'language' })" 
+                   v-bind:class="{ 'active': current === 'language' }">
                     <i class="fa fa-times-circle-o"></i>
                     <span>参赛语言控制</span>
-                </a>
+                </a>-->
                 <hr class="sidebar-hr" />
                 <router-link :to="{ name: '/contest/:id', path: '/contest/' + id, params: { 'id': id } }"
                              class="sidebar-section-button">

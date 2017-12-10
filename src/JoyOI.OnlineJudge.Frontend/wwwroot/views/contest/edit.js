@@ -39,7 +39,7 @@ component.methods = {
                 this.attendPermission = x.data.attendPermission;
                 this.isHighlighted = x.data.isHighlighted;
                 this.disableVirtual = x.data.disableVirtual;
-                this.languages = x.data.bannedLanguagesArray;
+                this.languages = x.data.bannedLanguagesArray || [];
                 app.links[1].text = x.data.title;
                 app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
                 try {

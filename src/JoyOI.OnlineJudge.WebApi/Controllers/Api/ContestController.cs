@@ -94,7 +94,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(new
                 {
-                    isRegistered = false
+                    isRegistered = false,
+                    begin = contest.Begin,
+                    end = contest.Begin.Add(contest.Duration),
+                    isBegan = DateTime.UtcNow > contest.Begin,
+                    isEnded = DateTime.UtcNow > contest.Begin.Add(contest.Duration)
                 });
             }
             else
