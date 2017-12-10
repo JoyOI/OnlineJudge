@@ -251,8 +251,8 @@ LazyRouting._sleep = function (time) {
     });
 }
 
-$(window).click(async function (e) {
-    if ($(e.target).hasClass('vue-resolved')) {
+$(window).click(function (e) {
+    if ($(e.target).hasClass('vue-resolved') || $(e.target).parents('.vue-resolved').length) {
         e.preventDefault();
         return false;
     }
@@ -264,7 +264,7 @@ $(window).click(async function (e) {
             return true;
         }
         e.target.lazyload = true;
-        await LazyRouting.RedirectTo(name, path, params);
+        LazyRouting.RedirectTo(name, path, params);
         return false;
     }
 });

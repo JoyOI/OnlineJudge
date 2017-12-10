@@ -135,11 +135,17 @@
 
         <div class="col-md-3 title-align">
             <div class="sidebar-section all-buttons">
-                <a class="sidebar-section-button" v-on:click="current = 'basic'" v-bind:class="{ 'active': current === 'basic' }">
+                <a class="sidebar-section-button vue-resolved" 
+                   v-bind:href="$root.resolveUrl({name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id }})"
+                   v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id })" 
+                   v-bind:class="{ 'active': current === 'basic' }">
                     <i class="fa fa-edit"></i>
                     <span>编辑比赛信息</span>
                 </a>
-                <a class="sidebar-section-button" v-on:click="current = 'problem'" v-bind:class="{ 'active': current === 'problem' }">
+                <a class="sidebar-section-button" 
+                   v-bind:href="$root.resolveUrl({name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id }, query: { current: 'problem' }})"
+                   v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id }, { current: 'problem' })" 
+                   v-bind:class="{ 'active': current === 'problem' }">
                     <i class="fa fa-tasks"></i>
                     <span>编辑比赛题目</span>
                 </a>
