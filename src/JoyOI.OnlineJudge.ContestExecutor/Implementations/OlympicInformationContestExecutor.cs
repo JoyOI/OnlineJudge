@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
@@ -12,9 +13,9 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             { "Point3", "Time" }
         };
 
-        public override bool AllowFilterByJudgeResult => false;
+        public override bool AllowFilterByJudgeResult => HasPermissionToContest();
 
-        public override bool AllowJudgeFinishedPushNotification => false;
+        public override bool AllowJudgeFinishedPushNotification => HasPermissionToContest();
 
         public override void OnShowJudgeResult(JudgeStatus status)
         {
@@ -35,8 +36,18 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override void OnJudgeCompleted(JudgeStatus status)
         {
-            var attendee = DB.Attendees.Single(x => x.ContestId == status.ContestId && x.UserId == status.UserId);
-            var cpls = DB.ContestProblemLastStatuses.SingleOrDefault(x => x.ProblemId == status.ProblemId && x.UserId == status.UserId && x.ContestId == status.ContestId);
+            var attendee = DB.Attendees
+                .Single(x => x.ContestId == status.ContestId && x.UserId == status.UserId);
+
+            var cpls = DB.ContestProblemLastStatuses
+                .Include(x => x.Status)
+                .SingleOrDefault(x => x.ProblemId == status.ProblemId && x.UserId == status.UserId && x.ContestId == status.ContestId);
+
+            if (cpls != null && status.CreatedTime <= cpls.Status.CreatedTime)
+            {
+                return;
+            }
+
             var contestProblem = DB.ContestProblems.Single(x => x.ContestId == status.ContestId && x.ProblemId == status.ProblemId);
             if (cpls == null)
             {
@@ -90,9 +101,15 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             return !IsContestInProgress(username) && Contest.Status != ContestStatus.Pending;
         }
 
-        public override string GenerateProblemStatusText(string username, string problemId)
+        public override string GenerateProblemStatusText(string problemId, string username = null)
         {
-            var cpls = DB.ContestProblemLastStatuses.SingleOrDefault(x => x.ContestId == ContestId && x.User.UserName == username && x.ProblemId == problemId);
+            var user = GetSpecifiedOrCurrentUser(username);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var cpls = DB.ContestProblemLastStatuses.SingleOrDefault(x => x.ContestId == ContestId && x.UserId == user.Id&& x.ProblemId == problemId);
             if (cpls == null) {
                 return null;
             } else

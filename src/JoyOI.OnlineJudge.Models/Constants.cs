@@ -1,4 +1,4 @@
-﻿namespace JoyOI.OnlineJudge.WebApi.Models
+﻿namespace JoyOI.OnlineJudge.Models
 {
     public static class Constants
     {

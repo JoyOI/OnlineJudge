@@ -35,6 +35,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         void GenerateProblemScoreDisplayText(Attendee src);
 
-        string GenerateProblemStatusText(string username, string problemId);
+        string GenerateProblemStatusText(string problemId, string username = null);
+
+        bool HasPermissionToContest(string username = null);
     }
 }

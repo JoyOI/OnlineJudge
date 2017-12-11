@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using JoyOI.OnlineJudge.Models;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
@@ -8,10 +9,12 @@ namespace JoyOI.OnlineJudge.ContestExecutor
     public class ContestExecutorFactory
     {
         private OnlineJudgeContext _db;
+        private SmartUser<User, Guid> _user;
 
-        public ContestExecutorFactory(OnlineJudgeContext db)
+        public ContestExecutorFactory(OnlineJudgeContext db, SmartUser<User, Guid> user)
         {
             this._db = db;
+            this._user = user;
         }
 
         public IContestExecutor Create(string contestId)

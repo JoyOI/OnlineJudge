@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using JoyOI.OnlineJudge.Models;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
@@ -8,6 +10,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
     public abstract class DefaultContestExecutor : IContestExecutor
     {
         public OnlineJudgeContext DB;
+        public SmartUser<User, Guid> User;
 
         public string ContestId { get; set; }
 
@@ -45,7 +48,12 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public bool IsContestInProgress(string username = null)
         {
-            var attendee = DB.Attendees.SingleOrDefault(x => x.User.UserName == username && x.ContestId == ContestId);
+            var user = GetSpecifiedOrCurrentUser(username);
+            if (user == null)
+            {
+                return Contest.Status == ContestStatus.Live;
+            }
+            var attendee = DB.Attendees.SingleOrDefault(x => x.UserId == user.Id && x.ContestId == ContestId);
             if (username == null || attendee == null || !attendee.IsVirtual)
             {
                 return Contest.Status == ContestStatus.Live;
@@ -84,9 +92,31 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             return true;
         }
 
-        public virtual string GenerateProblemStatusText(string username, string problemId)
+        public virtual string GenerateProblemStatusText(string problemId, string username = null)
         {
             return null;
+        }
+
+        public bool HasPermissionToContest(string username = null)
+        {
+            var user = GetSpecifiedOrCurrentUser(username);
+            if (user == null)
+                return false;
+
+            if (User.Manager.IsInAnyRolesAsync(user, Constants.MasterOrHigherRoles).Result)
+                return true;
+            if (!DB.UserClaims.Any(x => x.UserId == user.Id
+                   && x.ClaimType == Constants.ContestEditPermission
+                   && x.ClaimValue == ContestId))
+                return true;
+            return false;
+        }
+
+        protected User GetSpecifiedOrCurrentUser(string username = null)
+        {
+            if (User.Current == null && string.IsNullOrEmpty(username))
+                return null;
+            return string.IsNullOrEmpty(username) ? User.Current : DB.Users.SingleOrDefault(x => x.UserName == username);
         }
     }
 }
