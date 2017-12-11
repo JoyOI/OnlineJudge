@@ -4,6 +4,13 @@ using System.Linq;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
 {
+    public enum PushNotificationType
+    {
+        None,
+        Master,
+        All
+    }
+
     public class Problem
     {
         public string id { get; set; }

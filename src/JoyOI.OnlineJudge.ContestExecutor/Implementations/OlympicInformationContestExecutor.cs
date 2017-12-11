@@ -15,7 +15,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override bool AllowFilterByJudgeResult => HasPermissionToContest();
 
-        public override bool AllowJudgeFinishedPushNotification => HasPermissionToContest();
+        public override PushNotificationType PushNotificationSetting => PushNotificationType.All;
 
         public override void OnShowJudgeResult(JudgeStatus status)
         {

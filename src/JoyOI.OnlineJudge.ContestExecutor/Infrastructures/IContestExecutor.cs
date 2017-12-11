@@ -13,7 +13,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         bool AllowFilterByHackResult { get; }
 
-        bool AllowJudgeFinishedPushNotification { get; }
+        PushNotificationType PushNotificationSetting { get; }
 
         bool AllowHackFinishedPushNotification { get; }
 
@@ -38,5 +38,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         string GenerateProblemStatusText(string problemId, string username = null);
 
         bool HasPermissionToContest(string username = null);
+
+        IEnumerable<string> GetContestOwners();
     }
 }

@@ -32,7 +32,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public virtual bool AllowFilterByHackResult => true;
 
-        public virtual bool AllowJudgeFinishedPushNotification => true;
+        public virtual PushNotificationType PushNotificationSetting => PushNotificationType.All;
 
         public virtual bool AllowHackFinishedPushNotification => true;
 
@@ -97,7 +97,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             return null;
         }
 
-        public bool HasPermissionToContest(string username = null)
+        public virtual bool HasPermissionToContest(string username = null)
         {
             var user = GetSpecifiedOrCurrentUser(username);
             if (user == null)
@@ -112,11 +112,23 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             return false;
         }
 
-        protected User GetSpecifiedOrCurrentUser(string username = null)
+        protected virtual User GetSpecifiedOrCurrentUser(string username = null)
         {
             if (User.Current == null && string.IsNullOrEmpty(username))
                 return null;
             return string.IsNullOrEmpty(username) ? User.Current : DB.Users.SingleOrDefault(x => x.UserName == username);
+        }
+
+        public virtual IEnumerable<string> GetContestOwners()
+        {
+            var ids = DB.UserClaims
+                .Where(x => x.ClaimType == Constants.ContestEditPermission && x.ClaimValue == ContestId)
+                .Select(x => x.UserId);
+
+            return DB.Users
+                .Where(x => ids.Contains(x.Id))
+                .Select(x => x.UserName)
+                .ToList();
         }
     }
 }

@@ -93,7 +93,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     var isContestInProgress = ce.IsContestInProgress(User.Current?.UserName) || ce.IsContestInProgress(submittorUsername);
                     if (isContestInProgress && !await HasPermissionToContestAsync(x.ContestId, token) && !await HasPermissionToProblemAsync(x.ProblemId, token))
                     {
-                        if (!ce.AllowFilterByJudgeResult && !status.HasValue)
+                        if (ce.AllowFilterByJudgeResult || !status.HasValue)
                         {
                             ce.OnShowJudgeResult(x);
                         }
