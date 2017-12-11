@@ -25,7 +25,12 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             switch (contest.Type)
             {
                 case ContestType.OI:
-                    return new OlympicInformationContestExecutor() { DB = this._db, ContestId = contestId };
+                    return new OlympicInformationContestExecutor()
+                    {
+                        DB = this._db,
+                        User = this._user,
+                        ContestId = contestId
+                    };
                 default:
                     throw new NotSupportedException($"The contest type { contest.Type } is not supported yet.");
             }

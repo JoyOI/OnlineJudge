@@ -267,7 +267,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     var ce = cef.Create(contestId);
                     foreach (var x in ret)
                     {
-                        x.status = ce.GenerateProblemStatusText(User.Current.UserName, x.problemId);
+                        x.status = ce.GenerateProblemStatusText(x.problemId, User.Current.UserName);
                     }
                 }
 
