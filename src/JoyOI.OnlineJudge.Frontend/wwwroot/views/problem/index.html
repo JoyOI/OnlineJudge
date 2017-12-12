@@ -154,6 +154,7 @@
                v-on:click="changeEditorMode('code')"><i class="fa fa-code"></i> 代码编辑</a>
             <a 
                class="code-editor-button" 
+               v-if="!contest"
                v-bind:class="{ 'active': control.editorActiveTag == 'data' }"
                v-on:click="changeEditorMode('data')"><i class="fa fa-database"></i> 自测数据{{ form.data.length ? ' (' + form.data.length + ')' : '' }}</a>
             <select class="code-editor-button" v-model="form.language">

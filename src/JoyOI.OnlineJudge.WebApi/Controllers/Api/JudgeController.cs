@@ -157,13 +157,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!string.IsNullOrEmpty(request.contestId))
             {
                 var ce = cef.Create(request.contestId);
+
                 if (!ce.IsContestInProgress(User.Current?.UserName))
                 {
                     return Result(400, "The contest is inactive.");
                 }
-            }
-            else
-            {
+
                 if (request.isSelfTest)
                 {
                     return Result(400, "You could not do a self test during the contest is in progress.");
