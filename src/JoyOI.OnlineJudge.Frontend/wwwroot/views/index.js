@@ -144,6 +144,8 @@
             app.notification('pending', '正在登录...');
             qv.put('/api/user/session', { username: $('#username').val(), password: $('#password').val() })
                 .then(function (result) {
+                    if (document.cookie)
+                        document.cookie = document.cookie + '; Expires=' + new Date(0).toUTCString();
                     document.cookie = result.data.cookie;
                     self.user.isSignedIn = true;
                     return qv.get('/api/user/session/info');
@@ -166,7 +168,7 @@
                 });
         },
         logout: function () {
-            document.cookie += '; Expires=' + new Date(0).toUTCString();
+            document.cookie = document.cookie + '; Expires=' + new Date(0).toUTCString();
             this.user.isSignedIn = false;
             app.notification('succeeded', '注销成功', '您已经注销了Joy OI的登录状态');
         },
