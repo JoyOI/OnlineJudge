@@ -165,6 +165,8 @@
                     self.notification("succeeded", "登录成功");
                     self.toggleLoginBox();
 
+                    qv.reset();
+
                     var current = LazyRouting.GetCurrentComponent();
                     if (current && current.$options.created.length) {
                         current.$options.created[0].call(current);
@@ -181,6 +183,7 @@
             }
             this.user.isSignedIn = false;
             app.notification('succeeded', '注销成功', '您已经注销了Joy OI的登录状态');
+            qv.reset();
 
             var current = LazyRouting.GetCurrentComponent();
             if (current && current.$options.created.length) {

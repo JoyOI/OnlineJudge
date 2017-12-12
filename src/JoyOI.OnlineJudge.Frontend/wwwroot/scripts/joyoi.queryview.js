@@ -261,5 +261,12 @@
         }
 
         return ret;
+    },
+    reset: function () {
+        this.__cache = {};
+        this.__cacheDictionary = { };
+        this.__cacheExpire = { };
+        this.__cacheFilters = { };
+        this.__cacheSubscribe = { };
     }
 };
