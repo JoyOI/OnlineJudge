@@ -32,10 +32,10 @@ component.methods = {
                 results = results.map(y => {
                     var begin = new Date(y.begin);
                     var end = new Date(begin.getTime() + parseTimeSpan(y.duration))
-                    if (new Date() < begin) {
+                    if (y.status == 0) {
                         y.status = 'Ready';
                         y.statusClass = 'contest-ready';
-                    } else if (new Date() < end) {
+                    } else if (y.status == 1) {
                         y.status = 'Live';
                         y.statusClass = 'contest-live';
                     } else {

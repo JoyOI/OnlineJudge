@@ -228,7 +228,9 @@
                         .then((result) => {
                             self.cache(endpoint, params, result, interval);
                             try {
-                                func(result);
+                                if (func) {
+                                    func(result);
+                                }
                             } catch (err) { console.error(err); }
                         });
                 } else {

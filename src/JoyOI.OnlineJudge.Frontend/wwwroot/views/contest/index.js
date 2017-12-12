@@ -73,7 +73,7 @@ component.methods = {
     loadContestProblem: function () {
         var self = this;
         if (!this.problemView) {
-            this.problemView = qv.createView('/api/contest/' + this.id + '/problem/all');
+            this.problemView = qv.createView('/api/contest/' + this.id + '/problem/all', {}, 60000);
             this.problemView
                 .fetch(x => {
                     this.problems = x.data;
@@ -91,9 +91,11 @@ component.methods = {
         }
     },
     getContestSession: function () {
-        qv.createView('/api/contest/' + this.id + '/session', 60000)
+        var self = this;
+        qv.createView('/api/contest/' + self.id + '/session', {}, 60000)
             .fetch(x => {
-                this.session = x.data;
+                self.session = x.data;
+                self.loadContestProblem();
             });
     }
 };
@@ -103,6 +105,5 @@ component.created = function () {
     app.links = [{ text: '比赛列表', to: '/contest' }];
 
     this.loadContest();
-    this.loadContestProblem();
     this.getContestSession();
 };
