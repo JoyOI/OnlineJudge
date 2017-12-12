@@ -93,7 +93,14 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public override void GenerateTotalScoreDisplayText(Attendee src)
         {
             src.pointDisplay = src.point.ToString();
-            src.point3Display = src.point3 + " ms";
+            if (src.point3 < 10000)
+            {
+                src.point3Display = src.point3 + " ms";
+            }
+            else
+            {
+                src.point3Display = (src.point3 / 1000.0).ToString("0.00") + " s";
+            }
         }
 
         public override bool IsStandingsAvailable(string username = null)
