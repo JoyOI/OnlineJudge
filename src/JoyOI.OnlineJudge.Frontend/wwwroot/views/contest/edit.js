@@ -103,7 +103,7 @@ component.methods = {
     saveBasic: function () {
         this.description = $('.markdown-textbox')[0].smde.codemirror.getValue();
         app.notification('pending', '正在保存比赛');
-        qv.patch('/api/contest/' + this.id, {
+        var request = {
             title: this.title,
             description: this.description,
             duration: this.duration,
@@ -111,7 +111,12 @@ component.methods = {
             begin: $('#txtBegin').length ? new Date($('#txtBegin').val()).toGMTString() : null,
             isHighlighted: this.isHighlighted,
             disableVirtual: this.disableVirtual
-        })
+        };
+
+        if (!request.begin) {
+            delete request.begin;
+        }
+        qv.patch('/api/contest/' + this.id, request)
             .then((x) => {
                 app.notification('succeeded', '比赛编辑成功', x.msg);
                 this.view.refresh();
