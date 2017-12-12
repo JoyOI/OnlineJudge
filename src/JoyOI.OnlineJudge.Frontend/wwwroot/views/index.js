@@ -144,8 +144,10 @@
             app.notification('pending', '正在登录...');
             qv.put('/api/user/session', { username: $('#username').val(), password: $('#password').val() })
                 .then(function (result) {
-                    if (document.cookie)
-                        document.cookie = document.cookie + '; Expires=' + new Date(0).toUTCString();
+                    document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+                    if (document.cookie) {
+                        qv.delete('/api/user/session');
+                    }
                     document.cookie = result.data.cookie;
                     self.user.isSignedIn = true;
                     return qv.get('/api/user/session/info');
@@ -162,15 +164,28 @@
                     self.control.chatIframeUrl = x.data.chat;
                     self.notification("succeeded", "登录成功");
                     self.toggleLoginBox();
+
+                    var current = LazyRouting.GetCurrentComponent();
+                    if (current && current.$options.created.length) {
+                        current.$options.created[0].call(current);
+                    }
                 })
                 .catch(err => {
                     self.notification("error", "登录失败", err.responseJSON.msg);
                 });
         },
         logout: function () {
-            document.cookie = document.cookie + '; Expires=' + new Date(0).toUTCString();
+            document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+            if (document.cookie) {
+                qv.delete('/api/user/session');
+            }
             this.user.isSignedIn = false;
             app.notification('succeeded', '注销成功', '您已经注销了Joy OI的登录状态');
+
+            var current = LazyRouting.GetCurrentComponent();
+            if (current && current.$options.created.length) {
+                current.$options.created[0].call(current);
+            }
         },
         marked: function (str) {
             return filterXSS(marked(str || ""))

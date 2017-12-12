@@ -206,6 +206,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, authorizeResult.msg);
             }
         }
+
+        [HttpDelete("session")]
+        public async Task<IActionResult> DeleteSession() {
+            await SignInManager.SignOutAsync();
+            return Result(200, "Signed out");
+        }
         #endregion
 
         #region Message
