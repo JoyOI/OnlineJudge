@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
@@ -56,6 +57,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     StatusId = status.Id,
                     Point = status.Result == JudgeResult.Accepted ? 1 : 0,
                     Point3 = status.Result == JudgeResult.Accepted ? 0 : 1,
+                    TimeSpan = status.Result == JudgeResult.Accepted ? ComputeTimeSpan(status.CreatedTime, status.UserId) : default(TimeSpan),
                     IsAccepted = status.Result == JudgeResult.Accepted,
                     IsVirtual = attendee.IsVirtual
                 };
@@ -66,6 +68,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 cpls.StatusId = status.Id;
                 cpls.Point = status.Result == JudgeResult.Accepted ? 1 : 0;
                 cpls.Point3 += status.Result == JudgeResult.Accepted ? 0 : 1;
+                cpls.TimeSpan = status.Result == JudgeResult.Accepted ? ComputeTimeSpan(status.CreatedTime, status.UserId).Add(new TimeSpan(0, 20 * cpls.Point3, 0)) : default(TimeSpan);
                 cpls.IsAccepted = status.Result == JudgeResult.Accepted;
             }
             DB.SaveChanges();
@@ -95,7 +98,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public override void GenerateTotalScoreDisplayText(Attendee src)
         {
             src.pointDisplay = src.point.ToString();
-            src.point3Display = src.timeSpan.ToString();
+            src.timeSpanDisplay = src.timeSpan.ToString();
         }
 
         public override bool IsStandingsAvailable(string username = null)
@@ -126,6 +129,34 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 {
                     return $"{cpls.Point3} Fails";
                 }
+            }
+        }
+
+        private TimeSpan ComputeTimeSpan(DateTime? statusTime = null, Guid? userId = null)
+        {
+            if (statusTime == null)
+            {
+                statusTime = DateTime.UtcNow;
+            }
+
+            if (userId == null)
+            {
+                userId = User.Current == null ? null : (Guid?)User.Current.Id;
+            }
+            
+            if (userId == null)
+            {
+                return statusTime.Value - Contest.Begin;
+            }
+
+            var attendee = DB.Attendees.SingleOrDefault(x => x.UserId == userId && x.ContestId == ContestId);
+            if (attendee == null)
+            {
+                return statusTime.Value - Contest.Begin;
+            }
+            else
+            {
+                return statusTime.Value - (attendee.IsVirtual ? attendee.RegisterTime : Contest.Begin);
             }
         }
     }

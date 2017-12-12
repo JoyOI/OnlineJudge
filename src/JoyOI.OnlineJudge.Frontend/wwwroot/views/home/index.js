@@ -26,7 +26,7 @@ component.methods = {
     },
     loadContests: function () {
         var self = this;
-        qv.createView('/api/contest/all', {}, 60000)
+        qv.createView('/api/contest/all', { highlight: true }, 60000)
             .fetch(x => {
                 var results = clone(x.data.result);
                 results = results.map(y => {

@@ -95,7 +95,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                             runner.PeakMemory,
                             string.Join(Environment.NewLine, actor.Exceptions) + Environment.NewLine + runner.Error));
                     }
-                    else if (runner.ExitCode == 139 || actor.Exceptions.Any(x => x.Contains("May cause by out of memory")) || runner.Error.Contains("std::bad_alloc"))
+                    else if (runner.ExitCode == 139 || actor.Exceptions.Any(x => x.Contains("May cause by out of memory")) || runner.Error.Contains("std::bad_alloc") || runner.PeakMemory > memoryLimit)
                     {
                         ret.Add((
                             i,

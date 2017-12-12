@@ -18,8 +18,10 @@ component.data = function () {
 component.watch = {
     excludeVirtual: function (val) {
         if (val) {
+            this.view.unsubscribe();
             app.redirect('/contest/:id/standings', '/contest/' + this.id + '/standings', { id: this.id }, { 'excludeVirtual': this.excludeVirtual.toString() });
         } else {
+            this.view.unsubscribe();
             app.redirect('/contest/:id/standings', '/contest/' + this.id + '/standings', { id: this.id });
         }
     }

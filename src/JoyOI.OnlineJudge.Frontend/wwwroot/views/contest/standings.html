@@ -26,7 +26,7 @@
                                 {{ x.username || x.userId.substr(0,8) }}
                             </router-link>
                         </td>
-                        <td v-for="(a,b) in columns" class="point-column" v-html="$root.xss(x[b.toLowerCase() + 'Display'] ? x[b.toLowerCase() + 'Display'].replace('\n', '<br />') : null)"></td>
+                        <td v-for="(a,b) in columns" class="point-column" v-html="$root.xss(x[b[0].toLowerCase() + b.substr(1) + 'Display'] ? x[b[0].toLowerCase() + b.substr(1) + 'Display'].replace('\n', '<br />') : null)"></td>
                         <td v-for="a in problems" class="problem-column" v-html="$root.xss(x.detail[a.id] ? x.detail[a.id].display.replace('\n', '<br />') : null)"></td>
                     </tr>
                 </tbody>

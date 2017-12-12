@@ -31,6 +31,13 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                         User = this._user,
                         ContestId = contestId
                     };
+                case ContestType.ACM:
+                    return new AcmIcpcContestExecutor()
+                    {
+                        DB = this._db,
+                        User = this._user,
+                        ContestId = contestId
+                    };
                 default:
                     throw new NotSupportedException($"The contest type { contest.Type } is not supported yet.");
             }
