@@ -162,6 +162,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(400, "The contest is inactive.");
                 }
             }
+            else
+            {
+                if (request.isSelfTest)
+                {
+                    return Result(400, "You could not do a self test during the contest is in progress.");
+                }
+            }
 
             if (!Constants.SupportedLanguages.Contains(request.language) && !Constants.UnsupportedLanguages.Contains(request.language) && problem.Source == ProblemSource.Local)
             {
