@@ -60,7 +60,10 @@ namespace JoyOI.OnlineJudge.WebApi
 
             services.AddSmartCookies();
             services.AddSmartUser<User, Guid>();
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(x => {
+                    x.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
+                });
             services.AddSignalR()
                 .AddRedis(x => 
                 {
