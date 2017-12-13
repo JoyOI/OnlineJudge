@@ -96,7 +96,7 @@
                         <td>{{ x.timeUsedInMs }}ms</td>
                         <td>{{ (x.memoryUsedInByte / 1024.0 / 1024.0).toFixed(1) }}MiB</td>
                         <td>{{ x.language }}</td>
-                        <td v-bind:datetime="x.createdTime"></td>
+                        <td v-bind:datetime="$root.ensureUTCTimeString(x.createdTime)"></td>
                     </tr>
                 </tbody>
                 <tfoot>

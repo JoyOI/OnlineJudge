@@ -10,8 +10,8 @@
                         <div class="profile-body">
                             <h1>{{ username || (id ? id.substr(0,8) : null) }} <small>({{ role || 'Member' }})</small></h1>
                             <p>
-                                注册于 <span class="time relative" v-bind:datetime="registeryTime">{{  registeryTime }}</span>,
-                                最后活动于 <span class="time relative" v-bind:datetime="activeTime">{{ activeTime }}</span>.
+                                注册于 <span class="time relative" v-bind:datetime="$root.ensureUTCTimeString(registeryTime)">{{  $root.toLocalTime(registeryTime) }}</span>,
+                                最后活动于 <span class="time relative" v-bind:datetime="$root.ensureUTCTimeString(activeTime)">{{ $root.toLocalTime(activeTime) }}</span>.
                             </p>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                                     <td>
                                         <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle }}</router-link>
                                     </td>
-                                    <td v-bind:datetime="x.time"></td>
+                                    <td v-bind:datetime="$root.ensureUTCTimeString(x.time)"></td>
                                 </tr>
                             </tbody>
                         </table>

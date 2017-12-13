@@ -37,7 +37,7 @@
                                     <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
                                         <div class="thread-body-plain"><i class="fa fa-user"></i> {{ x.username }}</div>
                                     </router-link>
-                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> <span v-bind:datetime="x.time"></span></div>
+                                    <div class="thread-body-plain"><i class="fa fa-clock-o"></i> <span v-bind:datetime="$root.ensureUTCTimeString(x.time)"></span></div>
                                     <div class="thread-body-plain"><i class="fa fa-comment-o"></i> {{ x.replyCount }}</div>
                                 </div>
                             </div>

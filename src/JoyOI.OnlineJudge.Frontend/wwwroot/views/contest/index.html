@@ -44,7 +44,7 @@
                 <div class="sidebar-section-header">
                     <h1>{{ session.isBegan ? '距离比赛结束' : '距离比赛开始' }}</h1>
                 </div>
-                <div class="sidebar-section-body contest-countdown" v-bind:datetime="!session.isBegan ? session.begin : session.end">
+                <div class="sidebar-section-body contest-countdown" v-bind:datetime="!session.isBegan ? $root.ensureUTCTimeString(session.begin) : $root.ensureUTCTimeString(session.end)">
                 </div>
             </div>
 
