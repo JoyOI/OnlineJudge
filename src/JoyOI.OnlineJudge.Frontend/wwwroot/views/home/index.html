@@ -34,9 +34,11 @@
                                     <a v-bind:href="$root.hosts.forum + '/Forum/' + x.forumId" target="_blank">
                                         <div class="thread-body-forum"><i class="fa fa-tag"></i> {{ x.forumTitle }}</div>
                                     </a>
-                                    <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
+                                    <a v-bind:href="$root.resolveUrl({ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } })"
+                                       v-on:click="$root.redirect('/user/:username', '/user/' + x.username, { username: x.username })"
+                                       class="vue-resolved">
                                         <div class="thread-body-plain"><i class="fa fa-user"></i> {{ x.username }}</div>
-                                    </router-link>
+                                    </a>
                                     <div class="thread-body-plain"><i class="fa fa-clock-o"></i> <span v-bind:datetime="$root.ensureUTCTimeString(x.time)"></span></div>
                                     <div class="thread-body-plain"><i class="fa fa-comment-o"></i> {{ x.replyCount }}</div>
                                 </div>

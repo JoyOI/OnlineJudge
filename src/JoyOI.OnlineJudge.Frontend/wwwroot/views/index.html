@@ -195,7 +195,7 @@
                     </label>
                     <label class="login-column">
                         <input type="checkbox" id="rememberme" />
-                        <span>记住我</span>
+                        <span>记住我 &nbsp;&nbsp; <a v-bind:href="$root.hosts.uc + '/account/forgot'" target="_blank">忘记密码?</a></span>
                     </label>
                     <div class="clear"></div>
                     <a class="login-btn" v-on:click="login()" v-bind:class="{ 'api-disabled': $root.control.apiLock }" v-bind:disabled="$root.control.apiLock">登录</a>
