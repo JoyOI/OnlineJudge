@@ -197,7 +197,7 @@
         <div class="judge-panel" v-bind:class="{ 'active': control.editorActiveTag == 'judge' }">
             <div class="judge-panel-status"
                  v-if="control.statuses.filter(x => x.display === judgeResult).length"
-                 v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === judgeResult)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === judgeResult)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === judgeResult)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === judgeResult)[0].color === 'green' }">{{ judgeResult }}</div>
+                 v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === judgeResult)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === judgeResult)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === judgeResult)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === judgeResult)[0].color === 'green', 'judge-panel-color-purple': control.statuses.filter(x => x.display === judgeResult)[0].color === 'purple' }">{{ judgeResult }}</div>
             <div class="judge-panel-status judge-panel-color-blue"
                  v-if="!control.statuses.filter(x => x.display === judgeResult).length">Pending</div>
             <div class="judge-panel-summary-hint" v-if="result.hint" v-html="$root.marked(result.hint.replace(/\n/g, '\n\n'))"></div>

@@ -972,6 +972,10 @@ select.code-editor-button {
     color: #16b368;
 }
 
+.judge-panel-color-purple {
+    color: #cf64ed;
+}
+
 .code-editor-outer.submit-mode {
     visibility: visible;
     width: 800px;

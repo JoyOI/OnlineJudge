@@ -418,13 +418,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var username = ret.User.UserName;
             ret.Problem = null;
             ret.User = null;
-
-            var hasPermissionToProblem = await HasPermissionToProblemAsync(problem.Id, token);
-
-            if (!problem.IsVisible && hasPermissionToProblem)
-            {
-                return Result<JudgeStatus>(403, "No permission");
-            }
+            bool hasPermissionToViewCode = false;
 
             if (!string.IsNullOrWhiteSpace(ret.ContestId))
             {
@@ -438,8 +432,25 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         ce.OnShowJudgeResult(ret);
                     }
                 }
+                else
+                {
+                    hasPermissionToViewCode = true;
+                }
 
                 ret.Contest = null;
+            }
+            else
+            {
+                var hasPermissionToProblem = await HasPermissionToProblemAsync(problem.Id, token);
+
+                if (!problem.IsVisible && hasPermissionToProblem)
+                {
+                    return Result<JudgeStatus>(403, "No permission");
+                }
+                else
+                {
+                    hasPermissionToViewCode = true;
+                }
             }
 
             if (User.Current != null && User.Current.Id == ret.UserId)
@@ -447,7 +458,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 HasOwnership = true;
             }
 
-            if (!HasOwnership && !hasPermissionToProblem && !await HasPermissionToContestAsync(ret.ContestId, token))
+            if (!HasOwnership && !hasPermissionToViewCode && !await HasPermissionToContestAsync(ret.ContestId, token))
             {
                 ret.Code = null;
             }
@@ -466,9 +477,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                    && x.ClaimValue == contestId));
 
         private async Task<bool> HasPermissionToProblemAsync(string problemId, CancellationToken token = default(CancellationToken))
-            => !(User.Current == null
-               || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
-               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
+            => User.Current != null && (await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
+            || await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
                    && x.ClaimType == Constants.ProblemEditPermission
                    && x.ClaimValue == problemId));
 

@@ -50,7 +50,14 @@ component.created = function () {
                 .fetch(y => {
                     self.role = y.data[x.data.id].role;
                 });
-        });
+        })
+        .catch(err => {
+            if (err.responseJSON.code == 404) {
+                app.redirect('/404', '/404');
+            } else {
+                app.notification('error', '获取用户信息失败', err.responseJSON.msg);
+            }
+        });;
     qv.createView('/api/user' + router.history.current.params.username + '/uploadedproblem', 600 * 1000)
         .fetch(x => {
             self.uploadedProblems = x.data.result;

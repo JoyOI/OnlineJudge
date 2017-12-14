@@ -92,7 +92,11 @@ component.created = function () {
             problemView.subscribe('problem', x.data.id);
         })
         .catch(err => {
-            app.notification('error', '获取题目信息失败', err.responseJSON.msg);
+            if (err.responseJSON.code == 404) {
+                app.redirect('/404', '/404');
+            } else {
+                app.notification('error', '获取题目信息失败', err.responseJSON.msg);
+            }
         });
 
     var sampleView = qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all', { type: 'Sample', showContent: true, contestId: this.contest })
@@ -102,7 +106,9 @@ component.created = function () {
             sampleView.subscribe('problem-sample-data', self.id);
         })
         .catch(err => {
-            app.notification('error', '获取样例数据失败', err.responseJSON.msg);
+            if (err.responseJSON.code != 404) {
+                app.notification('error', '获取样例数据失败', err.responseJSON.msg);
+            }
         });
 
     if (this.contest) {

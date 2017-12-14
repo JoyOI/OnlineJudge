@@ -49,7 +49,14 @@ component.created = function () {
                 {
                     self.problem.title = y.data[self.problem.id].title;
                 })
-    });
+    })
+        .catch(err => {
+            if (err.responseJSON.code == 404) {
+                app.redirect('/404', '/404');
+            } else {
+                app.notification('error', '获取评测信息失败', err.responseJSON.msg);
+            }
+        });
     self.view.subscribe('judge', self.id);
 };
 

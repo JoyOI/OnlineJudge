@@ -63,7 +63,11 @@ component.methods = {
                 app.title = this.title;
             })
             .catch(err => {
-                app.notification('error', '获取比赛信息失败', err.responseJSON.msg);
+                if (err.code == 404) {
+                    app.redirect('/404', '/404');
+                } else {
+                    app.notification('error', '获取题目信息失败', err.responseJSON.msg);
+                }
             });
         qv.createView('/api/contest/' + this.id + '/claim/all')
             .fetch(x => {
