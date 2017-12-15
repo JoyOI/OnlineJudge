@@ -1331,6 +1331,7 @@ dd {
 .problem-render {
     margin-top: 25px;
     padding-bottom: 10px;
+    word-break: break-word;
 }
 
     .problem-render h1, .problem-render h2, problem-render .area-title {
@@ -1677,8 +1678,8 @@ dd {
     text-align: left;
 }
 
-.standings-list .point-column, .standings-list .problem-column {
-    border-left: 1px solid #ddd!important;
+.standings-list .point-column, .standings-list .problem-column, .standings-list .user-column {
+    border-left: 1px solid #ddd !important;
 }
 
 .standings-avatar {
@@ -1714,4 +1715,39 @@ dd {
 .contest-icon:hover, .contest-icon.active {
     filter: grayscale(0);
     opacity: 1;
+}
+
+.infobox {
+    background-color: #eeeeee;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.infobox-icon {
+    background-color: #dddddd;
+    text-align: center;
+    width: 48px;
+}
+
+.infobox tr {
+    line-height: 32px;
+}
+
+.infobox-icon i {
+    padding: 8px;
+    width: 48px;
+    height: 48px;
+    line-height: 32px;
+    text-align: center;
+    font-size: 32px !important;
+    vertical-align: middle;
+    display: table-cell!important;
+}
+
+.infobox-text {
+    width: calc(100% - 48px);
+    font-size: 12px;
+    padding: 0 10px;
+    word-break: break-all;
+    line-height: 20px;
 }

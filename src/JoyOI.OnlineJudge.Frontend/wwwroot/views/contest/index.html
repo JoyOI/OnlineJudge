@@ -21,13 +21,31 @@
                             <tr v-for="x in problems">
                                 <td v-if="$root.user.isSignedIn">{{ x.status }}</td>
                                 <td>
-                                    <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId }, (session.isRegistered && session.isBegan && !session.isEnded) ? { contest: id } : undefined)"
-                                       v-bind:href="$root.resolveUrl({ name: '/problem/:id', path: '/problem/' + x.problemId, params: { id: x.problemId }, query: (session.isRegistered && !session.isEnded) ? { contest: id } : undefined })"
+                                    <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId }, { contest: id })"
+                                       v-bind:href="$root.resolveUrl({ name: '/problem/:id', path: '/problem/' + x.problemId, params: { id: x.problemId }, query: { contest: id } })"
+                                       v-if="session.isRegistered && session.isBegan && !session.isEnded"
                                        class="vue-resolved">{{ x.number }}:{{ x.problemTitle || x.problemId }}</a>
+                                    <template v-else>
+                                        <a v-on:click="$root.redirect('/problem/:id', '/problem/' + x.problemId, { id: x.problemId })"
+                                           v-bind:href="$root.resolveUrl({ name: '/problem/:id', path: '/problem/' + x.problemId, params: { id: x.problemId } })"
+                                           v-if="x.isVisible"
+                                           class="vue-resolved">{{ x.number }}:{{ x.problemTitle || x.problemId }}</a>
+                                        <span v-else>{{ x.number }}:{{ x.problemTitle || x.problemId }}</span>
+                                    </template>
                                 </td>
                                 <td>{{ x.point }}</td>
                             </tr>
                         </tbody>
+                    </table>
+
+                    <table class="infobox" style="margin-top: 25px;" v-if="problems.some(x => !x.isVisible) && (!session.isRegistered && !disableVirtual || session.isEnded)">
+                        <tr>
+                            <td class="infobox-icon"><i class="fa fa-exclamation-circle" style="color: #4c99c4"></i></td>
+                            <td class="infobox-text" v-if="!session.isRegistered && !disableVirtual">目前该场比赛题目未开放公开评测，题目仅在比赛中可用，您可以报名参赛进行答题。</td>
+                            <template v-else>
+                                <td class="infobox-text" v-if="session.isEnded">目前该场比赛题目未开放公开评测，题目仅在比赛中可用，比赛已经结束，您暂时无法查看题目。</td>
+                            </template>
+                        </tr>
                     </table>
                 </div>
             </div>

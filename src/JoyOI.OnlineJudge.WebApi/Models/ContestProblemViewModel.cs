@@ -9,5 +9,7 @@
         public string number { get; set; }
 
         public string status { get; set; }
+
+        public bool isVisible { get; set; }
     }
 }

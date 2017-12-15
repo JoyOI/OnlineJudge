@@ -57,7 +57,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 page = 1;
             }
-            return Paged(ret, page.Value, 20, token);
+            return Paged(ret
+                .OrderByDescending(x => x.Begin.Add(x.Duration))
+                .ThenByDescending(x => x.Begin), 
+                page.Value, 
+                20, 
+                token);
         }
 
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
@@ -251,6 +256,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             else
             {
                 var ret = await DB.ContestProblems
+                    .Include(x => x.Problem)
                     .Where(x => x.ContestId == contestId)
                     .OrderBy(x => x.Number)
                     .ThenBy(x => x.Point)
@@ -258,7 +264,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     {
                         problemId = x.ProblemId,
                         number = x.Number,
-                        point = x.Point
+                        point = x.Point,
+                        isVisible = x.Problem.IsVisible
                     })
                     .ToListAsync(token);
 
@@ -584,6 +591,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             foreach (var x in attendees)
             {
+                ce.OnShowStandings(x);
                 ce.GenerateProblemScoreDisplayText(x);
                 ce.GenerateTotalScoreDisplayText(x);
             }
@@ -593,7 +601,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 title = contest.Title,
                 columnDefinations = ce.PointColumnDefinations,
                 problems = problems,
-                attendees = attendees
+                attendees = attendees.OrderBy(x => x.IsInvisible)
             });
         }
 
@@ -629,6 +637,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     .ToDictionary(x => x.problemId)
             };
 
+            ce.OnShowStandings(ret);
             ce.GenerateTotalScoreDisplayText(ret);
             ce.GenerateProblemScoreDisplayText(ret);
 

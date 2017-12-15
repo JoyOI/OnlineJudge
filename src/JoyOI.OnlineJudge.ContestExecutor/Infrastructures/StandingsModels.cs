@@ -66,6 +66,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public string timeSpan2Display { get; set; }
 
         public IDictionary<string, Detail> detail { get; set; } = new Dictionary<string, Detail>();
+
+        public bool IsInvisible { get; set; }
+
+        public string InvisibleDisplay { get; set; }
     }
 
     public class Standings

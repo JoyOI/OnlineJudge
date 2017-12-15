@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
@@ -32,6 +33,25 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             status.Result = JudgeResult.Hidden;
             status.TimeUsedInMs = 0;
             status.MemoryUsedInByte = 0;
+        }
+
+        public override void OnShowStandings(Attendee attendee)
+        {
+            if (attendee.isVirtual)
+            {
+                var _attendee = DB.Attendees
+                   .Include(x => x.User)
+                   .Single(x => x.ContestId == ContestId && x.UserId == attendee.userId);
+
+                var attendeeUsername = _attendee.User.UserName;
+
+                if (!HasPermissionToContest() && IsContestInProgress(attendeeUsername))
+                {
+                    attendee.detail.Clear();
+                    attendee.IsInvisible = true;
+                    attendee.InvisibleDisplay = "模拟赛进行中，剩余时间：" + (_attendee.RegisterTime.Add(Contest.Duration) - DateTime.UtcNow).ToString("d\\.hh\\:mm\\:ss");
+                }
+            }
         }
 
         public override void OnJudgeCompleted(JudgeStatus status)

@@ -130,5 +130,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 .Select(x => x.UserName)
                 .ToList();
         }
+
+        public virtual void OnShowStandings(Attendee attendee)
+        {
+            return;
+        }
     }
 }

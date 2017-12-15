@@ -31,6 +31,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         void OnHackCompleted(HackStatus status);
 
+        void OnShowStandings(Attendee attendee);
+
         void GenerateTotalScoreDisplayText(Attendee src);
 
         void GenerateProblemScoreDisplayText(Attendee src);
