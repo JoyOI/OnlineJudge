@@ -8,6 +8,33 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 {
     public class OlympicInformationContestExecutor : DefaultContestExecutor
     {
+        private Dictionary<Guid, TimeSpan> _cachedVirtualContestAttendees;
+
+        private Dictionary<Guid, TimeSpan> CachedVirtualContestAttendees
+        {
+            get
+            {
+                if (_cachedVirtualContestAttendees == null)
+                {
+                    var ret = new Dictionary<Guid, TimeSpan>();
+                    var result = DB.Attendees
+                        .Where(x => x.ContestId == ContestId)
+                        .Where(x => x.IsVirtual)
+                        .Where(x => x.RegisterTime.Add(Contest.Duration) >= DateTime.UtcNow)
+                        .Select(x => new KeyValuePair<Guid, TimeSpan>(x.UserId, x.RegisterTime.Add(Contest.Duration) - DateTime.UtcNow))
+                        .ToList();
+
+                    foreach (var x in result)
+                    {
+                        ret.Add(x.Key, x.Value);
+                    }
+
+                    _cachedVirtualContestAttendees = ret;
+                }
+                return _cachedVirtualContestAttendees;
+            }
+        }
+
         public override IDictionary<string, string> PointColumnDefinations => new Dictionary<string, string>
         {
             { "Point", "Score" },
@@ -39,17 +66,11 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         {
             if (attendee.isVirtual)
             {
-                var _attendee = DB.Attendees
-                   .Include(x => x.User)
-                   .Single(x => x.ContestId == ContestId && x.UserId == attendee.userId);
-
-                var attendeeUsername = _attendee.User.UserName;
-
-                if (!HasPermissionToContest() && IsContestInProgress(attendeeUsername))
+                if (!HasPermissionToContest() && CachedVirtualContestAttendees.ContainsKey(attendee.userId))
                 {
                     attendee.detail.Clear();
                     attendee.IsInvisible = true;
-                    attendee.InvisibleDisplay = "模拟赛进行中，剩余时间：" + (_attendee.RegisterTime.Add(Contest.Duration) - DateTime.UtcNow).ToString("d\\.hh\\:mm\\:ss");
+                    attendee.InvisibleDisplay = "模拟赛进行中，剩余时间：" + CachedVirtualContestAttendees[attendee.userId].ToString("d\\.hh\\:mm\\:ss");
                 }
             }
         }
