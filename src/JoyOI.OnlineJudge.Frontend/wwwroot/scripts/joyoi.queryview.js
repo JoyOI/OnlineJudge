@@ -201,6 +201,18 @@
         this.__cacheFilters[endpoint] = func;
     },
     subscribe: function (key, func) {
+        let current = LazyRouting.GetCurrentComponent();
+        let uid = current._uid;
+        if (current) {
+            func = function () {
+                let com = LazyRouting.GetCurrentComponent();
+                if (com && com._uid != uid) {
+                    return;
+                } else {
+                    func();
+                }
+            }
+        }
         if (this.__cacheSubscribe[key] === undefined)
             this.__cacheSubscribe[key] = [];
         this.__cacheSubscribe[key].push(func);

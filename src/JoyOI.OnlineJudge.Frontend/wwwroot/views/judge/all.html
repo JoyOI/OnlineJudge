@@ -83,9 +83,12 @@
                 <tbody>
                     <tr v-for="x in result">
                         <td
-                            v-bind:class="x.resultClass"><router-link :to="{ name: '/judge/:id', path: '/judge/' + x.id, params: { 'id': x.id } }"><i class="fa" v-bind:class="x.iconClass"></i>{{ x.result }}</router-link></td>
+                            v-bind:class="x.resultClass">
+                            <router-link :to="{ name: '/judge/:id', path: '/judge/' + x.id, params: { 'id': x.id } }"><i class="fa" v-bind:class="x.iconClass"></i>{{ x.result }}</router-link>
+                        </td>
                         <td>
-                            <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
+                            <router-link v-if="x.result !== 'Hidden'" :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
+                            <span v-else>{{ x.problemTitle || x.problemId }}</span>
                             <span v-if="x.isSelfTest">(自测)</span>
                         </td>
                         <td v-bind:class="x.roleClass">

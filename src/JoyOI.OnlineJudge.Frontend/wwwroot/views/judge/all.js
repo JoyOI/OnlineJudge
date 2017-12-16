@@ -24,42 +24,66 @@ component.watch = {
     selectedStatus: function () {
         $('.status-filter').removeClass('active');
         var args = this.generateQuery();
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     selectedProblem: function () {
         var args = this.generateQuery();
         delete args['paging.current'];
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     selectedSubmittor: function () {
         var args = this.generateQuery();
         delete args['paging.current'];
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     selectedLanguage: function () {
         $('.language-filter').removeClass('active');
         var args = this.generateQuery();
         delete args['paging.current'];
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     selectedContest: function () {
         var args = this.generateQuery();
         delete args['paging.current'];
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     selectedTime: function () {
         var args = this.generateQuery();
         delete args['paging.current'];
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     'paging.current': function (newVal, oldVal) {
         var args = this.generateQuery();
+        if (this.view) {
+            this.view.unsubscribe();
+        }
         app.redirect('/judge', '/judge', {}, args);
     },
     view: function (newVal, oldVal) {
         var fields = getFields(newVal.__cacheInfo.params);
         if (fields.length == 0 || fields.length == 1 && fields[0] == 'page') {
             newVal.subscribe('judge');
+        }
+        if (oldVal) {
+            oldVal.unsubscribe();
         }
     },
     deep: true
