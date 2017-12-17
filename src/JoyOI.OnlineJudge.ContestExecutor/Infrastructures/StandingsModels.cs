@@ -63,7 +63,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public string point3Display { get; set; }
         
-        public virtual int point4 => detail.Values.Sum(x => x.point3);
+        public virtual int point4 => detail.Values.Sum(x => x.point4);
 
         public string point4Display { get; set; }
 
