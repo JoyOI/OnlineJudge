@@ -190,6 +190,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(400, $"The { contest.Type.ToString() } is not supported yet.");
                 }
+                if (!IsMasterOrHigher && contest.Type == ContestType.OI && contest.Duration > new TimeSpan(3, 0, 0, 0, 0))
+                {
+                    return Result(400, "The duration of OI contest must lower than 3 days.");
+                }
+                if (!IsMasterOrHigher && contest.Duration > new TimeSpan(7, 0, 0, 0, 0))
+                {
+                    return Result(400, "The duration must lower than 7 days.");
+                }
 
                 DB.Contests.Add(contest);
                 DB.UserClaims.Add(new IdentityUserClaim<Guid> { ClaimType = Constants.ContestEditPermission, ClaimValue = id, UserId = User.Current.Id });

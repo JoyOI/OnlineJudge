@@ -28,7 +28,6 @@
         Succeeded, 
         Failed, 
         BadData, 
-        DatamakerError, 
         SystemError, 
         Running, 
         Pending 

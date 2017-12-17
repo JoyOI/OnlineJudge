@@ -73,6 +73,15 @@ var statuses = [
     { display: 'Hidden', color: 'purple', value: 12 }
 ];
 
+var hackStatuses = [
+    { display: 'Succeeded', color: 'green', value: 0 },
+    { display: 'Failed', color: 'red', value: 1 },
+    { display: 'Bad Data', color: 'orange', value: 2 },
+    { display: 'System Error', color: 'orange', value: 3 },
+    { display: 'Running', color: 'blue', value: 4 },
+    { display: 'Pending', color: 'blue', value: 5 },
+];
+
 var languages = [
     'C',
     'C++',
@@ -131,7 +140,7 @@ $(window).click(function (e) {
 
         if ($(window).width() >= 768) {
             try {
-                if (box.hasClass('submit-filter') || box.hasClass('language-filter')) {
+                if (box.hasClass('submit-filter') || box.hasClass('language-filter') || box.hasClass('filter-right-side')) {
                     box.css('left', box.parents('th').offset().left - box.parents('tr').offset().left + 15 - box.outerWidth() + box.parents('th').outerWidth());
                 } else {
                     box.css('left', box.parents('th').offset().left - box.parents('tr').offset().left + 15);
@@ -288,9 +297,9 @@ function ConvertJudgeResultToCss(x)
         return 'judge-blue';
     else if (x === 'Hidden')
         return 'judge-purple';
-    else if (x === 'Accepted')
+    else if (x === 'Accepted' || x === 'Succeeded')
         return 'judge-green';
-    else if (x === 'Compile Error' || x === 'System Error')
+    else if (x === 'Compile Error' || x === 'System Error' || x === 'Bad Data')
         return 'judge-orange';
     else
         return 'judge-red';
@@ -302,9 +311,9 @@ function ConvertJudgeResultToIconCss(x)
         return 'fa-question';
     else if (x === 'Hidden')
         return 'fa-eye-slash';
-    else if (x === 'Accepted')
+    else if (x === 'Accepted' || x === 'Succeeded')
         return 'fa-check';
-    else if (x === 'Compile Error' || x === 'System Error')
+    else if (x === 'Compile Error' || x === 'System Error' || x === 'Bad Data')
         return 'fa-exclamation';
     else
         return 'fa-remove';

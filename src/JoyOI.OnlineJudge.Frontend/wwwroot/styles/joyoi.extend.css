@@ -353,12 +353,30 @@
         color: #2ac649 !important;
     }
 
+.hack-green {
+    border-right: 3px solid #2ac649 !important;
+    color: #2ac649 !important;
+}
+
+    .hack-green a {
+        color: #2ac649 !important;
+    }
+
 .judge-red {
     border-left: 3px solid #fb6666 !important;
     color: #fb6666 !important;
 }
 
     .judge-red a {
+        color: #fb6666 !important;
+    }
+
+.hack-red {
+    border-right: 3px solid #fb6666 !important;
+    color: #fb6666 !important;
+}
+
+    .hack-red a {
         color: #fb6666 !important;
     }
 
@@ -371,8 +389,21 @@
         color: #f39800 !important;
     }
 
+.hack-orange {
+    border-right: 3px solid #f39800 !important;
+    color: #f39800 !important;
+}
+
+    .hack-orange a {
+        color: #f39800 !important;
+    }
+
 .judge-purple {
     border-left: 3px solid #be3fe2 !important;
+    color: #be3fe2 !important;
+}
+
+.judge-purple a {
     color: #be3fe2 !important;
 }
 
@@ -397,7 +428,7 @@
         color: #0074d9 !important;
     }
 
-.judge-list td i, .filter-item i, .problem-list i {
+.judge-list td i, .filter-item i, .problem-list i, .hack-list i {
     width: 16px !important;
     height: 12px !important;
     font-size: 12px !important;
@@ -533,6 +564,7 @@
     text-align: center !important;
     border-top: 3px solid #ddd !important;
     border-left: none !important;
+    border-right: none !important;
     padding: 0 0 10px 0 !important;
 }
 
@@ -1751,3 +1783,19 @@ dd {
     word-break: break-all;
     line-height: 20px;
 }
+
+.hack-list td, .hack-list th {
+    text-align: left;
+}
+
+    .hack-list td:nth-child(7), .hack-list th:nth-child(7), .hack-list td:nth-child(8), .hack-list th:nth-child(8) {
+        text-align: right;
+    }
+
+    .hack-list td:nth-child(4), .hack-list th:nth-child(4), .hack-list td:nth-child(5), .hack-list th:nth-child(5), .hack-list td:nth-child(6), .hack-list th:nth-child(6) {
+        text-align: center;
+    }
+
+    .hack-list td:nth-child(1), .hack-list th:nth-child(1), .hack-list td:nth-child(2), .hack-list th:nth-child(2), .hack-list td:nth-child(3), .hack-list th:nth-child(3), .hack-list td:nth-child(7), .hack-list th:nth-child(6), .hack-list td:nth-child(6), .hack-list th:nth-child(7) {
+        border-right: 1px solid #ddd;
+    }

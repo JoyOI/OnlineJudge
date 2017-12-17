@@ -1,0 +1,151 @@
+﻿<div id="judge-all" class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table-list hack-list">
+                <colgroup>
+                    <col style="width: 140px;" />
+                    <col style="width: 125px;" />
+                    <col />
+
+                    <col style="width: 80px;" />
+                    <col style="width: 80px;" />
+                    <col style="width: 130px;" />
+                    <col style="width: 125px;" />
+                    <col style="width: 170px;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <a class="filter-button">{{ selectedHackStatus !== null ? hackStatuses[selectedHackStatus].display : '状态' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer status-filter">
+                                <ul class="filter-list">
+                                    <li v-for="status in hackStatuses">
+                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue' }" v-on:click="selectedHackStatus = selectedHackStatus === status.value ? null : status.value" class="filter-item">
+                                            <i class="fa" v-bind:class="{ 'fa-question': status.color === 'blue', 'fa-check': status.color === 'green', 'fa-eye-slash': status.color === 'purple', 'fa-exclamation': status.color === 'orange', 'fa-remove': status.color === 'red' }"></i>
+                                            {{ status.display }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="filter-button">{{ selectedHacker ? selectedHacker : 'Hacker' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer">
+                                <p><input type="text" class="form-control textbox-search-submittor" placeholder="用户名" v-on:keyup="searchHacker()" /></p>
+                                <div class="submit-filter-list">
+                                    <div class="submit-filter-list-item" v-for="x in hackerSearchResult" v-on:click="selectHacker(x.username)">
+                                        <img v-bind:src="x.avatarUrl" class="submit-filter-list-item-avatar" />
+                                        <div class="submit-filter-list-item-username" v-bind:class="x.roleClass">{{ x.username }}</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="filter-button">{{ selectedProblem ? selectedProblem.title : '题目' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer problem-filter">
+                                <p>
+                                    <input v-on:keyup="searchProblem()"
+                                           type="text"
+                                           class="form-control textbox-search-problem"
+                                           placeholder="题目ID或名称" />
+                                </p>
+                                <div class="problem-filter-list">
+                                    <div class="problem-filter-list-item" v-for="x in problemSearchResult" v-on:click="selectProblem(x.id, x.title)">
+                                        <div class="problem-filter-list-item-title">{{ x.title }}</div>
+                                        <div class="problem-filter-list-item-id">ID: {{ x.id }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                        <th>耗时</th>
+                        <th>内存</th>
+                        <th>
+                            <a class="filter-button">{{ selectedTime ? (( selectedTime && selectedTime.begin ? selectedTime.begin + (selectedTime && selectedTime.end ? '~' : '') : '' ) + (  selectedTime && selectedTime.end ? selectedTime.end : '' )) : 'Hack时间' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer time-filter">
+                                <p><input type="text" class="form-control datetime time-range-begin" v-bind:value="selectedTime && selectedTime.begin ? selectedTime.begin : ''" placeholder="起始时间" /></p>
+                                <p><input type="text" class="form-control datetime time-range-end" v-bind:value="selectedTime && selectedTime.end ? selectedTime.end : ''" placeholder="结束时间" /></p>
+                                <p><a class="sidebar-button" v-on:click="selectTimeRange()"><i class="fa fa-filter"></i> 过滤</a></p>
+                                <p><a class="sidebar-button" v-on:click="clearTimeRange()"><i class="fa fa-ban"></i> 清除</a></p>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="filter-button">{{ selectedHackee ? selectedHackee : 'Hackee' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer submit-filter">
+                                <p><input type="text" class="form-control textbox-search-submittor" placeholder="用户名" v-on:keyup="searchHackee()" /></p>
+                                <div class="submit-filter-list">
+                                    <div class="submit-filter-list-item" v-for="x in hackeeSearchResult" v-on:click="selectHackee(x.username)">
+                                        <img v-bind:src="x.avatarUrl" class="submit-filter-list-item-avatar" />
+                                        <div class="submit-filter-list-item-username" v-bind:class="x.roleClass">{{ x.username }}</div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <a class="filter-button">{{ selectedJudgeStatus !== null ? judgeStatuses[selectedJudgeStatus].display : '结果' }} <i class="fa fa-filter"></i></a>
+                            <div class="filter-outer status-filter filter-right-side">
+                                <ul class="filter-list">
+                                    <li v-for="status in judgeStatuses">
+                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue', 'judge-purple': status.color === 'purple', 'active': selectedJudgeStatus === status.value }" v-on:click="selectedJudgeStatus = selectedJudgeStatus === status.value ? null : status.value" class="filter-item">
+                                            <i class="fa" v-bind:class="{ 'fa-question': status.color === 'blue', 'fa-check': status.color === 'green', 'fa-eye-slash': status.color === 'purple', 'fa-exclamation': status.color === 'orange', 'fa-remove': status.color === 'red' }"></i>
+                                            {{ status.display }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="x in result">
+                        <td v-bind:class="x.hackClass">
+                            <router-link :to="{ name: '/hack/:id', path: '/hack/' + x.id, params: { 'id': x.id } }"><i class="fa" v-bind:class="x.hackIcon"></i>{{ x.hackResult }}</router-link>
+                        </td>
+                        <td v-bind:class="x.hackerRole">
+                            <router-link :to="{ name: '/user/:username', path: '/user/' + x.hacker, params: { 'username': x.hacker } }">
+                                {{ x.hacker }}
+                            </router-link>
+                        </td>
+                        <td>
+                            <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
+                            <span v-else>{{ x.problemTitle || x.problemId }}</span>
+                        </td>
+                        <td>{{ x.timeUsedInMs }}ms</td>
+                        <td>{{ (x.memoryUsedInByte / 1024.0 / 1024.0).toFixed(1) }}MiB</td>
+                        <td v-bind:datetime="$root.ensureUTCTimeString(x.time)"></td>
+                        <td v-bind:class="x.hackeeRole">
+                            <router-link :to="{ name: '/user/:username', path: '/user/' + x.hackee, params: { 'username': x.hackee } }">
+                                {{ x.hackee }}
+                            </router-link>
+                        </td>
+                        <td v-bind:class="x.judgeClass">
+                            <router-link :to="{ name: '/judge/:id', path: '/judge/' + x.id, params: { 'id': x.judgeStatusId } }">{{ x.judgeResult }}<i class="fa" v-bind:class="x.judgeIcon"></i></router-link>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8" class="tfoot-paging">
+                            <div class="tfoot-paging-outer">
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (1)">首页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.max(paging.current - 1, 1))">上一页</a>
+                                <div class="tfoot-paging-item" v-if="paging.current > 3">...</div>
+                                <a class="tfoot-paging-item"
+                                   v-for="p in 5"
+                                   v-if="paging.current + p - 3 >= 1 && paging.current + p - 3 <= paging.count"
+                                   v-on:click="paging.current = paging.current + p - 3"
+                                   v-bind:class="{ 'current': paging.current + p - 3 === paging.current }">
+                                    {{ paging.current + p - 3 }}
+                                </a>
+                                <div class="tfoot-paging-item" v-if="paging.current < paging.count - 2">...</div>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.min(paging.current + 1, paging.count))">下一页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (paging.count)">尾页</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

@@ -20,9 +20,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         [HttpGet("all")]
         public async Task<IActionResult> Get(
-            HackResult? status, 
+            HackResult? hackStatus,
+            JudgeResult? judgeStatus,
             string problemId, 
-            string userId, 
+            string hacker,
+            string hackee,
             DateTime? begin, 
             DateTime? end, 
             string contestId, 
@@ -30,21 +32,32 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             [FromServices] ContestExecutorFactory cef,
             CancellationToken token)
         {
-            IQueryable<HackStatus> ret = DB.HackStatuses;
+            IQueryable<HackStatus> ret = DB.HackStatuses
+                .Include(x =>x.Status);
 
             if (!page.HasValue)
             {
                 page = 1;
             }
 
-            if (status.HasValue)
+            if (hackStatus.HasValue)
             {
-                ret = ret.Where(x => x.Result == status.Value);
+                ret = ret.Where(x => x.Result == hackStatus.Value);
             }
 
-            if (!string.IsNullOrEmpty(userId))
+            if (judgeStatus.HasValue)
             {
-                ret = ret.Where(x => x.User.UserName == userId);
+                ret = ret.Where(x => x.HackeeResult == judgeStatus.Value);
+            }
+
+            if (!string.IsNullOrEmpty(hacker))
+            {
+                ret = ret.Where(x => x.User.UserName == hacker);
+            }
+            
+            if (!string.IsNullOrEmpty(hackee))
+            {
+                ret = ret.Where(x => x.Status.User.UserName == hackee);
             }
 
             if (begin.HasValue)
@@ -62,23 +75,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.ContestId == contestId);
             }
 
-            var result = await DoPaging(ret.OrderByDescending(x => x.Time), page.Value, 20, token);
-            if (!IsMasterOrHigher && result.data.result.Any(x => !string.IsNullOrWhiteSpace(x.ContestId)))
-            {
-                foreach (var x in result.data.result.Where(x => !string.IsNullOrWhiteSpace(x.ContestId)))
+            return await Paged(ret.OrderByDescending(x => x.Time)
+                .Select(x => new HackViewModel
                 {
-                    var ce = cef.Create(x.ContestId);
-                    var submittorUsername = DB.Users.Single(y => y.Id == x.UserId).UserName;
-                    var isContestInProgress = ce.IsContestInProgress(User.Current?.UserName) || ce.IsContestInProgress(submittorUsername);
-                    if (isContestInProgress && !ce.HasPermissionToContest())
-                    {
-                        ce.OnShowHackResult(x);
-                    }
-                    x.Contest = null;
-                }
-            }
-
-            return Json(result);
+                    HackerId = x.UserId,
+                    HackeeId = x.Status.UserId,
+                    HackResult = x.Result,
+                    JudgeResult = x.HackeeResult,
+                    Time = x.Time,
+                    TimeUsedInMs = x.TimeUsedInMs,
+                    MemoryUsedInByte = x.MemoryUsedInByte,
+                    JudgeStatusId = x.JudgeStatusId
+                }), 
+                page.Value, 
+                20, 
+                token);
         }
 
         [HttpGet("{id:Guid}")]
@@ -204,7 +215,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             // Start hack state machine
-            var stateMachineId = await mgmt.PutStateMachineInstanceAsync("HackZStateMachine", Configuration["ManagementService:CallBack"], blobs.ToArray(), 1, token);
+            var stateMachineId = await mgmt.PutStateMachineInstanceAsync("HackStateMachine", Configuration["ManagementService:CallBack"], blobs.ToArray(), 1, token);
             var stateMachine = new StateMachine { CreatedTime = DateTime.Now, Name = "HackStateMachine", Id = stateMachineId };
             DB.StateMachines.Add(stateMachine);
             hack.RelatedStateMachineIds.Add(new HackStatusStateMachine { StateMachineId = stateMachine.Id, StatusId = judge.Id });
