@@ -121,7 +121,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         [NonAction]
         public async Task<ApiResult<PagedResult<IEnumerable<T>>>> DoPaging<T>(IQueryable<T> src, int currentPage, int size = 100, CancellationToken token = default(CancellationToken))
         {
-            var total = src.Count();
+            var total = await src.CountAsync(token);
             var result = await src.Skip((currentPage - 1) * size).Take(size).ToListAsync(token);
             var type = typeof(T);
             var webapiAttributedProperty = type.GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null);

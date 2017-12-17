@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -61,6 +63,24 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             else
             {
                 return attendee.RegisterTime.Add(Contest.Duration) > DateTime.UtcNow;
+            }
+        }
+
+        public bool IsContestEnded(string username = null)
+        {
+            var user = GetSpecifiedOrCurrentUser(username);
+            if (user == null)
+            {
+                return Contest.Status == ContestStatus.Done;
+            }
+            var attendee = DB.Attendees.SingleOrDefault(x => x.UserId == user.Id && x.ContestId == ContestId);
+            if (username == null || attendee == null || !attendee.IsVirtual)
+            {
+                return Contest.Status == ContestStatus.Done;
+            }
+            else
+            {
+                return attendee.RegisterTime.Add(Contest.Duration) < DateTime.UtcNow;
             }
         }
 
@@ -131,9 +151,18 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 .ToList();
         }
 
-        public virtual void OnShowStandings(Attendee attendee)
+        public virtual bool IsStatusHackable(JudgeStatus status) => false;
+
+        public virtual bool IsAbleToSubmitProblem(string problemId, string username = null) => true;
+
+        public virtual Task<IEnumerable<Attendee>> GenerateFullStandingsAsync(bool includeVirtual = true, CancellationToken token = default(CancellationToken))
         {
-            return;
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<Attendee> GenerateSingleStandingsAsync(string username = null, CancellationToken token = default(CancellationToken))
+        {
+            throw new NotImplementedException();
         }
     }
 }

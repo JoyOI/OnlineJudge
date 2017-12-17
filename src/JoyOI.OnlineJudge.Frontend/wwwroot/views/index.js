@@ -61,7 +61,7 @@
         qv.__host = this.hosts.api;
 
         this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
-        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id) => {
+        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id, user) => {
             var listners = this.signalr.onlinejudge.listeners.filter(x => x.type === type && (x.id === id || !x.id)).map(x => {
                 x.view.removeCache();
                 return x.view.fetch(x.view._fetchFunc);

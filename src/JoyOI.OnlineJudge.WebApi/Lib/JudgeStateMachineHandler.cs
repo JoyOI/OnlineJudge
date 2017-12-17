@@ -230,6 +230,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
 
                     _db.JudgeStatuses
                         .Where(x => x.Id == statusId)
+                        .SetField(x => x.BinaryBlobId).WithValue(Guid.Parse(compileResult.hint))
                         .SetField(x => x.TimeUsedInMs).WithValue(finalTime)
                         .SetField(x => x.MemoryUsedInByte).WithValue(finalMemory)
                         .SetField(x => x.Result).WithValue((int)finalResult)

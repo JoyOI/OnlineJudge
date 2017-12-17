@@ -25,8 +25,8 @@
     /// </summary>
     public enum HackResult 
     { 
-        Success, 
-        Failure, 
+        Succeeded, 
+        Failed, 
         BadData, 
         DatamakerError, 
         SystemError, 

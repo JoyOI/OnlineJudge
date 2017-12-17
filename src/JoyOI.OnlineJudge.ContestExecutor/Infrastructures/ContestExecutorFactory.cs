@@ -2,19 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using JoyOI.OnlineJudge.Models;
+using JoyOI.ManagementService.SDK;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
 {
-    public class ContestExecutorFactory
+    public class ContestExecutorFactory : IDisposable
     {
         private OnlineJudgeContext _db;
         private SmartUser<User, Guid> _user;
+        private ManagementServiceClient _mgmt;
+        private IConfiguration _config;
 
-        public ContestExecutorFactory(OnlineJudgeContext db, SmartUser<User, Guid> user)
+        public ContestExecutorFactory(OnlineJudgeContext db, SmartUser<User, Guid> user, ManagementServiceClient mgmt, IConfiguration config)
         {
             this._db = db;
             this._user = user;
+            this._mgmt = mgmt;
+            this._config = config;
         }
 
         public IContestExecutor Create(string contestId)
@@ -38,9 +44,23 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                         User = this._user,
                         ContestId = contestId
                     };
+                case ContestType.Codeforces:
+                    return new CodeforcesContestExecutor()
+                    {
+                        DB = this._db,
+                        User = this._user,
+                        ManagementService = this._mgmt,
+                        Configuration = this._config,
+                        ContestId = contestId
+                    };
                 default:
                     throw new NotSupportedException($"The contest type { contest.Type } is not supported yet.");
             }
+        }
+
+        public void Dispose()
+        {
+            this._db.Dispose();
         }
     }
 }

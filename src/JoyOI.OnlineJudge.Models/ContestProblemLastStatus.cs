@@ -85,6 +85,12 @@ namespace JoyOI.OnlineJudge.Models
         public int Point3 { get; set; }
 
         /// <summary>
+        /// Gets or sets the point #4.
+        /// </summary>
+        /// <value>The point #4.</value>
+        public int Point4 { get; set; }
+
+        /// <summary>
         /// Gets or sets the time span.
         /// </summary>
         /// <value>The time span #1.</value>
@@ -114,6 +120,18 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value><c>true</c> if is virtual; otherwise, <c>false</c>.</value>
         public bool IsAccepted { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this status has been hacked
+        /// </summary>
+        /// <value><c>true</c> if is hacked; otherwise, <c>false</c>.</value>
+        public bool IsHacked { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this status is hackable
+        /// </summary>
+        /// <value><c>true</c> if is hackable; otherwise, <c>false</c>.</value>
+        public bool IsHackable { get; set; }
         #endregion
     }
 }

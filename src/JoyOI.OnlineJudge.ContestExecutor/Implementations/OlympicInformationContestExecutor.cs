@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using JoyOI.OnlineJudge.Models;
@@ -62,7 +64,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             status.MemoryUsedInByte = 0;
         }
 
-        public override void OnShowStandings(Attendee attendee)
+        public void OnShowStandings(Attendee attendee)
         {
             if (attendee.isVirtual)
             {
@@ -171,6 +173,101 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     return cpls.Point.ToString();
                 }
             }
+        }
+
+        public override async Task<IEnumerable<Attendee>> GenerateFullStandingsAsync(bool includingVirtual = true, CancellationToken token =default(CancellationToken))
+        {
+            var exceptNestedQuery = DB.Attendees
+               .Where(x => x.ContestId == ContestId)
+               .Where(x => x.IsVirtual)
+               .Select(x => x.UserId);
+            IQueryable<ContestProblemLastStatus> query = DB.ContestProblemLastStatuses
+                .Where(x => x.ContestId == ContestId);
+            if (!includingVirtual)
+                query = query.Where(x => !exceptNestedQuery.Contains(x.UserId));
+            var attendees = (await query
+               .GroupBy(x => new { x.UserId, x.IsVirtual })
+               .ToListAsync(token))
+               .Select(x => new Attendee
+               {
+                   userId = x.Key.UserId,
+                   isVirtual = x.Key.IsVirtual,
+                   detail = x.GroupBy(y => y.ProblemId)
+                       .Select(y => new Detail
+                       {
+                           problemId = y.Key,
+                           isAccepted = y.First().IsAccepted,
+                           isHackable = x.First().IsHackable,
+                           point = y.First().Point,
+                           point2 = y.First().Point2,
+                           point3 = y.First().Point3,
+                           point4 = y.First().Point4,
+                           statusId = y.First().StatusId.ToString(),
+                           timeSpan = y.First().TimeSpan,
+                           timeSpan2 = y.First().TimeSpan2
+                       })
+                       .ToDictionary(y => y.problemId)
+               })
+               .OrderByDescending(x => x.point)
+               .ThenByDescending(x => x.point2)
+               .ThenBy(x => x.point3)
+               .ThenBy(x => x.point4)
+               .ThenBy(x => x.timeSpan)
+               .ThenBy(x => x.timeSpan2)
+               .ToList();
+
+            foreach (var x in attendees)
+            {
+                this.OnShowStandings(x);
+                this.GenerateProblemScoreDisplayText(x);
+                this.GenerateTotalScoreDisplayText(x);
+            }
+
+            return attendees
+               .OrderBy(x => x.IsInvisible);
+        }
+
+        public override async Task<Attendee> GenerateSingleStandingsAsync(string username = null, CancellationToken token = default(CancellationToken))
+        {
+            if (username == null && User.Current != null)
+            {
+                username = User.Current.UserName;
+            }
+
+            var statuses = await DB.ContestProblemLastStatuses
+                .Where(x => x.ContestId == ContestId)
+                .Where(x => x.User.UserName == username)
+                .ToListAsync(token);
+
+            if (statuses.Count == 0)
+                return null;
+
+            var ret = new Attendee
+            {
+                userId = statuses.First().UserId,
+                detail = statuses
+                    .GroupBy(x => x.ProblemId)
+                    .Select(x => new Detail
+                    {
+                        isAccepted = x.First().IsAccepted,
+                        isHackable = x.First().IsHackable,
+                        point = x.First().Point,
+                        point2 = x.First().Point2,
+                        point3 = x.First().Point3,
+                        point4 = x.First().Point4,
+                        timeSpan = x.First().TimeSpan,
+                        timeSpan2 = x.First().TimeSpan2,
+                        problemId = x.First().ProblemId,
+                        statusId = x.First().StatusId.ToString()
+                    })
+                    .ToDictionary(x => x.problemId)
+            };
+
+            this.OnShowStandings(ret);
+            this.GenerateTotalScoreDisplayText(ret);
+            this.GenerateProblemScoreDisplayText(ret);
+
+            return ret;
         }
     }
 }

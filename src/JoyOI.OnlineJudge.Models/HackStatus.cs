@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -83,5 +84,45 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The result.</value>
         public HackResult Result { get; set; }
+
+        /// <summary>
+        /// Gets or set the hackee result
+        /// </summary>
+        /// <value>The hackee's result</value>
+        public JudgeResult HackeeResult { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contest identifier.
+        /// </summary>
+        /// <value>The contest identifier.</value>
+        [MaxLength(128)]
+        [ForeignKey("Contest")]
+        public string ContestId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the contest.
+        /// </summary>
+        /// <value>The contest.</value>
+        public virtual Contest Contest { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hint.
+        /// </summary>
+        /// <value>The hint.</value>
+        public string Hint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the memory used (byte)
+        /// </summary>
+        /// <value>The memory used in byte</value>
+        public int MemoryUsedInByte { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time used (ms)
+        /// </summary>
+        /// <value>The time used in ms</value>
+        public int TimeUsedInMs { get; set; }
+
+        public virtual ICollection<HackStatusStateMachine> RelatedStateMachineIds { get; set; }
     }
 }

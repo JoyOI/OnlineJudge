@@ -547,7 +547,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var problems = DB.ContestProblems
                 .Where(x => x.ContestId == contestId)
                 .OrderBy(x => x.Number)
-                .Select(x => new ContestExecutor.Problem
+                .Select(x => new ContestExecutor.ProblemSummary
                 {
                     number = x.Number,
                     point = x.Point,
@@ -555,53 +555,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 })
                 .ToList();
 
-            var exceptNestedQuery = DB.Attendees
-                .Where(x => x.ContestId == contestId)
-                .Where(x => x.IsVirtual)
-                .Select(x => x.UserId);
-            IQueryable<ContestProblemLastStatus> query = DB.ContestProblemLastStatuses
-                .Where(x => x.ContestId == contestId);
-            if (!includingVirtual.Value)
-                query = query.Where(x => !exceptNestedQuery.Contains(x.UserId));
-            var attendees = (await query
-                .GroupBy(x => new { x.UserId, x.IsVirtual })
-                .ToListAsync(token))
-                .Select(x => new ContestExecutor.Attendee
-                {
-                    userId = x.Key.UserId,
-                    isVirtual = x.Key.IsVirtual,
-                    detail = x.GroupBy(y => y.ProblemId)
-                        .Select(y => new Detail {
-                            problemId = y.Key,
-                            isAccepted = y.First().IsAccepted,
-                            point = y.First().Point,
-                            point2 = y.First().Point2,
-                            point3 = y.First().Point3,
-                            timeSpan = y.First().TimeSpan,
-                            timeSpan2 = y.First().TimeSpan2
-                        })
-                        .ToDictionary(y => y.problemId)
-                })
-                .OrderByDescending(x => x.point)
-                .ThenByDescending(x => x.point2)
-                .ThenBy(x => x.point3)
-                .ThenBy(x => x.timeSpan)
-                .ThenBy(x => x.timeSpan2)
-                .ToList();
-
-            foreach (var x in attendees)
-            {
-                ce.OnShowStandings(x);
-                ce.GenerateProblemScoreDisplayText(x);
-                ce.GenerateTotalScoreDisplayText(x);
-            }
+            var attendees = await ce.GenerateFullStandingsAsync(includingVirtual.Value, token);
 
             return Result(new Standings {
                 id = contestId,
                 title = contest.Title,
                 columnDefinations = ce.PointColumnDefinations,
                 problems = problems,
-                attendees = attendees.OrderBy(x => x.IsInvisible)
+                attendees = attendees
             });
         }
 
@@ -614,33 +575,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(401, "No permission");
             }
 
-            var statuses = await DB.ContestProblemLastStatuses
-                .Where(x => x.ContestId == contestId)
-                .Where(x => x.UserId == userId)
-                .ToListAsync(token);
-
-            var ret = new ContestExecutor.Attendee
+            var username = (await DB.Users.SingleOrDefaultAsync(x => x.Id == userId)).UserName;
+            var ret = await ce.GenerateSingleStandingsAsync(username, token);
+            if (ret == null)
             {
-                userId = userId,
-                detail = statuses
-                    .GroupBy(x => x.ProblemId)
-                    .Select((IGrouping<string, ContestProblemLastStatus> x) => new Detail
-                    {
-                        isAccepted = x.First().IsAccepted,
-                        point = x.First().Point,
-                        point2 = x.First().Point2,
-                        point3 = x.First().Point3,
-                        timeSpan = x.First().TimeSpan,
-                        timeSpan2 = x.First().TimeSpan2,
-                        problemId = x.First().ProblemId
-                    })
-                    .ToDictionary(x => x.problemId)
-            };
-
-            ce.OnShowStandings(ret);
-            ce.GenerateTotalScoreDisplayText(ret);
-            ce.GenerateProblemScoreDisplayText(ret);
-
+                return Result(404, "Standings of this user is not found");
+            }
             return Result(ret);
         }
         #endregion

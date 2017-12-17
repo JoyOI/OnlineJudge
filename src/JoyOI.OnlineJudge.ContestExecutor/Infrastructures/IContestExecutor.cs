@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using JoyOI.OnlineJudge.Models;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
@@ -31,7 +33,9 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         void OnHackCompleted(HackStatus status);
 
-        void OnShowStandings(Attendee attendee);
+        Task<IEnumerable<Attendee>> GenerateFullStandingsAsync(bool includeVirtual = true, CancellationToken token = default(CancellationToken));
+
+        Task<Attendee> GenerateSingleStandingsAsync(string username = null, CancellationToken token = default(CancellationToken));
 
         void GenerateTotalScoreDisplayText(Attendee src);
 
@@ -40,6 +44,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         string GenerateProblemStatusText(string problemId, string username = null);
 
         bool HasPermissionToContest(string username = null);
+
+        bool IsAbleToSubmitProblem(string problemId, string username = null);
+
+        bool IsStatusHackable(JudgeStatus status);
 
         IEnumerable<string> GetContestOwners();
     }

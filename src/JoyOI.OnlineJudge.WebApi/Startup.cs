@@ -84,6 +84,7 @@ namespace JoyOI.OnlineJudge.WebApi
             ));
 
             services.AddJudgeStateMachineHandler();
+            services.AddHackStateMachineHandler();
             services.AddExternalApi();
             services.AddContestExecutorFactory();
 

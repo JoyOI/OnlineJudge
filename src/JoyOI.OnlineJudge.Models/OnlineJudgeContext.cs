@@ -165,6 +165,7 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Type);
                 e.HasIndex(x => x.Title).ForMySqlIsFullText();
                 e.HasMany(x => x.JudgeStatuses).WithOne(x => x.Contest).IsRequired(false);
+                e.HasMany(x => x.HackStatuses).WithOne(x => x.Contest).IsRequired(false);
             });
 
             builder.Entity<ContestProblem>(e =>
@@ -179,8 +180,9 @@ namespace JoyOI.OnlineJudge.Models
                 e.HasKey(x => new { x.ContestId, x.ProblemId, x.UserId });
 				e.HasIndex(x => x.Point);
 				e.HasIndex(x => x.Point2);
-				e.HasIndex(x => x.Point3);
-				e.HasIndex(x => x.TimeSpan);
+                e.HasIndex(x => x.Point3);
+                e.HasIndex(x => x.Point4);
+                e.HasIndex(x => x.TimeSpan);
 				e.HasIndex(x => x.TimeSpan2);
                 e.HasIndex(x => x.IsLocked);
             });

@@ -219,7 +219,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> Message([FromServices] JoyOIUC UC, CancellationToken token)
         {
             if (User.IsSignedIn())
-                return Result(await UC.HasUnreadMessage(User.Current.OpenId));
+                return Result(await UC.HasUnreadMessageAsync(User.Current.OpenId));
             return Result(false);
         }
         #endregion
