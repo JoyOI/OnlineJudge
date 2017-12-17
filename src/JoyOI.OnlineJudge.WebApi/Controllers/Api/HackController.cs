@@ -189,7 +189,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 // Get 3 accepted programs instead of standard program
                 var statuses = await DB.JudgeStatuses
-                    .Where(x => x.Result == JudgeResult.Accepted && x.ProblemId == judge.ProblemId && x.BinaryBlobId.HasValue)
+                    .Where(x => x.Result == JudgeResult.Accepted && x.ProblemId == judge.ProblemId && x.BinaryBlobId.HasValue && x.Id != judge.Id)
                     .OrderBy(x => x.TimeUsedInMs)
                     .ThenBy(x => x.MemoryUsedInByte)
                     .Take(3)

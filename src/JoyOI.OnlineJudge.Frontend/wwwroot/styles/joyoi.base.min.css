@@ -16971,3 +16971,11 @@ span.CodeMirror-selectedtext {
 .pointer {
     cursor: pointer;
 }
+
+.editor-toolbar.fullscreen {
+    top: 50px !important;
+}
+
+.CodeMirror-fullscreen {
+    top: 100px !important;
+}
