@@ -49,31 +49,6 @@ namespace JoyOI.OnlineJudge.Models
         public DateTime Time { get; set; }
 
         /// <summary>
-        /// Gets or sets the data maker code.
-        /// </summary>
-        /// <value>The data maker code.</value>
-        public string DataMakerCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data maker language.
-        /// </summary>
-        /// <value>The data maker language.</value>
-        [MaxLength(16)]
-        public string DataMakerLanguage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data maker BLOB identifier.
-        /// </summary>
-        /// <value>The data maker BLOB identifier.</value>
-        public Guid? DataMakerBlobId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hack data content.
-        /// </summary>
-        /// <value>The hack data content.</value>
-        public string HackDataContent { get; set; }
-
-        /// <summary>
         /// Gets or sets the hack data BLOB identifier.
         /// </summary>
         /// <value>The hack data BLOB identifier.</value>

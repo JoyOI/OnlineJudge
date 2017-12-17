@@ -84,7 +84,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var result = await DoPaging(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 20, token);
             if (!IsMasterOrHigher && result.data.result.Any(x => !string.IsNullOrWhiteSpace(x.ContestId)))
             {
-                var tasks = new List<Task>(13);
                 var pendingRemove = new ConcurrentBag<JudgeStatus>();
                 foreach (var x in result.data.result.Where(x => !string.IsNullOrWhiteSpace(x.ContestId)))
                 {
