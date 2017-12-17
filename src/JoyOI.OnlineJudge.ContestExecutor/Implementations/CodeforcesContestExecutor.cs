@@ -340,7 +340,9 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override bool IsStatusHackable(JudgeStatus status)
         {
-            return DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.StatusId == status.Id && x.IsHackable);
+            return User.IsSignedIn() 
+                && DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.StatusId == status.Id && x.IsHackable)
+                && DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.UserId == User.Current.Id &&  x.IsLocked);
         }
 
         private int CaculatePoint(int full, TimeSpan duration, int submit)
