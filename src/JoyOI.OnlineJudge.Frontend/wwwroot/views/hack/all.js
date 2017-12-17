@@ -115,7 +115,7 @@ component.methods = {
         }
     },
     searchHacker: function () {
-        var val = $('.textbox-search-submittor').val();
+        var val = $('.textbox-search-hacker').val();
         var self = this;
         if (!val) {
             self.hackerSearchResult = [];
@@ -142,7 +142,7 @@ component.methods = {
         }
     },
     searchHackee: function () {
-        var val = $('.textbox-search-submittor').val();
+        var val = $('.textbox-search-hackee').val();
         var self = this;
         if (!val) {
             self.hackeeSearchResult = [];

@@ -1,4 +1,4 @@
-﻿<div id="judge-all" class="container">
+﻿<div id="hack-all" class="container">
     <div class="row">
         <div class="col-md-12">
             <table class="table-list hack-list">
@@ -31,7 +31,7 @@
                         <th>
                             <a class="filter-button">{{ selectedHacker ? selectedHacker : 'Hacker' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer">
-                                <p><input type="text" class="form-control textbox-search-submittor" placeholder="用户名" v-on:keyup="searchHacker()" /></p>
+                                <p><input type="text" class="form-control textbox-search-hacker" placeholder="用户名" v-on:keyup="searchHacker()" /></p>
                                 <div class="submit-filter-list">
                                     <div class="submit-filter-list-item" v-for="x in hackerSearchResult" v-on:click="selectHacker(x.username)">
                                         <img v-bind:src="x.avatarUrl" class="submit-filter-list-item-avatar" />
@@ -72,7 +72,7 @@
                         <th>
                             <a class="filter-button">{{ selectedHackee ? selectedHackee : 'Hackee' }} <i class="fa fa-filter"></i></a>
                             <div class="filter-outer submit-filter">
-                                <p><input type="text" class="form-control textbox-search-submittor" placeholder="用户名" v-on:keyup="searchHackee()" /></p>
+                                <p><input type="text" class="form-control textbox-search-hackee" placeholder="用户名" v-on:keyup="searchHackee()" /></p>
                                 <div class="submit-filter-list">
                                     <div class="submit-filter-list-item" v-for="x in hackeeSearchResult" v-on:click="selectHackee(x.username)">
                                         <img v-bind:src="x.avatarUrl" class="submit-filter-list-item-avatar" />
@@ -109,7 +109,6 @@
                         </td>
                         <td>
                             <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.problemId, params: { 'id': x.problemId } }">{{ x.problemTitle || x.problemId }}</router-link>
-                            <span v-else>{{ x.problemTitle || x.problemId }}</span>
                         </td>
                         <td>{{ x.timeUsedInMs }}ms</td>
                         <td>{{ (x.memoryUsedInByte / 1024.0 / 1024.0).toFixed(1) }}MiB</td>
