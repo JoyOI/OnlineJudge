@@ -109,6 +109,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the hint
         /// </summary>
         /// <value>The hint of this status</value>
+        [WebApi(FilterLevel.GetListDisabled)]
         public string Hint { get; set; }
 
         /// <summary>
@@ -127,6 +128,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the sub statuses.
         /// </summary>
         /// <value>The sub statuses.</value>
+        [ForceInclude]
         public virtual ICollection<SubJudgeStatus> SubStatuses { get; set; }
     }
 }

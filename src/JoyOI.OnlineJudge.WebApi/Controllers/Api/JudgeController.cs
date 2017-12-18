@@ -109,17 +109,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
             }
 
-            var userIds = result.data.result.Select(x => x.UserId).Distinct();
-            var users = await DB.Users
-                .Where(x => userIds.Contains(x.Id))
-                .Select(x => new { x.Id, x.UserName })
-                .ToDictionaryAsync(x => x.Id, x => x.UserName);
-
-            foreach (var x in result.data.result)
-            {
-                x.User = new User { Id = x.UserId, UserName = users[x.UserId] };
-            }
-
             return Json(result);
         }
 

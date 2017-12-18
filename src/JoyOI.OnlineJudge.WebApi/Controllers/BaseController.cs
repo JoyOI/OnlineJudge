@@ -125,6 +125,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             var result = await src.Skip((currentPage - 1) * size).Take(size).ToListAsync(token);
             var type = typeof(T);
             var webapiAttributedProperty = type.GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null);
+            var virtualProperty = type.GetProperties().Where(z => !z.PropertyType.IsValueType && z.GetCustomAttribute<ForceIncludeAttribute>() == null && z.GetAccessors().Any(y => y.IsVirtual));
             foreach (var x in result)
             {
                 foreach (var y in webapiAttributedProperty)
@@ -139,6 +140,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                         y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
                     }
                     else if (level.HasFlag(FilterLevel.GetNeedOwner) && !HasOwnership)
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                }
+
+                if (type.FullName.StartsWith("JoyOI.OnlineJudge"))
+                {
+                    foreach (var y in virtualProperty)
                     {
                         y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
                     }
@@ -171,6 +180,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             Response.StatusCode = code;
             var type = typeof(T);
             var webapiAttributedProperties = type.GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null);
+            var virtualProperty = type.GetProperties().Where(z => !z.PropertyType.IsValueType && z.GetCustomAttribute<ForceIncludeAttribute>() == null && z.GetAccessors().Any(y => y.IsVirtual));
             foreach (var x in webapiAttributedProperties)
             {
                 var level = x.GetCustomAttribute<WebApiAttribute>().Level;
@@ -183,7 +193,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                     x.SetValue(result, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
                 }
             }
-            
+            if (type.FullName.StartsWith("JoyOI.OnlineJudge"))
+            {
+                foreach (var x in virtualProperty)
+                {
+                    x.SetValue(result, x.PropertyType.IsValueType ? Activator.CreateInstance(x.PropertyType) : null);
+                }
+            }
+
             return Json(new ApiResult<T> { code = code, data = result });
         }
 
