@@ -433,10 +433,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 HasOwnership = true;
             }
 
+            ret.IsHackable = await IsStatusCouldBeHacked(ret, cef, token);
+
             if (!HasOwnership
                 && !await HasPermissionToProblemAsync(problem.Id, token)
                 && !await HasPermissionToContestAsync(ret.ContestId, token)
-                && !await IsStatusCouldBeHacked(ret, cef))
+                && !await IsStatusCodeCouldBeViewed(ret, cef, token))
             {
                 ret.Code = null;
             }
@@ -497,7 +499,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return await DB.Attendees.AnyAsync(x => x.ContestId == contestId && x.UserId == User.Current.Id, token);
         }
 
-        private async Task<bool> IsStatusCouldBeHacked(JudgeStatus status, ContestExecutorFactory cef)
+        private async Task<bool> IsStatusCodeCouldBeViewed(JudgeStatus status, ContestExecutorFactory cef, CancellationToken token)
         {
             if (!User.IsSignedIn() || status.IsSelfTest)
                 return false;
@@ -516,7 +518,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return false;
             }
 
-            return await DB.JudgeStatuses.AnyAsync(x => x.UserId == User.Current.Id && string.IsNullOrEmpty(x.ContestId) && x.Result == JudgeResult.Accepted);
+            return await DB.JudgeStatuses.AnyAsync(x => x.UserId == User.Current.Id && string.IsNullOrEmpty(x.ContestId) && x.Result == JudgeResult.Accepted, token);
+        }
+
+        private async Task<bool> IsStatusCouldBeHacked(JudgeStatus status, ContestExecutorFactory cef, CancellationToken token)
+        {
+            if (User.IsSignedIn() && User.Current.Id == status.UserId)
+                return false;
+            return await IsStatusCodeCouldBeViewed(status, cef, token);
         }
         #endregion
     }

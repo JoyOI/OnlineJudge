@@ -119,6 +119,12 @@ namespace JoyOI.OnlineJudge.Models
         public bool IsSelfTest { get; set; }
 
         /// <summary>
+        /// Gets or sets a value that indicates whether the status is hackable.
+        /// </summary>
+        [NotMapped]
+        public bool? IsHackable { get; set; }
+
+        /// <summary>
         /// Gets or sets the related state machine identifiers.
         /// </summary>
         /// <value>The related state machine identifiers.</value>
