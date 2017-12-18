@@ -20,7 +20,14 @@ namespace JoyOI.OnlineJudge.Frontend
 
         public Task Invoke(HttpContext httpContext)
         {
-            return httpContext.Response.WriteAsync(File.ReadAllText(Path.Combine("wwwroot", "views", "index.html")));
+            if (httpContext.Request.Path.HasValue && httpContext.Request.Path.Value == "/badbrowser")
+            {
+                return httpContext.Response.WriteAsync(File.ReadAllText(Path.Combine("wwwroot", "views", "badbrowser.html")));
+            }
+            else
+            {
+                return httpContext.Response.WriteAsync(File.ReadAllText(Path.Combine("wwwroot", "views", "index.html")));
+            }
         }
     }
 
