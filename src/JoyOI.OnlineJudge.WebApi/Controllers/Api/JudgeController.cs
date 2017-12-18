@@ -404,9 +404,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             var problem = ret.Problem;
             var username = ret.User.UserName;
-            ret.Problem = null;
-            ret.User = null;
-            bool hasPermissionToViewCode = false;
 
             if (!string.IsNullOrWhiteSpace(ret.ContestId))
             {
@@ -420,12 +417,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         ce.OnShowJudgeResult(ret);
                     }
                 }
-                else
-                {
-                    hasPermissionToViewCode = true;
-                }
-
-                ret.Contest = null;
             }
             else
             {
@@ -435,10 +426,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result<JudgeStatus>(403, "No permission");
                 }
-                else
-                {
-                    hasPermissionToViewCode = true;
-                }
             }
 
             if (User.Current != null && User.Current.Id == ret.UserId)
@@ -446,7 +433,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 HasOwnership = true;
             }
 
-            if (!HasOwnership && !hasPermissionToViewCode && !await HasPermissionToContestAsync(ret.ContestId, token))
+            if (!HasOwnership
+                && !await HasPermissionToProblemAsync(problem.Id, token)
+                && !await HasPermissionToContestAsync(ret.ContestId, token)
+                && !await IsStatusCouldBeHacked(ret, cef))
             {
                 ret.Code = null;
             }
@@ -507,37 +497,26 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return await DB.Attendees.AnyAsync(x => x.ContestId == contestId && x.UserId == User.Current.Id, token);
         }
 
-        private async Task<bool> IsAttendeeActive(string contestId, CancellationToken token)
+        private async Task<bool> IsStatusCouldBeHacked(JudgeStatus status, ContestExecutorFactory cef)
         {
-            if (!await IsContestAttendee(contestId, token))
+            if (!User.IsSignedIn() || status.IsSelfTest)
                 return false;
 
-            if (string.IsNullOrEmpty(contestId))
-                return false;
+            if (!string.IsNullOrEmpty(status.ContestId))
+            {
+                var ce = cef.Create(status.ContestId);
+                if (ce.IsContestInProgress(status.User.UserName) || ce.IsContestInProgress())
+                {
+                    return ce.IsStatusHackable(status);
+                }
+            }
 
-            var attendee = await DB.Attendees.SingleAsync(x => x.UserId == User.Current.Id && x.ContestId == contestId, token);
-            var contest = await DB.Contests.SingleAsync(x => x.Id == contestId, token);
-            if (contest.Status == ContestStatus.Pending)
+            if (Constants.HackInvalidResults.Contains(status.Result))
+            {
                 return false;
-            if (!attendee.IsVirtual && contest.Status == ContestStatus.Live)
-                return true;
-            else if (!contest.DisableVirtual && attendee.IsVirtual && attendee.RegisterTime.Add(contest.Duration) > DateTime.UtcNow)
-                return true;
-            else
-                return false;
-        }
+            }
 
-        private async Task<bool> IsContestProblem(string problemId, string contestId, CancellationToken token)
-        {
-            if (string.IsNullOrEmpty(problemId) || string.IsNullOrEmpty(contestId))
-                return false;
-
-            return await DB.ContestProblems.AnyAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
-        }
-
-        private async Task<bool> IsContestAttendeeAbleToAccessProblem(string problemId, string contestId, CancellationToken token)
-        {
-            return await IsContestProblem(problemId, contestId, token) && await IsAttendeeActive(contestId, token);
+            return await DB.JudgeStatuses.AnyAsync(x => x.UserId == User.Current.Id && string.IsNullOrEmpty(x.ContestId) && x.Result == JudgeResult.Accepted);
         }
         #endregion
     }

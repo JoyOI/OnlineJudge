@@ -70,6 +70,13 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             var contestProblem = DB.ContestProblems.Single(x => x.ContestId == status.ContestId && x.ProblemId == status.ProblemId);
             var duration = ComputeTimeSpan(status.CreatedTime, status.UserId);
 
+            var validTestCases = GetValidTestCasesAsync(status.ProblemId, status.UserId, default(CancellationToken)).Result;
+            bool isHackable = false;
+            if (validTestCases.Count() == 0)
+                isHackable = true;
+            else
+                isHackable = status.SubStatuses.Where(x => validTestCases.Contains(x.TestCaseId.Value)).Select(x => x.Result).Max() == JudgeResult.Accepted;
+
             if (cpls == null)
             {
                 cpls = new ContestProblemLastStatus
@@ -84,7 +91,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     Point4 = 1,
                     TimeSpan = duration,
                     IsAccepted = status.Result == JudgeResult.Accepted,
-                    IsVirtual = attendee.IsVirtual
+                    IsVirtual = attendee.IsVirtual,
+                    IsHackable = isHackable
                 };
                 DB.ContestProblemLastStatuses.Add(cpls);
             }
@@ -95,6 +103,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 cpls.Point4++;
                 cpls.TimeSpan = duration;
                 cpls.IsAccepted = status.Result == JudgeResult.Accepted;
+                cpls.IsHackable = isHackable;
+                cpls.IsHacked = isHackable ? false : cpls.IsHacked;
             }
             DB.SaveChanges();
         }
@@ -340,9 +350,9 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override bool IsStatusHackable(JudgeStatus status)
         {
-            return User.IsSignedIn() 
+            return User.IsSignedIn()
                 && DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.StatusId == status.Id && x.IsHackable)
-                && DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.UserId == User.Current.Id &&  x.IsLocked);
+                && DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.UserId == User.Current.Id && x.IsLocked);
         }
 
         private int CaculatePoint(int full, TimeSpan duration, int submit)
@@ -489,6 +499,20 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             cpls.Status.Result = cpls.Status.SubStatuses.Max(x => x.Result);
             cpls.IsAccepted = cpls.Status.Result == JudgeResult.Accepted;
             cpls.Point = cpls.IsAccepted ? CaculatePoint(contestProblems[cpls.ProblemId].Point, ComputeTimeSpan(cpls.Status.CreatedTime, cpls.UserId), cpls.Point4) : 0;
+        }
+
+        private async Task<IEnumerable<Guid>> GetValidTestCasesAsync(string problem, Guid userId, CancellationToken token)
+        {
+            var ret = new List<Guid>(5);
+            var inputIds = DB.HackStatuses
+                .Where(x => x.ContestId == ContestId && x.Status.UserId == userId && x.Status.ProblemId == problem)
+                .Select(x => x.HackDataBlobId);
+            var testCases = await DB.TestCases
+                .Where(x => x.ProblemId == problem)
+                .Where(x => inputIds.Contains(x.InputBlobId) || x.Type == TestCaseType.Small)
+                .Select(x => x.Id)
+                .ToListAsync(token);
+            return testCases;
         }
     }
 }

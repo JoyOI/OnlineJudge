@@ -128,6 +128,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             CancellationToken token)
         {
             var request = JsonConvert.DeserializeObject<HackRequest>(RequestBody);
+
+            if (!User.IsSignedIn())
+            {
+                return Result(403, "Please login first.");
+            }
+
             var judge = await DB.JudgeStatuses
                 .Include(x => x.Problem)
                 .SingleOrDefaultAsync(x => x.Id == request.JudgeStatusId, token);
@@ -140,6 +146,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!judge.BinaryBlobId.HasValue)
             {
                 return Result(400, "The lagency status could not be hacked.");
+            }
+
+            if (judge.UserId == User.Current.Id)
+            {
+                return Result(400, "You cannot hack yourself.");
             }
 
             if (!string.IsNullOrEmpty(request.ContestId))

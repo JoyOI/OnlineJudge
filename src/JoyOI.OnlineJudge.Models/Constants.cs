@@ -14,6 +14,7 @@
         public const string VB = "VB.NET";
         public static readonly string[] SupportedLanguages = new[] { C, Cxx, CSharp, Pascal, Java, VB, FSharp, Python };
         public static readonly string[] UnsupportedLanguages = new[] { Nodejs };
+        public static readonly JudgeResult[] HackInvalidResults = new[] { JudgeResult.CompileError, JudgeResult.SystemError, JudgeResult.Pending, JudgeResult.Running };
         public static string GetSourceExtension(string language)
         {
             switch (language)
