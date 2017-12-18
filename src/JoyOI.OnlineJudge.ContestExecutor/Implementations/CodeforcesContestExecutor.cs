@@ -122,39 +122,47 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
                 // 2. Add the hack data to problem
                 var input = status.HackDataBlobId.Value;
-                var inputLength = ManagementService.GetBlobAsync(input).Result.Body.Length;
-                var stateMachine = ManagementService.GetStateMachineInstanceAsync(status.RelatedStateMachineIds.Last().StateMachineId).Result;
-                var output = stateMachine.StartedActors.First(x => x.Tag == "Standard").Outputs.First(x => x.Name == "stdout.txt").Id;
-                var outputLength = ManagementService.GetBlobAsync(output).Result.Body.Length;
-
-                var testCase = new TestCase
+                var testCase = DB.TestCases.FirstOrDefault(x => x.InputBlobId == input && x.ProblemId == status.Status.ProblemId);
+                var testCaseExisted = testCase != null;
+                if (!testCaseExisted)
                 {
-                    ContestId = ContestId,
-                    InputBlobId = input,
-                    InputSizeInByte = inputLength,
-                    OutputBlobId = output,
-                    OutputSizeInByte = outputLength,
-                    ProblemId = status.Status.ProblemId,
-                    Type = TestCaseType.Hack
-                };
-                DB.TestCases.Add(testCase);
-                DB.SaveChanges();
+                    var inputLength = ManagementService.GetBlobAsync(input).Result.Body.Length;
+                    var stateMachine = ManagementService.GetStateMachineInstanceAsync(status.RelatedStateMachineIds.Last().StateMachineId).Result;
+                    var output = stateMachine.StartedActors.First(x => x.Tag == "Standard").Outputs.First(x => x.Name == "stdout.txt").Id;
+                    var outputLength = ManagementService.GetBlobAsync(output).Result.Body.Length;
+
+                    testCase = new TestCase
+                    {
+                        ContestId = ContestId,
+                        InputBlobId = input,
+                        InputSizeInByte = inputLength,
+                        OutputBlobId = output,
+                        OutputSizeInByte = outputLength,
+                        ProblemId = status.Status.ProblemId,
+                        Type = TestCaseType.Hack
+                    };
+                    DB.TestCases.Add(testCase);
+                    DB.SaveChanges();
+                }
 
                 // 3. Add the result into sub judge status
-                var sub = new SubJudgeStatus
+                if (!testCaseExisted)
                 {
-                    SubId = DB.SubJudgeStatuses.Where(x => x.StatusId == status.JudgeStatusId).Count(),
-                    Hint = status.Hint,
-                    MemoryUsedInByte = status.MemoryUsedInByte,
-                    TimeUsedInMs = status.TimeUsedInMs,
-                    Result = status.HackeeResult,
-                    InputBlobId = testCase.InputBlobId,
-                    OutputBlobId = testCase.OutputBlobId,
-                    TestCaseId = testCase.Id,
-                    StatusId = status.JudgeStatusId
-                };
-                DB.SubJudgeStatuses.Add(sub);
-                DB.SaveChanges();
+                    var sub = new SubJudgeStatus
+                    {
+                        SubId = DB.SubJudgeStatuses.Where(x => x.StatusId == status.JudgeStatusId).Count(),
+                        Hint = status.Hint,
+                        MemoryUsedInByte = status.MemoryUsedInByte,
+                        TimeUsedInMs = status.TimeUsedInMs,
+                        Result = status.HackeeResult,
+                        InputBlobId = testCase.InputBlobId,
+                        OutputBlobId = testCase.OutputBlobId,
+                        TestCaseId = testCase.Id,
+                        StatusId = status.JudgeStatusId
+                    };
+                    DB.SubJudgeStatuses.Add(sub);
+                    DB.SaveChanges();
+                }
 
                 // 4. Add point for the hacker
                 DB.ContestProblemLastStatuses
@@ -163,23 +171,26 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     .Update();
 
                 // 5. Hack all statuses
-                var affectedStatuses = DB.ContestProblemLastStatuses
-                    .Include(x => x.Status)
-                    .Where(x => x.ProblemId == status.Status.ProblemId && x.ContestId == ContestId && x.Status.BinaryBlobId.HasValue && x.IsAccepted)
-                    .ToList();
-
-                var problem = DB.Problems.Single(x => x.Id == status.Status.ProblemId);
-                var validatorId = problem.ValidatorBlobId.HasValue ? problem.ValidatorBlobId.Value : Guid.Parse(Configuration["JoyOI:StandardValidatorBlobId"]);
-
-                var blobs = new List<BlobInfo>(affectedStatuses.Count);
-                blobs.Add(new BlobInfo(validatorId, problem.ValidatorBlobId.HasValue ? "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage) : "Validator.out"));
-                blobs.Add(new BlobInfo(status.HackDataBlobId.Value, "data.txt", testCase.Id.ToString()));
-                foreach (var x in affectedStatuses)
+                if (!testCaseExisted)
                 {
-                    blobs.Add(new BlobInfo(x.Status.BinaryBlobId.Value, "Hackee" + Constants.GetBinaryExtension(x.Status.Language), x.StatusId.ToString()));
-                }
+                    var affectedStatuses = DB.ContestProblemLastStatuses
+                        .Include(x => x.Status)
+                        .Where(x => x.ProblemId == status.Status.ProblemId && x.ContestId == ContestId && x.Status.BinaryBlobId.HasValue && x.IsAccepted)
+                        .ToList();
 
-                ManagementService.PutStateMachineInstanceAsync("HackAllStateMachine", Configuration["ManagementService:CallBack"], blobs, 2);
+                    var problem = DB.Problems.Single(x => x.Id == status.Status.ProblemId);
+                    var validatorId = problem.ValidatorBlobId.HasValue ? problem.ValidatorBlobId.Value : Guid.Parse(Configuration["JoyOI:StandardValidatorBlobId"]);
+
+                    var blobs = new List<BlobInfo>(affectedStatuses.Count);
+                    blobs.Add(new BlobInfo(validatorId, problem.ValidatorBlobId.HasValue ? "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage) : "Validator.out"));
+                    blobs.Add(new BlobInfo(status.HackDataBlobId.Value, "data.txt", testCase.Id.ToString()));
+                    foreach (var x in affectedStatuses)
+                    {
+                        blobs.Add(new BlobInfo(x.Status.BinaryBlobId.Value, "Hackee" + Constants.GetBinaryExtension(x.Status.Language), x.StatusId.ToString()));
+                    }
+
+                    ManagementService.PutStateMachineInstanceAsync("HackAllStateMachine", Configuration["ManagementService:CallBack"], blobs, 2);
+                }
             }
             else if (status.Result == HackResult.Failed)
             {
