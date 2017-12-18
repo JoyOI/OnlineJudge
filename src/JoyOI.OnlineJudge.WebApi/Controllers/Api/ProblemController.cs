@@ -53,7 +53,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             if (!string.IsNullOrWhiteSpace(title))
             {
-                ret = ret.Where(x => x.Title.Contains(title));
+                ret = ret.Where(x => x.Title.Contains(title) || x.Id == title);
             }
 
             if (difficulty.HasValue)
