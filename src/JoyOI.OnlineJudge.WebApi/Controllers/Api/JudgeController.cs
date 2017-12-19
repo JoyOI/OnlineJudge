@@ -518,7 +518,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return false;
             }
 
-            return await DB.JudgeStatuses.AnyAsync(x => x.UserId == User.Current.Id && string.IsNullOrEmpty(x.ContestId) && x.Result == JudgeResult.Accepted, token);
+            return await DB.JudgeStatuses.AnyAsync(x => x.UserId == User.Current.Id && x.ProblemId == status.ProblemId && string.IsNullOrEmpty(x.ContestId) && x.Result == JudgeResult.Accepted, token);
         }
 
         private async Task<bool> IsStatusCouldBeHacked(JudgeStatus status, ContestExecutorFactory cef, CancellationToken token)

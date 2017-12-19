@@ -34,14 +34,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             if (!string.IsNullOrWhiteSpace(username))
             {
-                ret = ret.Where(x => x.UserName.Contains(username) || username.Contains(x.UserName));
+                ret = ret.Where(x => x.UserName.Contains(username));
             }
 
-            var result = await DoPaging(ret, page ?? 1, 50, token);
-            var type = typeof(IdentityUser<Guid>);
-            foreach (var x in result.data.result)
-                foreach (var y in type.GetProperties().Where(y => y.Name != nameof(IdentityUser.Id) && y.Name != nameof(IdentityUser.UserName)))
-                    y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+            var result = await DoPaging(ret.Select(x => new UserListViewModel
+            {
+                Id = x.Id,
+                UserName = x.UserName,
+                AvatarUrl = x.AvatarUrl
+            }), page ?? 1, 50, token);
 
             return Json(result);
         }
