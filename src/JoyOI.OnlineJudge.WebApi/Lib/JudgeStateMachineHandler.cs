@@ -288,7 +288,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     .Update();
 
                 // Handle sub-status
-                if (resultBody.SubStatuses.Count() > 0)
+                if (resultBody.SubStatuses != null && resultBody.SubStatuses.Count() > 0)
                 {
                     foreach (var x in resultBody.SubStatuses)
                     {
