@@ -538,5 +538,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 .ToListAsync(token);
             return testCases;
         }
+
+        public override void OnShowHackResult(HackStatus status)
+        {
+            status.HackDataBody = null;
+        }
     }
 }

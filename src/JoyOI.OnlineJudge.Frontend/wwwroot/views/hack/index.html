@@ -1,0 +1,64 @@
+﻿<div class="container" id="hack">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="area-outer">
+                <div class="area-item">
+                    <div class="area-title"
+                         v-bind:class="'judge-panel-color-' + (control.hackStatuses.some(x => x.display === hackerResult) ? control.hackStatuses.filter(x => x.display === hackerResult)[0].color : 'blue')">{{ hackerResult }}</div>
+                    <div class="hack-detail-outer">
+                        <table class="hack-detail">
+                            <colgroup>
+                                <col style="width:30%" />
+                                <col />
+                            </colgroup>
+                            <tr>
+                                <td>Hackee 结果</td>
+                                <td v-bind:class="hackeeClass">
+                                    <router-link v-bind:class="hackeeClass" :to="{ name: '/judge/:id', path: '/judge/' + judgeStatusId, params: { 'id': judgeStatusId } }">{{ hackeeResult }}</router-link>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>时间消耗</td>
+                                <td>{{ timeUsedInMs }} ms</td>
+                            </tr>
+                            <tr>
+                                <td>内存消耗</td>
+                                <td>{{ (memoryUsedInByte / 1024 / 1024).toFixed(1) }} MiB</td>
+                            </tr>
+                            <tr>
+                                <td>备注</td>
+                                <td v-html="$root.xss(hint)"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="area-item dark" v-if="data">
+                    <div class="area-title">Hack 数据</div>
+                    <div class="code-box-outer">
+                        <pre class="code-box">{{ data }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 title-align">
+            <div class="sidebar-section">
+                <div v-bind:style="{ 'background-image': 'url(/images/' + parseInt(Math.random() * 20 + 1) + '.jpg)' }" class="sidebar-avatar-set-off"></div>
+                <div class="sidebar-padding-outer">
+                    <img v-bind:src="userAvatarUrl" class="sidebar-avatar" />
+                    <div class="sidebar-username" v-bind:class="userRoleClass">
+                        <router-link :to="{ name: '/user/:username', path: '/user/' + username, params: { 'username': username } }">
+                            {{ username }}
+                        </router-link>
+                    </div>
+                </div>
+                <div class="sidebar-padding-outer">
+                    <dl>
+                        <dt>Hack时间</dt>
+                        <dd v-bind:title="$root.toLocalTime(time)">{{ $root.toLocalTime(time) }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

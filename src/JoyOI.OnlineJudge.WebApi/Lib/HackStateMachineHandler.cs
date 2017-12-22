@@ -111,10 +111,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
         private async Task HandleSingleHackAsync(IEnumerable<ActorInfo> actors, HackStatus hack, JudgeStatus judge, Problem problem, Guid? testCaseId, CancellationToken token)
         {
             var sub = new SubJudgeStatus();
+            var isBadData = false;
 
-            if (actors.Count() == 1)
+            if (actors.Count(x => x.Name == "CompareActor") == 0)
             {
-                var runActor = actors.First();
+                var runActor = actors.First(x => x.Stage == "GenerateHackeeAnswer");
                 var runner = await _mgmt.ReadBlobAsObjectAsync<Runner>(runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
 
                 if (runner.IsTimeout)
@@ -139,32 +140,46 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error + Environment.NewLine + $"User process exited with code { runner.ExitCode }";
                 }
             }
-            else if (actors.Count() == 2)
+            else if (actors.Count(x => x.Name == "CompareActor") > 0)
             {
-                var runActor = actors.First();
-                var runRunner = await _mgmt.ReadBlobAsObjectAsync<Runner>(runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
-
-                var compareActor = actors.Last();
-                var runner = await _mgmt.ReadBlobAsObjectAsync<Runner>(compareActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
-                if (runner.ExitCode < 0 || runner.ExitCode > 2)
+                var runners = actors.Where(x => x.Name == "CompareActor").Select(x => x.Outputs.Single(y => y.Name == "runner.json"));
+                var runnerResults = runners.Select(x => _mgmt.ReadBlobAsObjectAsync<Runner>(x.Id, token).Result);
+                var exitCodes = runnerResults.Select(x => x.ExitCode);
+                if (exitCodes.Distinct().Count() > 1)
                 {
-                    sub.TimeUsedInMs = 0;
-                    sub.MemoryUsedInByte = 0;
-                    sub.Result = JudgeResult.SystemError;
-                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                    isBadData = true;
                 }
                 else
                 {
-                    sub.TimeUsedInMs = runRunner.UserTime;
-                    sub.MemoryUsedInByte = runRunner.PeakMemory;
-                    sub.Result = (JudgeResult)runner.ExitCode;
-                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                    var runActor = actors.First(x => x.Stage == "GenerateHackeeAnswer");
+                    var runRunner = await _mgmt.ReadBlobAsObjectAsync<Runner>(runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+
+                    var compareActor = actors.Last(x => x.Name == "CompareActor");
+                    var runner = await _mgmt.ReadBlobAsObjectAsync<Runner>(compareActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                    if (runner.ExitCode < 0 || runner.ExitCode > 2)
+                    {
+                        sub.TimeUsedInMs = 0;
+                        sub.MemoryUsedInByte = 0;
+                        sub.Result = JudgeResult.SystemError;
+                        sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                    }
+                    else
+                    {
+                        sub.TimeUsedInMs = runRunner.UserTime;
+                        sub.MemoryUsedInByte = runRunner.PeakMemory;
+                        sub.Result = (JudgeResult)runner.ExitCode;
+                        sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                    }
                 }
             }
-
-            if (hack == null && actors.Count() > 0 && testCaseId.HasValue)
+            else
             {
-                var runActor = actors.First();
+                isBadData = true;
+            }
+
+            if (hack == null && actors.Count(x => x.Stage == "GenerateHackeeAnswer") > 0 && testCaseId.HasValue)
+            {
+                var runActor = actors.First(x => x.Stage == "GenerateHackeeAnswer");
                 var statusId = Guid.Parse(runActor.Tag.Split("=")[1]);
                 var testCase = await _db.TestCases.SingleAsync(x => x.Id == testCaseId.Value, token);
                 var testCases = await _db.TestCases
@@ -185,10 +200,10 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             {
                 _db.HackStatuses
                     .Where(x => x.Id == hack.Id)
-                    .SetField(x => x.HackeeResult).WithValue(sub.Result)
+                    .SetField(x => x.HackeeResult).WithValue(isBadData ? JudgeResult.Accepted : sub.Result)
                     .SetField(x => x.TimeUsedInMs).WithValue(sub.TimeUsedInMs)
                     .SetField(x => x.MemoryUsedInByte).WithValue(sub.MemoryUsedInByte)
-                    .SetField(x => x.Result).WithValue(actors.Count() == 0 ? (HackResult.BadData) : (sub.Result == JudgeResult.Accepted ? HackResult.Failed : HackResult.Succeeded))
+                    .SetField(x => x.Result).WithValue(isBadData ? (HackResult.BadData) : (sub.Result == JudgeResult.Accepted ? HackResult.Failed : HackResult.Succeeded))
                     .Update();
             }
         }

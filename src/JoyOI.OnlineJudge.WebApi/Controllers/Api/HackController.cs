@@ -102,11 +102,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> Get(
             Guid id,
-            [FromServices] ContestExecutorFactory cef)
+            [FromServices] ManagementServiceClient mgmt,
+            [FromServices] ContestExecutorFactory cef,
+            CancellationToken token)
         {
-            var ret = DB.HackStatuses
+            var ret = await DB.HackStatuses
+                .Include(x => x.Status)
                 .Include(x => x.User)
-                .SingleOrDefault(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id, token);
+
+            if (ret.HackDataBlobId.HasValue)
+            {
+                ret.HackDataBody = Encoding.UTF8.GetString((await mgmt.GetBlobAsync(ret.HackDataBlobId.Value, token)).Body);
+            }
 
             var username = ret.User.UserName;
             ret.User = null;
@@ -119,10 +127,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!string.IsNullOrEmpty(ret.ContestId))
             {
                 var ce = cef.Create(ret.ContestId);
-                if (ce.IsContestInProgress(User.Current?.UserName) || ce.IsContestInProgress(username))
+                if ((ce.IsContestInProgress(User.Current?.UserName) || ce.IsContestInProgress(username)) && ret.UserId != User.Current?.Id && !IsMasterOrHigher && !ce.HasPermissionToContest(User.Current?.UserName))
                 {
                     ce.OnShowHackResult(ret);
                 }
+            }
+
+            if (User.Current?.Id != ret.UserId && User.Current?.Id != ret.Status.UserId)
+            {
+                ret.HackDataBody = null;
             }
 
             return Result(ret);

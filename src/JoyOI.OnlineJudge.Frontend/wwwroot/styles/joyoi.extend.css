@@ -1808,3 +1808,25 @@ dd {
     .hack-list td:nth-child(1), .hack-list th:nth-child(1), .hack-list td:nth-child(2), .hack-list th:nth-child(2), .hack-list td:nth-child(3), .hack-list th:nth-child(3), .hack-list td:nth-child(7), .hack-list th:nth-child(6), .hack-list td:nth-child(6), .hack-list th:nth-child(7) {
         border-right: 1px solid #ddd;
     }
+
+.hack-detail-outer {
+    margin: 0 -25px -25px -25px
+}
+
+.hack-detail {
+    width: 100%;
+    font-size: 12px;
+    table-layout: auto;
+}
+
+    .hack-detail tr {
+        border-top: 1px solid #ddd;
+    }
+
+    .hack-detail tr:nth-child(even) {
+        background: #eee;
+    }
+
+    .hack-detail td {
+        padding: 5px 10px;
+    }

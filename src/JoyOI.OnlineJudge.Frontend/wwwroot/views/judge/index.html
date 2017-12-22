@@ -81,11 +81,11 @@
         <div class="code-editor-header">
             <a class="code-editor-button"
                v-bind:class="{ 'active': control.editorActiveTag === 'code' }"
-               v-on:click="changeEditorMode('data')"><i class="fa fa-code"></i>编辑Hack数据</a>
+               v-on:click="changeEditorMode('data')"><i class="fa fa-code"></i> 编辑Hack数据</a>
             <a class="code-editor-button float-right"
                v-on:click="sendToHack()"><i class="fa fa-send"></i> 提交</a>
             <a class="code-editor-button float-right"
-               v-on:click="backToViewMode()"><i class="fa" v-bind:class="{ 'fa-mail-reply': control.isInHackMode }"></i>返回评测结果</a>
+               v-on:click="backToViewMode()"><i class="fa" v-bind:class="{ 'fa-mail-reply': control.isInHackMode }"></i> 返回评测结果</a>
         </div>
 
         <!-- Hack data editor -->

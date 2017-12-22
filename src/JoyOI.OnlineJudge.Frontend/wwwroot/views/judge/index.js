@@ -21,7 +21,9 @@ component.data = function () {
         time: null,
         problem: { id: null, title: null },
         user: { id: null, username: null, roleClass: null, avatarUrl: null },
-        view: null
+        view: null,
+        hackView: null,
+        hackResult: null
     };
 };
 
@@ -151,6 +153,14 @@ component.methods = {
         })
             .then(x => {
                 app.notification('succeeded', 'Hack请求已被处理...', x.msg);
+                if (this.hackView) {
+                    this.hackView.unsubscribe();
+                }
+                this.hackView = qv.createView('/api/hack/' + x.id);
+                this.hackView.fetch(x => {
+                    this.hackResult = x.data;
+                });
+                self.result.view.subscribe('hack', x.data);
             })
             .catch(err => {
                 app.notification('error', 'Hack提交失败', err.responseJSON.msg);

@@ -57,6 +57,12 @@ namespace JoyOI.OnlineJudge.Models
         public Guid? HackDataBlobId { get; set; }
 
         /// <summary>
+        /// Gets or sets the hack data body
+        /// </summary>
+        [NotMapped]
+        public string HackDataBody { get; set; }
+
+        /// <summary>
         /// Gets or sets the result.
         /// </summary>
         /// <value>The result.</value>

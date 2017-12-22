@@ -248,6 +248,7 @@ component.methods = {
         .then(x =>
         {
             app.notification('succeeded', '评测请求已被接受');
+            self.result.view.unsubscribe();
             self.result.view = qv.createView('/api/judge/' + x.data);
             self.result.view.fetch(y =>
             {
