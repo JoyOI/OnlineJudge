@@ -20,7 +20,7 @@
                             <div class="filter-outer status-filter">
                                 <ul class="filter-list">
                                     <li v-for="status in hackStatuses">
-                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue' }" v-on:click="selectedHackStatus = selectedHackStatus === status.value ? null : status.value" class="filter-item">
+                                        <a v-bind:data-value="status.value" v-bind:class="{ 'judge-red': status.color === 'red', 'judge-green': status.color === 'green', 'judge-orange': status.color === 'orange', 'judge-blue': status.color === 'blue', 'active': selectedHackStatus === status.value }" v-on:click="selectedHackStatus = selectedHackStatus === status.value ? null : status.value" class="filter-item">
                                             <i class="fa" v-bind:class="{ 'fa-question': status.color === 'blue', 'fa-check': status.color === 'green', 'fa-eye-slash': status.color === 'purple', 'fa-exclamation': status.color === 'orange', 'fa-remove': status.color === 'red' }"></i>
                                             {{ status.display }}
                                         </a>

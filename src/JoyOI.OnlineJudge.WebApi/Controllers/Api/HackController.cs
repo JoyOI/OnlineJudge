@@ -75,10 +75,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.ContestId == contestId);
             }
 
+            if (!string.IsNullOrEmpty(problemId))
+            {
+                ret.Where(x => x.Status.ProblemId == problemId);
+            }
+
             return await Paged(ret.OrderByDescending(x => x.Time)
                 .Select(x => new HackViewModel
                 {
                     Id = x.Id,
+                    problemId = x.Status.ProblemId,
                     HackerId = x.UserId,
                     HackeeId = x.Status.UserId,
                     HackResult = x.Result,

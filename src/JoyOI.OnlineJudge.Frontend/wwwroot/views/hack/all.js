@@ -254,7 +254,6 @@ component.methods = {
                 ret.hackee = app.lookup.user[y.hackeeId] ? app.lookup.user[y.hackeeId].name : y.hackeeId.substr(0, 8);
                 ret.hackerRole = app.lookup.user[y.hackerId] ? app.lookup.user[y.hackerId].class : undefined;
                 ret.hackeeRole = app.lookup.user[y.hackeeId] ? app.lookup.user[y.hackeeId].class : undefined;
-                ret.problemTitle = app.lookup.problem[ret.problemId];
                 return ret;
             });
 

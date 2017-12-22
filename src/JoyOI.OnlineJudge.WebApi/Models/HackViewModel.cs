@@ -13,6 +13,8 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
         public Guid HackeeId { get; set; }
 
+        public string problemId { get; set; }
+
         [JsonConverter(typeof(StringEnumConverter))]
         public HackResult HackResult { get; set; }
 
