@@ -77,7 +77,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             if (!string.IsNullOrEmpty(problemId))
             {
-                ret.Where(x => x.Status.ProblemId == problemId);
+                ret = ret.Where(x => x.Status.ProblemId == problemId);
             }
 
             return await Paged(ret.OrderByDescending(x => x.Time)
