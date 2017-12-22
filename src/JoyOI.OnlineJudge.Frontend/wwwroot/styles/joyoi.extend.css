@@ -428,6 +428,15 @@
         color: #0074d9 !important;
     }
 
+.hack-blue {
+    border-right: 3px solid #0074d9 !important;
+    color: #0074d9 !important;
+}
+
+    .hack-blue a {
+        color: #0074d9 !important;
+    }
+
 .judge-list td i, .filter-item i, .problem-list i, .hack-list i {
     width: 16px !important;
     height: 12px !important;

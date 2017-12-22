@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JoyOI.OnlineJudge.Models
 {
@@ -58,12 +60,14 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the result.
         /// </summary>
         /// <value>The result.</value>
+        [JsonConverter(typeof(StringEnumConverter))]
         public HackResult Result { get; set; }
 
         /// <summary>
         /// Gets or set the hackee result
         /// </summary>
         /// <value>The hackee's result</value>
+        [JsonConverter(typeof(StringEnumConverter))]
         public JudgeResult HackeeResult { get; set; }
 
         /// <summary>

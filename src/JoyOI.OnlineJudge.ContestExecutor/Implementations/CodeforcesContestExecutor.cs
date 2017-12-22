@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.ManagementService.SDK;
+using Newtonsoft.Json;
 
 namespace JoyOI.OnlineJudge.ContestExecutor
 {
@@ -181,7 +183,18 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     var problem = DB.Problems.Single(x => x.Id == status.Status.ProblemId);
                     var validatorId = problem.ValidatorBlobId.HasValue ? problem.ValidatorBlobId.Value : Guid.Parse(Configuration["JoyOI:StandardValidatorBlobId"]);
 
-                    var blobs = new List<BlobInfo>(affectedStatuses.Count);
+                    var blobs = new List<BlobInfo>(affectedStatuses.Count + 10);
+                    blobs.Add(new BlobInfo
+                    {
+                        Id = ManagementService.PutBlobAsync("limit.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
+                        {
+                            UserTime = status.Status.Problem.TimeLimitationPerCaseInMs,
+                            PhysicalTime = status.Status.Problem.TimeLimitationPerCaseInMs * 4,
+                            Memory = status.Status.Problem.MemoryLimitationPerCaseInByte
+                        }))).Result,
+                        Name = "limit.json",
+                        Tag = "Problem=" + status.Status.ProblemId
+                    });
                     blobs.Add(new BlobInfo(validatorId, problem.ValidatorBlobId.HasValue ? "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage) : "Validator.out"));
                     blobs.Add(new BlobInfo(status.HackDataBlobId.Value, "data.txt", testCase.Id.ToString()));
                     foreach (var x in affectedStatuses)

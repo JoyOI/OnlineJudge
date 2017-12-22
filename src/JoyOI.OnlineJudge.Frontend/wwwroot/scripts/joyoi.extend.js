@@ -257,6 +257,7 @@ $(window).mousemove(function (e) {
         var left = (x / width * 100).toFixed(3);
         var right = 100 - (x / width * 100).toFixed(3);
         $('.problem-body').css('width', left + '%');
+        $('.hack-data pre').css('width', left + '%');
         $('.code-editor-outer').css('width', right + '%');
         $('.code-editor-outer').css('left', left + '%');
         $('.problem-edit-split-line').css('left', 'calc(' + left + '% - 3px)');
@@ -291,18 +292,18 @@ function formatJudgeResult(str) {
     return str.trim();
 }
 
-function ConvertJudgeResultToCss(x)
+function ConvertJudgeResultToCss(x, isRight)
 {
     if (x === 'Pending' || x === 'Running')
-        return 'judge-blue';
+        return isRight ? 'hack-blue' : 'judge-blue';
     else if (x === 'Hidden')
-        return 'judge-purple';
+        return isRight ? 'hack-purple' : 'judge-purple';
     else if (x === 'Accepted' || x === 'Succeeded')
-        return 'judge-green';
+        return isRight ? 'hack-green' : 'judge-green';
     else if (x === 'Compile Error' || x === 'System Error' || x === 'Bad Data')
-        return 'judge-orange';
+        return isRight ? 'hack-orange' : 'judge-orange';
     else
-        return 'judge-red';
+        return isRight ? 'hack-red' : 'judge-red';
 }
 
 function ConvertJudgeResultToIconCss(x)

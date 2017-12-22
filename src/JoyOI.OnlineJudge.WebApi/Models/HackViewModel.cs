@@ -1,5 +1,7 @@
 ﻿using System;
 using JoyOI.OnlineJudge.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace JoyOI.OnlineJudge.WebApi.Models
 {
@@ -11,8 +13,10 @@ namespace JoyOI.OnlineJudge.WebApi.Models
 
         public Guid HackeeId { get; set; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public HackResult HackResult { get; set; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public JudgeResult JudgeResult { get; set; }
 
         public int TimeUsedInMs { get; set; }

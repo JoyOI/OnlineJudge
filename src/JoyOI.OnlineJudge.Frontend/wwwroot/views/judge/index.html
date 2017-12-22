@@ -73,4 +73,69 @@
             </div>
         </div>
     </div>
+
+    <div v-show="control.isInHackMode" class="problem-body-set-off hack-data" style="background:#f5f5f5;">
+        <pre style="width:50%"><code>{{ code }}</code></pre>
+    </div>
+    <div class="code-editor-outer" v-bind:class="{ 'edit-mode': control.isInHackMode }">
+        <div class="code-editor-header">
+            <a class="code-editor-button"
+               v-bind:class="{ 'active': control.editorActiveTag === 'code' }"
+               v-on:click="changeEditorMode('data')"><i class="fa fa-code"></i>编辑Hack数据</a>
+            <a class="code-editor-button float-right"
+               v-on:click="sendToHack()"><i class="fa fa-send"></i> 提交</a>
+            <a class="code-editor-button float-right"
+               v-on:click="backToViewMode()"><i class="fa" v-bind:class="{ 'fa-mail-reply': control.isInHackMode }"></i>返回评测结果</a>
+        </div>
+
+        <!-- Hack data editor -->
+        <pre id="code-editor" class="ace_editor ace-twilight ace_dark code-box editable" v-bind:class="{ 'active': control.editorActiveTag === 'code' }">{{ form.data }}</pre>
+
+        <!-- Result panel -->
+        <div class="judge-panel" v-bind:class="{ 'active': control.editorActiveTag == 'judge' }">
+            <!--<div class="judge-panel-status"
+                 v-if="control.statuses.filter(x => x.display === judgeResult).length"
+                 v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === judgeResult)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === judgeResult)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === judgeResult)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === judgeResult)[0].color === 'green', 'judge-panel-color-purple': control.statuses.filter(x => x.display === judgeResult)[0].color === 'purple' }">{{ judgeResult }}</div>
+            <div class="judge-panel-status judge-panel-color-blue"
+                 v-if="!control.statuses.filter(x => x.display === judgeResult).length">Pending</div>
+            <div class="judge-panel-summary-hint" v-if="result.hint" v-html="$root.marked(result.hint.replace(/\n/g, '\n\n'))"></div>
+            <div class="judge-panel-table-outer" v-if="judgeResult != 'Pending' && judgeResult != 'Running' && judgeResult != 'Compile Error' && judgeResult != 'Unkown Result' && judgeResult != 'Hidden'">
+                <table class="judge-panel-table">
+                    <colgroup>
+                        <col style="width: 70px" />
+                        <col />
+                        <col style="width: 120px" />
+                        <col style="width: 120px" />
+                    </colgroup>
+                    <template v-for="(sub, index) in result.substatuses">
+                        <tr>
+                            <td v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                #{{ index + 1 }}
+                            </td>
+                            <td v-on:click="toggleStatusHint(index)"
+                                v-bind:class="{ 'judge-panel-color-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-color-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-color-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-color-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                {{ sub.status }}
+                            </td>
+                            <td>{{ sub.time }}ms</td>
+                            <td>{{ (sub.memory / 1024 / 1024).toFixed(2) }}MiB</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"
+                                v-bind:class="{ 'judge-panel-border-blue': control.statuses.filter(x => x.display === sub.status)[0].color === 'blue', 'judge-panel-border-red': control.statuses.filter(x => x.display === sub.status)[0].color === 'red', 'judge-panel-border-orange': control.statuses.filter(x => x.display === sub.status)[0].color === 'orange', 'judge-panel-border-green': control.statuses.filter(x => x.display === sub.status)[0].color === 'green' }">
+                                <div class="judge-panel-hint" v-html="$root.xss(sub.hint)"></div>
+                            </td>
+                        </tr>
+                    </template>
+                </table>
+            </div>-->
+        </div>
+    </div>
+
+    <a v-if="control.isInHackMode"
+       v-on:click="backToViewMode()"
+       class="back-to-view-mode">
+        <i class="fa fa-close"></i> 退出Hack
+    </a>
+
+    <div class="split-line problem-edit-split-line" v-if="control.isInHackMode"></div>
 </div>

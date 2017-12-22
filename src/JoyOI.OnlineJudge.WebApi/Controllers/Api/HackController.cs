@@ -78,6 +78,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return await Paged(ret.OrderByDescending(x => x.Time)
                 .Select(x => new HackViewModel
                 {
+                    Id = x.Id,
                     HackerId = x.UserId,
                     HackeeId = x.Status.UserId,
                     HackResult = x.Result,
@@ -179,11 +180,25 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             await DB.SaveChangesAsync(token);
 
             var blobs = new List<BlobInfo>(10);
+
+            // Put the limit.json into blob collection
+            blobs.Add(new BlobInfo
+            {
+                Id = await mgmt.PutBlobAsync("limit.json", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
+                {
+                    UserTime = judge.Problem.TimeLimitationPerCaseInMs,
+                    PhysicalTime = judge.Problem.TimeLimitationPerCaseInMs * 4,
+                    Memory = judge.Problem.MemoryLimitationPerCaseInByte
+                }))),
+                Name = "limit.json",
+                Tag = "Problem=" + judge.ProblemId
+            });
+
             // Put the data into blob collection
             blobs.Add(new BlobInfo(blobId, "data.txt"));
 
             // Put the hackee program into blob collection
-            blobs.Add(new BlobInfo(judge.BinaryBlobId.Value, "Hackee" + Constants.GetBinaryExtension(judge.Language)));
+            blobs.Add(new BlobInfo(judge.BinaryBlobId.Value, "Hackee" + Constants.GetBinaryExtension(judge.Language), judge.Id.ToString()));
 
             // Put range validator program into blob collection
             if (judge.Problem.RangeBlobId.HasValue && string.IsNullOrEmpty(judge.Problem.RangeError))
@@ -229,6 +244,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var stateMachineId = await mgmt.PutStateMachineInstanceAsync("HackStateMachine", Configuration["ManagementService:CallBack"], blobs.ToArray(), 1, token);
             var stateMachine = new StateMachine { CreatedTime = DateTime.Now, Name = "HackStateMachine", Id = stateMachineId };
             DB.StateMachines.Add(stateMachine);
+            hack.RelatedStateMachineIds = new List<HackStatusStateMachine>();
             hack.RelatedStateMachineIds.Add(new HackStatusStateMachine { StateMachineId = stateMachine.Id, StatusId = judge.Id });
             await DB.SaveChangesAsync(token);
 

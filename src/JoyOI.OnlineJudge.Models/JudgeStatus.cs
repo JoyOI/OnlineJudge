@@ -76,7 +76,7 @@ namespace JoyOI.OnlineJudge.Models
         /// Gets or sets the compiled code BLOB identifier.
         /// </summary>
         /// <value>The binary BLOB identifier.</value>
-        [WebApi(FilterLevel.GetNeedOwner | FilterLevel.GetListDisabled)]
+        [WebApi(FilterLevel.GetListDisabled | FilterLevel.GetSingleDisabled)]
         public Guid? BinaryBlobId { get; set; }
 
         /// <summary>

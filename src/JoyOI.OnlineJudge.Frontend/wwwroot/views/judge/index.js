@@ -1,14 +1,22 @@
-﻿component.data = function () {
+﻿var __ace_style;
+component.data = function () {
     return {
         control: {
             statuses: statuses,
             languages: languages,
-            highlighters: syntaxHighlighter
+            highlighters: syntaxHighlighter,
+            editorActiveTag: 'code',
+            isInHackMode: false
+        },
+        form: {
+            data: ''
         },
         id: null,
         language: null,
         hint: null,
+        contestId: null,
         code: null,
+        isHackable: false,
         substatuses: [],
         time: null,
         problem: { id: null, title: null },
@@ -29,13 +37,14 @@ component.created = function () {
             self.hint = x.data.hint;
             self.time = x.data.createdTime;
             self.problem.id = x.data.problemId;
+            self.contestId = x.data.contestId;
             self.user.id = x.data.userId.substr(0, 8);
+            self.isHackable = x.data.isHackable;
             self.substatuses = x.data.subStatuses.map(y =>
             {
                 return { hint: y.hint, status: formatJudgeResult(y.result), time: y.timeUsedInMs, memory: y.memoryUsedInByte };
             });
             self.language = x.data.language;
-
             qv.createView('/api/user/role', { userids: x.data.userId })
                 .fetch(y =>
                 {
@@ -114,5 +123,37 @@ component.methods = {
         if (2 * index + 1 < tr.length) {
             $(tr[2 * index + 1]).toggle();
         }
+    },
+    backToViewMode: function () {
+        this.form.data = $('#code-editor')[0].editor.getValue();
+        this.control.isInHackMode = false;
+        app.fullScreen = false;
+        $('.problem-body').attr('style', '');
+    },
+    goToEditMode: function () {
+        $('.hack-data pre code').each(function (i, block) {
+            hljs.highlightBlock(block);
+        });
+        $('#code-editor')[0].editor.setValue(this.form.data);
+
+        setTimeout(function () { $('#code-editor')[0].editor.resize(); }, 250);
+
+        this.control.isInHackMode = true;
+        app.fullScreen = true;
+        __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
+    },
+    sendToHack: function () {
+        app.notification('pending', '正在提交Hack...');
+        qv.put('/api/hack', {
+            judgeStatusId: this.id,
+            data: $('#code-editor')[0].editor.getValue(),
+            contestId: this.contestId
+        })
+            .then(x => {
+                app.notification('succeeded', 'Hack请求已被处理...', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', 'Hack提交失败', err.responseJSON.msg);
+            });
     }
 };

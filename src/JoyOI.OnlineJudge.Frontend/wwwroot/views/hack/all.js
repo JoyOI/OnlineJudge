@@ -247,7 +247,7 @@ component.methods = {
                 ret.hackResult = formatJudgeResult(y.hackResult);
                 ret.judgeResult = formatJudgeResult(y.judgeResult);
                 ret.hackClass = ConvertJudgeResultToCss(ret.hackResult);
-                ret.judgeClass = ConvertJudgeResultToCss(ret.judgeResult);
+                ret.judgeClass = ConvertJudgeResultToCss(ret.judgeResult, true);
                 ret.hackIcon = ConvertJudgeResultToIconCss(ret.hackResult);
                 ret.judgeIcon = ConvertJudgeResultToIconCss(ret.judgeResult);
                 ret.hacker = app.lookup.user[y.hackerId] ? app.lookup.user[y.hackerId].name : y.hackerId.substr(0, 8);
@@ -270,8 +270,8 @@ component.methods = {
                 app.lookupUsers({ userIds: x.data.result.map(y => y.hackerId) })
                     .then(() => {
                         for (var i = 0; i < self.result.length; i ++) {
-                            self.result[i].hacker = app.lookup.user[self.result[i].userId].name;
-                            self.result[i].hackerRole = app.lookup.user[self.result[i].userId].class;
+                            self.result[i].hacker = app.lookup.user[self.result[i].hackerId].name;
+                            self.result[i].hackerRole = app.lookup.user[self.result[i].hackerId].class;
                         }
                         this.$forceUpdate();
                     });
@@ -279,8 +279,8 @@ component.methods = {
                 app.lookupUsers({ userIds: x.data.result.map(y => y.hackeeId) })
                     .then(() => {
                         for (var i = 0; i < self.result.length; i++) {
-                            self.result[i].hackee = app.lookup.user[self.result[i].userId].name;
-                            self.result[i].hackeeRole = app.lookup.user[self.result[i].userId].class;
+                            self.result[i].hackee = app.lookup.user[self.result[i].hackeeId].name;
+                            self.result[i].hackeeRole = app.lookup.user[self.result[i].hackeeId].class;
                         }
                         this.$forceUpdate();
                     });
