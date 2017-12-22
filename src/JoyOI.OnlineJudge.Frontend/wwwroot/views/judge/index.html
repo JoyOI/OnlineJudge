@@ -130,8 +130,7 @@
                         <td>{{ (hackResult.memoryUsedInByte / 1024 / 1024).toFixed(1) }} MiB</td>
                     </tr>
                     <tr>
-                        <td>备注</td>
-                        <td v-html="$root.xss(hint)"></td>
+                        <td colspan="2" v-html="$root.xss(hackResult.hint)"></td>
                     </tr>
                 </table>
             </div>

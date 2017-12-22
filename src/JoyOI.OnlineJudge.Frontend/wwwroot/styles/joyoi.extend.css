@@ -1850,3 +1850,8 @@ dd {
 .hack-detail.dark td:nth-child(1) {
     padding-left: 25px;
 }
+
+.hack-detail.dark td pre {
+    background: #444;
+    color: #aaa;
+}

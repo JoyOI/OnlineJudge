@@ -165,10 +165,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     }
                     else
                     {
+                        var validatorOutput = Encoding.UTF8.GetString((await _mgmt.GetBlobAsync(compareActor.Outputs.Single(x => x.Name == "stdout.txt").Id)).Body);
                         sub.TimeUsedInMs = runRunner.UserTime;
                         sub.MemoryUsedInByte = runRunner.PeakMemory;
                         sub.Result = (JudgeResult)runner.ExitCode;
-                        sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                        sub.Hint = validatorOutput + Environment.NewLine + string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
                     }
                 }
             }
@@ -204,6 +205,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     .SetField(x => x.TimeUsedInMs).WithValue(sub.TimeUsedInMs)
                     .SetField(x => x.MemoryUsedInByte).WithValue(sub.MemoryUsedInByte)
                     .SetField(x => x.Result).WithValue(isBadData ? (HackResult.BadData) : (sub.Result == JudgeResult.Accepted ? HackResult.Failed : HackResult.Succeeded))
+                    .SetField(x => x.Hint).WithValue(sub.Hint)
                     .Update();
             }
         }
