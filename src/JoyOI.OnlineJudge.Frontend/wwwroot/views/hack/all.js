@@ -285,7 +285,7 @@ component.methods = {
                     });
             }
 
-            self.view.subscribe('judge');
+            self.view.subscribe('hack');
         });
     },
     generateQuery: function () {

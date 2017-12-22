@@ -1830,3 +1830,23 @@ dd {
     .hack-detail td {
         padding: 5px 10px;
     }
+
+.hack-sidebar-outer {
+    margin: 0 -20px -13px -20px;
+}
+
+.hack-detail.dark, .hack-detail.dark a {
+    color: #aaa;
+}
+
+.dark.hack-detail tr:nth-child(even) {
+    background: #444;
+}
+
+.dark.hack-detail tr {
+    border-top: 1px solid #666;
+}
+
+.hack-detail.dark td:nth-child(1) {
+    padding-left: 25px;
+}

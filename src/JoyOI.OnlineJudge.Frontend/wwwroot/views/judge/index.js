@@ -4,8 +4,9 @@ component.data = function () {
         control: {
             statuses: statuses,
             languages: languages,
+            hackStatuses: hackStatuses,
             highlighters: syntaxHighlighter,
-            editorActiveTag: 'code',
+            editorActiveTag: 'data',
             isInHackMode: false
         },
         form: {
@@ -156,11 +157,14 @@ component.methods = {
                 if (this.hackView) {
                     this.hackView.unsubscribe();
                 }
-                this.hackView = qv.createView('/api/hack/' + x.id);
-                this.hackView.fetch(x => {
-                    this.hackResult = x.data;
+                this.control.editorActiveTag = 'result';
+                this.hackView = qv.createView('/api/hack/' + x.data);
+                this.hackView.fetch(y => {
+                    this.hackResult = y.data;
+                    this.hackResult.result = formatJudgeResult(y.data.result);
+                    this.hackResult.hackeeResult = formatJudgeResult(y.data.hackeeResult);
                 });
-                self.result.view.subscribe('hack', x.data);
+                this.hackView.subscribe('hack', x.data);
             })
             .catch(err => {
                 app.notification('error', 'Hack提交失败', err.responseJSON.msg);

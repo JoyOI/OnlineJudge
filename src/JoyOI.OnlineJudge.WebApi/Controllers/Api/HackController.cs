@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using JoyOI.OnlineJudge.ContestExecutor;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
+using JoyOI.OnlineJudge.WebApi.Hubs;
 using JoyOI.ManagementService.SDK;
 using Newtonsoft.Json;
 
@@ -145,6 +147,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> Put(
             [FromServices] ContestExecutorFactory cef, 
             [FromServices] ManagementServiceClient mgmt,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
             CancellationToken token)
         {
             var request = JsonConvert.DeserializeObject<HackRequest>(RequestBody);
@@ -266,6 +269,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             hack.RelatedStateMachineIds = new List<HackStatusStateMachine>();
             hack.RelatedStateMachineIds.Add(new HackStatusStateMachine { StateMachineId = stateMachine.Id, StatusId = judge.Id });
             await DB.SaveChangesAsync(token);
+
+            hub.Clients.All.InvokeAsync("ItemUpdated", "hack", hack.Id);
 
             return Result(hack.Id);
         }

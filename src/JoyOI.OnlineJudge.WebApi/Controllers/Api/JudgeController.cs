@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,6 @@ using JoyOI.OnlineJudge.WebApi.Lib;
 using JoyOI.OnlineJudge.WebApi.Models;
 using JoyOI.OnlineJudge.WebApi.Hubs;
 using JoyOI.OnlineJudge.ContestExecutor;
-using Microsoft.AspNetCore.SignalR;
 
 namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 {
