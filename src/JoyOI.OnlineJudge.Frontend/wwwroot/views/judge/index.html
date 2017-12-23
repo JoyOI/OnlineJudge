@@ -96,6 +96,9 @@
             <a class="code-editor-button"
                v-bind:class="{ 'active': control.editorActiveTag === 'data' }"
                v-on:click="changeEditorMode('data')"><i class="fa fa-code"></i> 编辑Hack数据</a>
+            <a class="code-editor-button"
+               v-bind:class="{ 'active': control.editorActiveTag === 'upload' }"
+               v-on:click="changeEditorMode('upload')"><i class="fa fa-cloud-upload"></i> 上传Hack数据</a>
             <a class="code-editor-button float-right"
                v-on:click="sendToHack()"><i class="fa fa-send"></i> 提交</a>
             <a class="code-editor-button float-right"
@@ -104,6 +107,16 @@
 
         <!-- Hack data editor -->
         <pre id="code-editor" class="ace_editor ace-twilight ace_dark code-box editable" v-bind:class="{ 'active': control.editorActiveTag === 'data' }">{{ form.data }}</pre>
+
+        <!-- Data uploder -->
+        <div class="data-editor" v-bind:class="{ 'active': control.editorActiveTag === 'upload' }">
+            <div class="upload-button-outer" v-on:click="selectZipFile">
+                <i class="fa fa-cloud-upload upload-button"></i>
+                <br />
+                <span>点击此处上传打包测试数据</span>
+            </div>
+            <input type="file" id="fileUpload" class="upload-button-hidden" />
+        </div>
 
         <!-- Result panel -->
         <div class="judge-panel" v-bind:class="{ 'active': control.editorActiveTag == 'result' }" v-if="hackResult">

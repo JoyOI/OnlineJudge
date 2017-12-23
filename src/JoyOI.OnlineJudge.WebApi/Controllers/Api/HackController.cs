@@ -186,6 +186,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             // Upload hack data to management service
+            if (request.IsBase64)
+            {
+                request.Data = request.Data.Substring(request.Data.IndexOf("base64,") + "base64,".Length);
+            }
             var blobId = await mgmt.PutBlobAsync("data.txt", request.IsBase64 ? Convert.FromBase64String(request.Data) : Encoding.UTF8.GetBytes(request.Data), token);
 
             var hack = new HackStatus

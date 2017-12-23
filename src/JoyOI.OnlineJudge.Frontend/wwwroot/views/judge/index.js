@@ -145,6 +145,53 @@ component.methods = {
         app.fullScreen = true;
         __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
     },
+    changeEditorMode: function (mode) {
+        if (mode != 'code') {
+            __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
+            $('#code-editor').attr('class', __ace_style);
+        }
+        this.control.editorActiveTag = mode;
+        if (mode == 'code') {
+            $('#code-editor').attr('class', __ace_style + ' active');
+        }
+    },
+    selectZipFile: function () {
+        var self = this;
+        $('#fileUpload')
+            .unbind()
+            .change(function (e) {
+                var file = $('#fileUpload')[0].files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    app.notification('pending', '正在提交Hack...');
+                    qv.put('/api/hack', {
+                        judgeStatusId: self.id,
+                        data: e.target.result,
+                        contestId: self.contestId,
+                        IsBase64: true
+                    })
+                        .then(x => {
+                            app.notification('succeeded', 'Hack请求已被处理...', x.msg);
+                            if (self.hackView) {
+                                this.hackView.unsubscribe();
+                            }
+                            self.control.editorActiveTag = 'result';
+                            self.hackView = qv.createView('/api/hack/' + x.data);
+                            self.hackView.fetch(y => {
+                                self.hackResult = y.data;
+                                self.hackResult.result = formatJudgeResult(y.data.result);
+                                self.hackResult.hackeeResult = formatJudgeResult(y.data.hackeeResult);
+                            });
+                            self.hackView.subscribe('hack', x.data);
+                        })
+                        .catch(err => {
+                            app.notification('error', 'Hack提交失败', err.responseJSON.msg);
+                        });
+                };
+                reader.readAsDataURL(file);
+            });
+        $('#fileUpload').click();
+    },
     sendToHack: function () {
         app.notification('pending', '正在提交Hack...');
         qv.put('/api/hack', {
