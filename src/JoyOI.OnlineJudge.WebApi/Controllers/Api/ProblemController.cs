@@ -185,7 +185,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     }
                     else
                     {
-                        var standardCodeId = await MgmtSvc.PutBlobAsync("standard-" + problem.Id, Encoding.UTF8.GetBytes(problem.ValidatorCode), token);
+                        var standardCodeId = await MgmtSvc.PutBlobAsync("standard-" + problem.Id, Encoding.UTF8.GetBytes(problem.StandardCode), token);
                         var stateMachineId = await MgmtSvc.PutStateMachineInstanceAsync("CompileOnlyStateMachine", "http://joyoitest.1234.sh", new BlobInfo[] { new BlobInfo(standardCodeId, "Main" + Constants.GetSourceExtension(problem.StandardLanguage)) });
                         var result = await Awaiter.GetStateMachineResultAsync(stateMachineId, true, token);
                         if (result.StartedActors.Any(x => x.Name == "CompileActor" && x.Status == JoyOI.ManagementService.Model.Enums.ActorStatus.Succeeded))

@@ -71,21 +71,29 @@ component.created = function () {
             self.range.blob = x.data.rangeBlobId;
             self.selected = x.data.tags ? x.data.tags.split(',').map(x => x.trim()) : [];
             try {
-                $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
+                if ($('.markdown-textbox').length && $('.markdown-textbox')[0].smde) {
+                    $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
+                }
 
-                if ($('.spjEditor').length) {
+                if ($('.spjEditor').length && $('.spjEditor')[0].editor) {
                     var editor = $('.spjEditor')[0].editor;
+                    editor.setValue(this.validator.code);
                     editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.validatorLanguage]);
                 }
-                if ($('.stdEditor').length) {
+
+                if ($('.stdEditor').length && $('.stdEditor')[0].editor) {
                     var editor = $('.stdEditor')[0].editor;
+                    editor.setvalue(self.standard.code);
                     editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.standardLanguage]);
                 }
-                if ($('.rangeEditor').length) {
+
+                if ($('.rangeEditor').length && $('.rangeEditor')[0].editor) {
                     var editor = $('.rangeEditor')[0].editor;
+                    editor.setvalue(self.range.code);
                     editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.rangeLanguage]);
                 }
-            } catch(ex) { }
+
+            } catch (ex) { console.error(ex); }
         });
 
     qv.createView('/api/configuration/problemtags').fetch(x => {
