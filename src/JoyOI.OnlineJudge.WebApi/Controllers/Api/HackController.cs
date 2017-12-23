@@ -179,7 +179,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!string.IsNullOrEmpty(request.ContestId))
             {
                 var ce = cef.Create(request.ContestId);
-                if (ce.IsStatusHackable(judge) && ce.IsContestInProgress())
+                if (!ce.IsStatusHackable(judge) || !ce.IsContestInProgress())
                 {
                     return Result(400, "You cannot hack this status");
                 }

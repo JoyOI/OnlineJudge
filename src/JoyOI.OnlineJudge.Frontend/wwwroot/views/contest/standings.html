@@ -6,7 +6,7 @@
                     <col style="width: 60px;" />
                     <col style="width: 47px;" />
                     <col style="width: 150px;" />
-                    <col v-for="x in columns"style="width: 80px;" />
+                    <col v-for="x in columns" style="width: 80px;" />
                     <col v-for="x in problems" />
                 </colgroup>
                 <thead>
@@ -27,11 +27,87 @@
                             </router-link>
                         </td>
                         <td v-if="!x.isInvisible" v-for="(a,b) in columns" class="point-column" v-html="$root.xss(x[b[0].toLowerCase() + b.substr(1) + 'Display'] ? x[b[0].toLowerCase() + b.substr(1) + 'Display'].replace('\n', '<br />') : null)"></td>
-                        <td v-if="!x.isInvisible" v-for="a in problems" class="problem-column" v-html="$root.xss(x.detail[a.id] ? x.detail[a.id].display.replace('\n', '<br />') : null)"></td>
+                        <td class="problem-column"
+                            v-if="!x.isInvisible"
+                            v-for="a in problems"
+                            v-bind:class="{ 'standings-hackable': x.detail[a.id] && x.detail[a.id].isHackable }"
+                            v-on:click="function(){if(x.detail[a.id] && x.detail[a.id].isHackable){goToEditMode(x.detail[a.id].statusId);}}"
+                            v-html="$root.xss(x.detail[a.id] && x.detail[a.id].display ? x.detail[a.id].display.replace('\n', '<br />') : null)"></td>
                         <td v-if="x.isInvisible" class="point-column" v-bind:colspan="problems.length + Object.getOwnPropertyNames(columns).length">{{ x.invisibleDisplay }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Hack area -->
+    <div v-show="control.isInHackMode" class="problem-body-set-off hack-data" style="background:#f5f5f5;">
+        <pre style="width:50%"><code></code></pre>
+    </div>
+    <div class="code-editor-outer" v-bind:class="{ 'edit-mode': control.isInHackMode }">
+        <div class="code-editor-header">
+            <a class="code-editor-button"
+               v-bind:class="{ 'active': control.editorActiveTag === 'data' }"
+               v-on:click="changeEditorMode('data')"><i class="fa fa-code"></i> 编辑Hack数据</a>
+            <a class="code-editor-button"
+               v-bind:class="{ 'active': control.editorActiveTag === 'upload' }"
+               v-on:click="changeEditorMode('upload')"><i class="fa fa-cloud-upload"></i> 上传Hack数据</a>
+            <a class="code-editor-button float-right"
+               v-on:click="sendToHack()"><i class="fa fa-send"></i> 提交</a>
+            <a class="code-editor-button float-right"
+               v-on:click="backToViewMode()"><i class="fa" v-bind:class="{ 'fa-mail-reply': control.isInHackMode }"></i> 返回评测结果</a>
+        </div>
+
+        <!-- Hack data editor -->
+        <pre id="code-editor" class="ace_editor ace-twilight ace_dark code-box editable" v-bind:class="{ 'active': control.editorActiveTag === 'data' }">{{ form.data }}</pre>
+
+        <!-- Data uploder -->
+        <div class="data-editor" v-bind:class="{ 'active': control.editorActiveTag === 'upload' }">
+            <div class="upload-button-outer" v-on:click="selectHackFile">
+                <i class="fa fa-cloud-upload upload-button"></i>
+                <br />
+                <span>点击此处上传Hack数据 (*.txt)</span>
+            </div>
+            <input type="file" id="fileUpload" class="upload-button-hidden" />
+        </div>
+
+        <!-- Result panel -->
+        <div class="judge-panel" v-bind:class="{ 'active': control.editorActiveTag == 'result' }" v-if="hackResult">
+            <div class="judge-panel-status"
+                 v-bind:class="'judge-panel-color-' + (control.hackStatuses.some(x => x.display === hackResult.result) ? control.hackStatuses.filter(x => x.display === hackResult.result)[0].color : 'blue')">{{ hackResult.result }}</div>
+            <div class="hack-detail-outer">
+                <table class="hack-detail dark">
+                    <colgroup>
+                        <col style="width:30%" />
+                        <col />
+                    </colgroup>
+                    <tr>
+                        <td>Hackee 结果</td>
+                        <td>
+                            <router-link v-bind:class="hackeeClass" :to="{ name: '/judge/:id', path: '/judge/' + hackResult.judgeStatusId, params: { 'id': hackResult.judgeStatusId } }">{{ hackResult.hackeeResult }}</router-link>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>时间消耗</td>
+                        <td>{{ hackResult.timeUsedInMs }} ms</td>
+                    </tr>
+                    <tr>
+                        <td>内存消耗</td>
+                        <td>{{ (hackResult.memoryUsedInByte / 1024 / 1024).toFixed(1) }} MiB</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" v-html="$root.xss(hackResult.hint)"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <a v-if="control.isInHackMode"
+       v-on:click="backToViewMode()"
+       class="back-to-view-mode">
+        <i class="fa fa-close"></i> 退出Hack
+    </a>
+
+    <div class="split-line problem-edit-split-line" v-if="control.isInHackMode"></div>
 </div>

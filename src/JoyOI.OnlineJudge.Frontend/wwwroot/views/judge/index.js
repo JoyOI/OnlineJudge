@@ -155,7 +155,7 @@ component.methods = {
             $('#code-editor').attr('class', __ace_style + ' active');
         }
     },
-    selectZipFile: function () {
+    selectHackFile: function () {
         var self = this;
         $('#fileUpload')
             .unbind()

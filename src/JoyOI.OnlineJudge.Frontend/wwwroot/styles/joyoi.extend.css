@@ -1855,3 +1855,12 @@ dd {
     background: #444;
     color: #aaa;
 }
+
+.standings-hackable {
+    cursor: pointer;
+    transition: background 0.2s linear;
+}
+
+    .standings-hackable:hover {
+        background: #fef8e1;
+    }

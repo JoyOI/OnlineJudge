@@ -6,12 +6,22 @@
 
 component.data = function () {
     return {
+        control: {
+            hackStatuses: hackStatuses,
+            editorActiveTag: 'data',
+            isInHackMode: false
+        },
         id: router.history.current.params.id,
         attendees: [],
         problems: [],
         columns: {},
         excludeVirtual: false,
-        view: null
+        view: null,
+        code: null,
+        hackView: null,
+        hackResult: null,
+        statusId: null,
+        form: { data: '' }
     };
 };
 
@@ -48,5 +58,111 @@ component.methods = {
                     this.$forceUpdate();
                 });
         });
+    },
+    backToViewMode: function () {
+        this.form.data = $('#code-editor')[0].editor.getValue();
+        this.control.isInHackMode = false;
+        app.fullScreen = false;
+        $('.problem-body').attr('style', '');
+    },
+    goToEditMode: function (id) {
+        this.statusId = id;
+        app.notification('pending', '正在准备Hack编辑器');
+        qv.get('/api/judge/' + id, {})
+            .then(x => {
+                if (x.data.code) {
+                    this.code = x.data.code;
+                    $('.hack-data').html('<pre><code></code></pre>');
+                    $('.hack-data pre code').html(this.code);
+                    $('.hack-data pre code').each(function (i, block) {
+                        hljs.highlightBlock(block);
+                    });
+
+                    $('#code-editor')[0].editor.setValue(this.form.data);
+
+                    setTimeout(function () { $('#code-editor')[0].editor.resize(); }, 250);
+
+                    this.control.isInHackMode = true;
+                    app.fullScreen = true;
+                    __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
+                } else {
+                    app.notification('error', '你还不能Hack这条记录');
+                }
+            })
+            .catch(err => {
+                app.notification('error', '你还不能Hack这条记录', err.toString());
+            });
+    },
+    changeEditorMode: function (mode) {
+        if (mode != 'code') {
+            __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
+            $('#code-editor').attr('class', __ace_style);
+        }
+        this.control.editorActiveTag = mode;
+        if (mode == 'code') {
+            $('#code-editor').attr('class', __ace_style + ' active');
+        }
+    },
+    selectHackFile: function () {
+        var self = this;
+        $('#fileUpload')
+            .unbind()
+            .change(function (e) {
+                var file = $('#fileUpload')[0].files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    app.notification('pending', '正在提交Hack...');
+                    qv.put('/api/hack', {
+                        judgeStatusId: self.statusId,
+                        data: e.target.result,
+                        contestId: self.id,
+                        IsBase64: true
+                    })
+                        .then(x => {
+                            app.notification('succeeded', 'Hack请求已被处理...', x.msg);
+                            if (self.hackView) {
+                                this.hackView.unsubscribe();
+                            }
+                            self.control.editorActiveTag = 'result';
+                            self.hackView = qv.createView('/api/hack/' + x.data);
+                            self.hackView.fetch(y => {
+                                self.hackResult = y.data;
+                                self.hackResult.result = formatJudgeResult(y.data.result);
+                                self.hackResult.hackeeResult = formatJudgeResult(y.data.hackeeResult);
+                            });
+                            self.hackView.subscribe('hack', x.data);
+                        })
+                        .catch(err => {
+                            app.notification('error', 'Hack提交失败', err.responseJSON.msg);
+                        });
+                };
+                reader.readAsDataURL(file);
+            });
+        $('#fileUpload').click();
+    },
+    sendToHack: function () {
+        app.notification('pending', '正在提交Hack...');
+        qv.put('/api/hack', {
+            judgeStatusId: this.statusId,
+            data: $('#code-editor')[0].editor.getValue(),
+            contestId: this.id
+        })
+            .then(x => {
+                app.notification('succeeded', 'Hack请求已被处理...', x.msg);
+                if (this.hackView) {
+                    this.hackView.unsubscribe();
+                }
+                this.control.editorActiveTag = 'result';
+                this.hackView = qv.createView('/api/hack/' + x.data);
+                this.hackView.fetch(y => {
+                    this.hackResult = y.data;
+                    this.hackResult.result = formatJudgeResult(y.data.result);
+                    this.hackResult.hackeeResult = formatJudgeResult(y.data.hackeeResult);
+                });
+                this.hackView.subscribe('hack', x.data);
+            })
+            .catch(err => {
+                app.notification('error', 'Hack提交失败', err.responseJSON.msg);
+            });
     }
 };
