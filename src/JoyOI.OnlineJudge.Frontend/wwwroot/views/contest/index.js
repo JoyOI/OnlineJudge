@@ -109,7 +109,9 @@ component.methods = {
             app.notification('pending', '正在锁定题目');
             qv.put('/api/contest/' + this.id + '/problem/' + problemId + '/lock', {})
                 .then(x => {
-                    self.sessionView.refresh();
+                    if (self.sessionView) {
+                        self.sessionView.refresh();
+                    }
                     app.notification('succeeded', '题目锁定成功', x.msg);
                 })
                 .catch(err => {

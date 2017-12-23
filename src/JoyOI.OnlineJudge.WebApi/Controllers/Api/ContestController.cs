@@ -606,7 +606,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #region Lock
 
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/lock")]
-        public async Task<IActionResult> PutLock(string contestId, string problemId, CancellationToken token)
+        public async Task<IActionResult> PutLock(
+            string contestId, 
+            string problemId, 
+            [FromServices] ContestExecutorFactory cef,
+            CancellationToken token)
         {
             if (User.Current == null)
             {
@@ -614,6 +618,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
+                var ce = cef.Create(contestId);
+
+                if (!ce.AllowLockProblem)
+                {
+                    return Result(400, "This contest does not accept lock problem.");
+                }
+
                 var status = await DB.ContestProblemLastStatuses
                     .Where(x => x.ContestId == contestId)
                     .Where(x => x.UserId == User.Current.Id)
