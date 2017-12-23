@@ -39,21 +39,19 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         {
             if (IsContestInProgress())
             {
+                var testCases = GetValidTestCasesAsync(status.ProblemId, status.UserId, default(CancellationToken)).Result;
                 var hack = DB.HackStatuses.FirstOrDefault(x => x.ContestId == ContestId && x.JudgeStatusId == status.Id && x.Result == HackResult.Succeeded);
-                if (hack != null)
+
+                status.SubStatuses = DB.SubJudgeStatuses
+                    .Where(x => x.StatusId == status.Id)
+                    .Where(x => testCases.Contains(x.TestCase.Id))
+                    .ToList();
+
+                foreach (var x in status.SubStatuses)
                 {
-                    status.SubStatuses = DB.SubJudgeStatuses
-                        .Where(x => x.StatusId == status.Id)
-                        .Where(x => x.TestCase.Type == TestCaseType.Small || x.TestCase.InputBlobId == hack.HackDataBlobId)
-                        .ToList();
+                    x.Hint = "Codeforces赛制不提供详细测试点信息";
                 }
-                else
-                {
-                    status.SubStatuses = DB.SubJudgeStatuses
-                        .Where(x => x.StatusId == status.Id)
-                        .Where(x => x.TestCase.Type == TestCaseType.Small)
-                        .ToList();
-                }
+
                 status.Result = status.SubStatuses.Max(x => x.Result);
                 status.TimeUsedInMs = status.SubStatuses.Sum(x => x.TimeUsedInMs);
                 status.MemoryUsedInByte = status.SubStatuses.Max(x => x.MemoryUsedInByte);
@@ -224,7 +222,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             {
                 if (x.isAccepted)
                 {
-                    x.display = x.point + "\r\n" + string.Format("{0}:{1}", (int)x.timeSpan.TotalMinutes / 60, (int)x.timeSpan.TotalMinutes % 60);
+                    x.display = x.point + "\r\n" + string.Format("{0}:{1}", (int)x.timeSpan.TotalMinutes / 60, (int)x.timeSpan.TotalMinutes % 60 == 0 ? "00" : ((int)x.timeSpan.TotalMinutes % 60).ToString());
                 }
                 else if (x.point4 != 0)
                 {
@@ -416,7 +414,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
 
             List<CodeforcesAttendee> attendees;
-            if (!HasPermissionToContest() && !IsContestEnded())
+            var hasPermission = HasPermissionToContest();
+            if (!hasPermission && !IsContestEnded())
             {
                 var contestProblems = await DB.ContestProblems
                     .Where(x => x.ContestId == ContestId)
@@ -527,7 +526,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 .Select(x => x.HackDataBlobId);
             var testCases = await DB.TestCases
                 .Where(x => x.ProblemId == problem)
-                .Where(x => inputIds.Contains(x.InputBlobId) || x.Type == TestCaseType.Small)
+                .Where(x => inputIds.Contains(x.InputBlobId) && x.Type != TestCaseType.Sample || x.Type == TestCaseType.Small)
                 .Select(x => x.Id)
                 .ToListAsync(token);
             return testCases;

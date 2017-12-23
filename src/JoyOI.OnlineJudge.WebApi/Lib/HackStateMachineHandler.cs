@@ -41,6 +41,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             CancellationToken token)
         {
             var statemachine = await _mgmt.GetStateMachineInstanceAsync(statemachineId, token);
+
             if (statemachine.Name == "HackStateMachine")
             {
                 await HandlePlainHackAsync(statemachine, token);
@@ -58,14 +59,23 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
         private async Task HandlePlainHackAsync(StateMachineInstanceOutputDto statemachine, CancellationToken token)
         {
             var hack = await _db.HackStatuses
+                .AsNoTracking()
                 .Include(x => x.RelatedStateMachineIds)
                 .Include(x => x.Status)
                 .ThenInclude(x => x.Problem)
                 .FirstOrDefaultAsync(x => x.RelatedStateMachineIds.Any(y => y.StateMachineId == statemachine.Id), token);
-            
+
             if (hack != null)
             {
                 await HandleSingleHackAsync(statemachine.StartedActors.Where(x => x.Tag == "Hackee=" + hack.JudgeStatusId), hack, hack.Status, hack.Status.Problem, null, token);
+
+                // Refresh
+                hack = await _db.HackStatuses
+                    .AsNoTracking()
+                    .Include(x => x.RelatedStateMachineIds)
+                    .Include(x => x.Status)
+                    .ThenInclude(x => x.Problem)
+                    .FirstOrDefaultAsync(x => x.RelatedStateMachineIds.Any(y => y.StateMachineId == statemachine.Id), token);
 
                 if (!string.IsNullOrEmpty(hack.ContestId))
                 {
@@ -187,12 +197,20 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     .Select(x => x.Id)
                     .ToListAsync(token);
 
+
+                var status = await _db.JudgeStatuses
+                    .Include(x => x.SubStatuses)
+                    .SingleAsync(x => x.Id == statusId, token);
+
                 sub.StatusId = statusId;
                 sub.TestCaseId = testCaseId.Value;
                 sub.InputBlobId = testCase.InputBlobId;
                 sub.OutputBlobId = testCase.OutputBlobId;
                 sub.SubId = testCases.IndexOf(testCaseId.Value);
-                _db.SubJudgeStatuses.Add(sub);
+                status.SubStatuses.Add(sub);
+                status.MemoryUsedInByte = status.SubStatuses.Max(x => x.MemoryUsedInByte);
+                status.TimeUsedInMs = status.SubStatuses.Sum(x => x.TimeUsedInMs);
+                status.Result = status.SubStatuses.Max(x => x.Result);
                 _db.SaveChanges();
             }
 

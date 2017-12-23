@@ -228,7 +228,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 else
                 {
                     testCases = await DB.TestCases
-                        .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large))
+                        .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large || x.Type == TestCaseType.Hack))
                         .ToListAsync(token);
 
                     if (testCases.Count == 0)
