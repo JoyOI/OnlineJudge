@@ -211,6 +211,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     // TODO: Special Judge
                 }
 
+                List<TestCase> testCases = null;
                 if (request.isSelfTest)
                 {
                     Parallel.For(0, request.data.Count(), i =>
@@ -226,8 +227,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
                 else
                 {
-                    // TODO: Test case type
-                    var testCases = await DB.TestCases
+                    testCases = await DB.TestCases
                         .Where(x => x.ProblemId == problem.Id && (x.Type == TestCaseType.Small || x.Type == TestCaseType.Large))
                         .ToListAsync(token);
 
@@ -255,6 +255,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         Result = JudgeResult.Pending,
                         InputBlobId = x.Value.Single(y => y.Name.StartsWith("input_")).Id,
                         OutputBlobId = x.Value.Single(y => y.Name.StartsWith("output_")).Id,
+                        TestCaseId = testCases != null ? (Guid?)testCases[x.Key].Id : null
                     })
                     .ToList();
 

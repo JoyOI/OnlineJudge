@@ -173,7 +173,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     .Update();
 
                 // 5. Hack all statuses
-                if (!testCaseExisted)
+                if (!testCaseExisted && DB.Attendees.Any(x => x.ContestId == ContestId && x.UserId == status.UserId && !x.IsVirtual))
                 {
                     var affectedStatuses = DB.ContestProblemLastStatuses
                         .Include(x => x.Status)

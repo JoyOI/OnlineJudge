@@ -186,7 +186,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(400, "The domain is already existed.");
                 }
-                if (contest.Type != ContestType.OI && contest.Type != ContestType.ACM)
+                if (contest.Type == ContestType.OpenOI)
                 {
                     return Result(400, $"The { contest.Type.ToString() } is not supported yet.");
                 }
