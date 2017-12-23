@@ -409,7 +409,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                .ToListAsync(token);
 
 
-            List<Attendee> attendees;
+            List<CodeforcesAttendee> attendees;
             if (!(HasPermissionToContest() || !IsContestEnded()))
             {
                 var contestProblems = await DB.ContestProblems
@@ -422,7 +422,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             }
 
             attendees = source
-              .Select(x => new Attendee
+              .Select(x => new CodeforcesAttendee
               {
                   userId = x.Key.UserId,
                   isVirtual = x.Key.IsVirtual,

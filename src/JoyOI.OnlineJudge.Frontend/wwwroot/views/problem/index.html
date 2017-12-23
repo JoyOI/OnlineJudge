@@ -95,10 +95,16 @@
                     <span>查看测试数据</span>
                 </a>
                 <a v-on:click="$root.redirect('/judge', '/judge', {}, contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title })"
-                   v-bind:href="$root.resolveUrl({ name: '/judge', path: '/judge', params: {}, query: contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title } })"          
+                   v-bind:href="$root.resolveUrl({ name: '/judge', path: '/judge', params: {}, query: contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title } })"
                    class="sidebar-section-button vue-resolved">
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
+                </a>
+                <a v-on:click="$root.redirect('/hack', '/hack', {}, contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title })"
+                   v-bind:href="$root.resolveUrl({ name: '/hack', path: '/hack', params: {}, query: contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title } })"
+                   class="sidebar-section-button vue-resolved">
+                    <i class="fa fa-shield"></i>
+                    <span>Hack记录</span>
                 </a>
                 <template v-if="isVisible && !contest">
                     <hr class="sidebar-hr" />
@@ -119,8 +125,8 @@
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
                 <a v-on:click="$root.redirect('/problem/:id/edit', '/problem/' + id + '/edit')"
                    v-bind:href="$root.resolveUrl({ name: '/problem/:id/edit', path: '/problem/' + id + '/edit', params: { 'id': id } })"
-                             v-if="hasPermissionToEdit"
-                             class="sidebar-section-button vue-resolved">
+                   v-if="hasPermissionToEdit"
+                   class="sidebar-section-button vue-resolved">
                     <i class="fa fa-cog"></i>
                     <span>管理题目</span>
                 </a>

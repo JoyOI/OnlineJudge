@@ -209,6 +209,8 @@
             LazyRouting.RedirectTo(name, path, params, query);
         },
         ensureUTCTimeString: function (timeStr) {
+            if (!timeStr)
+                return null;
             if (timeStr[timeStr.length - 1] !== 'Z')
                 return timeStr + 'Z';
             else

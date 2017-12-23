@@ -147,7 +147,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             var attendees = (await query
                .GroupBy(x => new { x.UserId, x.IsVirtual })
                .ToListAsync(token))
-               .Select(x => new CodeforcesAttendee
+               .Select(x => new Attendee
                {
                    userId = x.Key.UserId,
                    isVirtual = x.Key.IsVirtual,
