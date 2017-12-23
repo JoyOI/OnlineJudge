@@ -20,6 +20,7 @@ component.methods = {
         });
     },
     register: function (isVirtual) {
+        app.notification('pending', '正在报名参赛');
         qv.put('/api/contest/' + this.id + '/register', {
             isVirtual: isVirtual,
             password: this.needPassword ? $('#txtPassword').val() : null

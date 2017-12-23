@@ -40,6 +40,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public virtual IDictionary<string, string> PointColumnDefinations => new Dictionary<string, string>();
 
+        public virtual bool AllowLockProblem => false;
+
         public virtual void OnShowHackResult(HackStatus status)
         {
         }

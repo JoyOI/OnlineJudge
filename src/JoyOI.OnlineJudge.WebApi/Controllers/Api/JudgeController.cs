@@ -155,6 +155,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(400, "You could not do a self test during the contest is in progress.");
                 }
+
+                if (await DB.ContestProblemLastStatuses.AnyAsync(x => x.IsLocked && x.ContestId == request.contestId && User.Current.Id == x.UserId && x.ProblemId == request.problemId, token))
+                {
+                    return Result(400, "You have locked this problem.");
+                }
             }
 
             if (!Constants.SupportedLanguages.Contains(request.language) && !Constants.UnsupportedLanguages.Contains(request.language) && problem.Source == ProblemSource.Local)

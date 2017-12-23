@@ -15,6 +15,7 @@
                                 <th v-if="$root.user.isSignedIn">状态</th>
                                 <th>题目</th>
                                 <th>分值</th>
+                                <th v-if="session.allowLock">锁定</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,6 +35,7 @@
                                     </template>
                                 </td>
                                 <td>{{ x.point }}</td>
+                                <td v-if="session.allowLock"><a v-if="!x.isLocked" v-on:click="lockProblem(x.problemId)">锁定</a><span v-else>已锁定</span></td>
                             </tr>
                         </tbody>
                     </table>

@@ -33,6 +33,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override bool AllowFilterByJudgeResult => false;
 
+        public override bool AllowLockProblem => true;
+
         public override PushNotificationType PushNotificationSetting => PushNotificationType.All;
 
         public override void OnShowJudgeResult(JudgeStatus status)
@@ -378,9 +380,11 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         public override bool IsStatusHackable(JudgeStatus status)
         {
             var signedIn = User.IsSignedIn();
-            var statusIsHackable = DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.StatusId == status.Id && x.IsHackable);
-            var problemLocked = DB.ContestProblemLastStatuses.Any(x => x.ContestId == ContestId && x.UserId == User.Current.Id && x.ProblemId == status.ProblemId && x.IsLocked);
-            return signedIn && statusIsHackable && problemLocked;
+            var hackStatus = DB.ContestProblemLastStatuses.FirstOrDefault(x => x.ContestId == ContestId && x.StatusId == status.Id && x.IsHackable);
+            var statusIsHackable = hackStatus != null;
+            var cpls = DB.ContestProblemLastStatuses.FirstOrDefault(x => x.ContestId == ContestId && x.UserId == User.Current.Id && x.ProblemId == status.ProblemId && x.IsLocked);
+            var problemLocked = cpls != null;
+            return signedIn && statusIsHackable && problemLocked && (!cpls.IsVirtual && hackStatus.IsVirtual);
         }
 
         private int CaculatePoint(int full, TimeSpan duration, int submit)

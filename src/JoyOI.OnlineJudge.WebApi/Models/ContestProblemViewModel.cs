@@ -11,5 +11,7 @@
         public string status { get; set; }
 
         public bool isVisible { get; set; }
+
+        public bool isLocked { get; set; }
     }
 }

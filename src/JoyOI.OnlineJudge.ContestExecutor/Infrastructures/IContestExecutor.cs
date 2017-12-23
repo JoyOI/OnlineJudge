@@ -15,6 +15,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         bool AllowFilterByHackResult { get; }
 
+        bool AllowLockProblem { get; }
+
         PushNotificationType PushNotificationSetting { get; }
 
         bool AllowHackFinishedPushNotification { get; }

@@ -106,7 +106,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     end = contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > contest.Begin,
                     isEnded = DateTime.UtcNow > contest.Begin.Add(contest.Duration),
-                    isStandingsAvailable = ce.IsAvailableToGetStandings() || await HasPermissionToContestAsync(contest.Id, token)
+                    isStandingsAvailable = ce.IsAvailableToGetStandings() || await HasPermissionToContestAsync(contest.Id, token),
+                    allowLock = false
                 });
             }
             else
@@ -119,7 +120,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     end = attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
                     isEnded = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration)),
-                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName) || await HasPermissionToContestAsync(contest.Id, token)
+                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName) || await HasPermissionToContestAsync(contest.Id, token),
+                    allowLock = ce.AllowLockProblem
                 });
             }
         }
@@ -263,6 +265,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             else
             {
+                var userId = User.Current?.Id;
+                var locked = await DB.ContestProblemLastStatuses
+                    .Where(x => x.ContestId == contestId)
+                    .Where(x => x.IsLocked)
+                    .Where(x => x.UserId == userId)
+                    .Select(x => x.ProblemId)
+                    .ToListAsync(token);
                 var ret = await DB.ContestProblems
                     .Include(x => x.Problem)
                     .Where(x => x.ContestId == contestId)
@@ -273,7 +282,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         problemId = x.ProblemId,
                         number = x.Number,
                         point = x.Point,
-                        isVisible = x.Problem.IsVisible
+                        isVisible = x.Problem.IsVisible,
+                        isLocked = locked.Contains(x.ProblemId)
                     })
                     .ToListAsync(token);
 
@@ -594,39 +604,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Lock
-        [HttpGet("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/lock")]
-        public async Task<IActionResult> GetAllLocks(string contestId, CancellationToken token)
-        {
-            if (User.Current == null)
-            {
-                return Result<IEnumerable<string>>(401, "Not authorized");
-            }
-            else
-            {
-                var contest = await DB.Contests
-                    .SingleOrDefaultAsync(x => x.Id == contestId, token);
-                if (contest == null)
-                {
-                    return Result<IEnumerable<string>>(404, "Contest not found");
-                }
-                else if (contest.Type != ContestType.Codeforces)
-                {
-                    return Result<IEnumerable<string>>(400, "You can only get the lock status in Codeforces contest");
-                }
-                else
-                {
-                    var ret = await DB.ContestProblemLastStatuses
-                        .Where(x => x.UserId == User.Current.Id)
-                        .Where(x => x.IsLocked)
-                        .Select(x => x.ProblemId)
-                        .ToListAsync(token);
 
-                    return Result(ret.AsEnumerable());
-                }
-            }
-        }
-
-        [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/lock/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/lock")]
         public async Task<IActionResult> PutLock(string contestId, string problemId, CancellationToken token)
         {
             if (User.Current == null)
@@ -643,11 +622,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 if (status == null)
                 {
-                    return Result(404, "Not found");
+                    return Result(404, "Please pass the small data of this problem first.");
                 }
                 else if (status.IsLocked)
                 {
                     return Result(400, "Already locked");
+                }
+                else if (!status.IsHackable)
+                {
+                    return Result(400, "Please pass the small data of this problem first.");
                 }
                 else
                 {

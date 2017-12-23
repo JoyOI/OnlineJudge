@@ -9,13 +9,15 @@
         type: null,
         claims: [],
         problems: [],
+        sessionView: null,
         session: {
             begin: null,
             end: null,
             isRegistered: false,
             isBegan: true,
             isEnded: true,
-            isStandingsAvailable: false
+            isStandingsAvailable: false,
+            allowLock: false
         },
         disableVirtual: false
     };
@@ -96,11 +98,24 @@ component.methods = {
     },
     getContestSession: function () {
         var self = this;
-        qv.createView('/api/contest/' + self.id + '/session', {}, 60000)
-            .fetch(x => {
-                self.session = x.data;
-                self.loadContestProblem();
-            });
+        self.sessionView = qv.createView('/api/contest/' + self.id + '/session', {}, 60000);
+        self.sessionView.fetch(x => {
+            self.session = x.data;
+            self.loadContestProblem();
+        });
+    },
+    lockProblem: function (problemId) {
+        if (confirm("锁定题目后您将无法再次提交该题，您确定要锁定该题吗？")) {
+            app.notification('pending', '正在锁定题目');
+            qv.put('/api/contest/' + this.id + '/problem/' + problemId + '/lock', {})
+                .then(x => {
+                    self.sessionView.refresh();
+                    app.notification('succeeded', '题目锁定成功', x.msg);
+                })
+                .catch(err => {
+                    app.notification('error', '题目锁定失败', err.responseJSON.msg);
+                });
+        }
     }
 };
 
