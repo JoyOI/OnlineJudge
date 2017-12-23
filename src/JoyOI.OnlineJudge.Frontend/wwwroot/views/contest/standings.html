@@ -32,7 +32,7 @@
                             v-for="a in problems"
                             v-bind:class="{ 'standings-hackable': x.detail[a.id] && x.detail[a.id].isHackable }"
                             v-on:click="function(){if(x.detail[a.id] && x.detail[a.id].isHackable){goToEditMode(x.detail[a.id].statusId);}}"
-                            v-html="$root.xss(x.detail[a.id] && x.detail[a.id].display ? x.detail[a.id].display.replace('\n', '<br />') : null)"></td>
+                            v-html="$root.xss(x.detail[a.id] && x.detail[a.id].display ? x.detail[a.id].display.replace('\r', '').replace('\n', '<br />') : null)"></td>
                         <td v-if="x.isInvisible" class="point-column" v-bind:colspan="problems.length + Object.getOwnPropertyNames(columns).length">{{ x.invisibleDisplay }}</td>
                     </tr>
                 </tbody>

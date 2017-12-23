@@ -87,7 +87,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     ContestId = status.ContestId,
                     UserId = status.UserId,
                     StatusId = status.Id,
-                    Point = status.Result == JudgeResult.Accepted ? CaculatePoint(contestProblem.Point, duration, 0) : 0,
+                    Point = status.Result == JudgeResult.Accepted ? CaculatePoint(contestProblem.Point, duration, 1) : 0,
                     Point2 = 0,
                     Point3 = 0,
                     Point4 = 1,
@@ -101,8 +101,8 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             else
             {
                 cpls.StatusId = status.Id;
-                cpls.Point = status.Result == JudgeResult.Accepted ? CaculatePoint(contestProblem.Point, ComputeTimeSpan(status.CreatedTime, status.UserId), cpls.Point4) : 0;
                 cpls.Point4++;
+                cpls.Point = status.Result == JudgeResult.Accepted ? CaculatePoint(contestProblem.Point, ComputeTimeSpan(status.CreatedTime, status.UserId), cpls.Point4) : 0;
                 cpls.TimeSpan = duration;
                 cpls.IsAccepted = status.Result == JudgeResult.Accepted;
                 cpls.IsHackable = isHackable;
