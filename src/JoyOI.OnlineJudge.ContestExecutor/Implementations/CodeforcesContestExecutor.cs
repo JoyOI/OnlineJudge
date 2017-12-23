@@ -197,6 +197,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                     });
                     blobs.Add(new BlobInfo(validatorId, problem.ValidatorBlobId.HasValue ? "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage) : "Validator.out"));
                     blobs.Add(new BlobInfo(status.HackDataBlobId.Value, "data.txt", testCase.Id.ToString()));
+                    blobs.Add(new BlobInfo(testCase.OutputBlobId, "std.txt", testCase.Id.ToString()));
                     foreach (var x in affectedStatuses)
                     {
                         blobs.Add(new BlobInfo(x.Status.BinaryBlobId.Value, "Hackee" + Constants.GetBinaryExtension(x.Status.Language), x.StatusId.ToString()));

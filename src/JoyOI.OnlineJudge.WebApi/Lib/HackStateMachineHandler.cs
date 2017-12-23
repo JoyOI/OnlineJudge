@@ -89,12 +89,11 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             var actors = statemachine
                 .StartedActors
                 .GroupBy(x => x.Tag)
-                .Where(x => x.Key.StartsWith("Hackee="))
                 .ToList();
 
             if (actors.Count > 0)
             {
-                var judgeStatusId = Guid.Parse(actors.First().Key.Split('=')[1]);
+                var judgeStatusId = Guid.Parse(actors.First().Key);
                 var judge = await _db.JudgeStatuses
                     .Include(x => x.Problem)
                     .SingleAsync(x => x.Id == judgeStatusId, token);
@@ -181,7 +180,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             if (hack == null && actors.Count(x => x.Stage == "GenerateHackeeAnswer") > 0 && testCaseId.HasValue)
             {
                 var runActor = actors.First(x => x.Stage == "GenerateHackeeAnswer");
-                var statusId = Guid.Parse(runActor.Tag.Split("=")[1]);
+                var statusId = Guid.Parse(runActor.Tag);
                 var testCase = await _db.TestCases.SingleAsync(x => x.Id == testCaseId.Value, token);
                 var testCases = await _db.TestCases
                     .Where(x => x.ProblemId == problem.Id)
