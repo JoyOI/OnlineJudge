@@ -188,10 +188,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(400, "The domain is already existed.");
                 }
-                if (contest.Type == ContestType.OpenOI)
-                {
-                    return Result(400, $"The { contest.Type.ToString() } is not supported yet.");
-                }
                 if (!IsMasterOrHigher && contest.Type == ContestType.OI && contest.Duration > new TimeSpan(3, 0, 0, 0, 0))
                 {
                     return Result(400, "The duration of OI contest must lower than 3 days.");

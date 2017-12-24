@@ -53,6 +53,13 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                         Configuration = this._config,
                         ContestId = contestId
                     };
+                case ContestType.OpenOI:
+                    return new OpenOIContestExecutor()
+                    {
+                        DB = this._db,
+                        User = this._user,
+                        ContestId = contestId
+                    };
                 default:
                     throw new NotSupportedException($"The contest type { contest.Type } is not supported yet.");
             }
