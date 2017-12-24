@@ -62,7 +62,7 @@
 
         this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
         this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id, user, hint, hint2) => {
-            if (this.user.profile && type === 'hack' && user === this.user.profile.username && hint === 'Succeeded') {
+            if (this.user.profile && type === 'hack' && user === this.user.profile.id && hint === 'Succeeded') {
                 app.lookupProblems([hint2])
                     .then(() => {
                         app.notification('important', 'Hack 通知', `您在比赛中提交的${app.lookup.problem[hint2]}已被其他选手Hack！`, '我知道了');

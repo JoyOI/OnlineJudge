@@ -224,7 +224,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             {
                 if (x.isAccepted)
                 {
-                    x.display = x.point + "\r\n" + string.Format("{0}:{1}", (int)x.timeSpan.TotalMinutes / 60, (int)x.timeSpan.TotalMinutes % 60 == 0 ? "00" : ((int)x.timeSpan.TotalMinutes % 60).ToString());
+                    x.display = x.point + "\r\n" + string.Format("{0}:{1}", (int)x.timeSpan.TotalMinutes / 60, (int)x.timeSpan.TotalMinutes % 60 < 10 ? ("0" + ((int)x.timeSpan.TotalMinutes % 60).ToString()) : ((int)x.timeSpan.TotalMinutes % 60).ToString());
                 }
                 else if (x.point4 != 0)
                 {
@@ -384,7 +384,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             var statusIsHackable = hackStatus != null;
             var cpls = DB.ContestProblemLastStatuses.FirstOrDefault(x => x.ContestId == ContestId && x.UserId == User.Current.Id && x.ProblemId == status.ProblemId && x.IsLocked);
             var problemLocked = cpls != null;
-            return signedIn && statusIsHackable && problemLocked && (!cpls.IsVirtual && hackStatus.IsVirtual);
+            return signedIn && statusIsHackable && problemLocked && (!cpls.IsVirtual && !hackStatus.IsVirtual || cpls.IsVirtual);
         }
 
         private int CaculatePoint(int full, TimeSpan duration, int submit)

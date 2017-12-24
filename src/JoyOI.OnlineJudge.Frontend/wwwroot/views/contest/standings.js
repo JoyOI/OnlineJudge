@@ -116,6 +116,7 @@ component.methods = {
         $('.problem-body').attr('style', '');
     },
     goToEditMode: function (id) {
+        var self = this;
         this.statusId = id;
         app.notification('pending', '正在准备Hack编辑器');
         qv.get('/api/judge/' + id, {})
@@ -123,16 +124,16 @@ component.methods = {
                 if (x.data.code) {
                     this.code = x.data.code;
                     $('.hack-data').html('<pre><code></code></pre>');
-                    $('.hack-data pre code').html(this.code);
+                    $('.hack-data pre code').text(self.code);
                     $('.hack-data pre code').each(function (i, block) {
                         hljs.highlightBlock(block);
                     });
 
-                    $('#code-editor')[0].editor.setValue(this.form.data);
+                    $('#code-editor')[0].editor.setValue(self.form.data);
 
                     setTimeout(function () { $('#code-editor')[0].editor.resize(); }, 250);
 
-                    this.control.isInHackMode = true;
+                    self.control.isInHackMode = true;
                     app.fullScreen = true;
                     __ace_style = $('#code-editor').attr('class').replace('active', '').trim();
                 } else {
@@ -248,10 +249,11 @@ component.methods = {
     },
     getSingleStandings: async function (user) {
         var attendee = (await qv.get('/api/contest/' + this.id + '/standings/' + user)).data;
-        if (excludeVirtual && attendee.isVirtual) return null;
-        await app.lookupUsers({ userIds: x.data.attendees.map(y => y.userId) });
+        if (this.excludeVirtual && attendee.isVirtual) return null;
+        await app.lookupUsers({ userIds: [attendee.userId] });
         attendee.roleClass = app.lookup.user[attendee.userId].class;
         attendee.avatarUrl = app.lookup.user[attendee.userId].avatar;
         attendee.username = app.lookup.user[attendee.userId].name;
+        return attendee;
     }
 };
