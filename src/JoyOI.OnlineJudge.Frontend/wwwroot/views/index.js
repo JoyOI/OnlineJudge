@@ -48,6 +48,8 @@
             userInfoView: null,
             chatIframeUrl: null,
             chatInterval: null
+        },
+        notice: {
         }
     },
     created: function () {
@@ -120,6 +122,15 @@
                     }
                 }
             });
+
+        qv.createView('/api/configuration/notice', null, 10 * 60 * 1000).fetch(x => {
+            var notice = JSON.parse(x.data.value);
+            if (notice.title !== this.notice.title || notice.text !== this.notice.text) {
+                this.notice = notice;
+                this.notification('important', notice.title, notice.text, '我知道了');
+            }
+        })
+            .catch(() => { });
     },
     watch: {
         title: function (val) {
