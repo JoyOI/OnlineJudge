@@ -61,7 +61,14 @@
         qv.__host = this.hosts.api;
 
         this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
-        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id, user) => {
+        this.signalr.onlinejudge.connection.on('ItemUpdated', (type, id, user, hint, hint2) => {
+            if (this.user.profile && type === 'hack' && user === this.user.profile.username && hint === 'Succeeded') {
+                app.lookupProblems([hint2])
+                    .then(() => {
+                        app.notification('important', 'Hack 通知', `您在比赛中提交的${app.lookup.problem[hint2]}已被其他选手Hack！`, '我知道了');
+                    });
+            }
+
             var listners = this.signalr.onlinejudge.listeners.filter(x => x.type === type && (x.id === id || !x.id)).map(x => {
                 x.view.removeCache();
                 return x.view.fetch(x.view._fetchFunc);

@@ -82,7 +82,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     var ce = _cef.Create(hack.ContestId);
                     if (ce.PushNotificationSetting == PushNotificationType.All)
                     {
-                        _hub.Clients.All.InvokeAsync("ItemUpdated", "hack", hack.Id, hack.Status.UserId);
+                        _hub.Clients.All.InvokeAsync("ItemUpdated", "hack", hack.Id, hack.Status.UserId, hack.Result.ToString(), hack.Status.ProblemId);
                         _hub.Clients.All.InvokeAsync("StandingsUpdated", hack.ContestId, hack.UserId, hack.Status.UserId);
                     }
 
