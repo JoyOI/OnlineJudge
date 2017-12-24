@@ -483,9 +483,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             if (statuses.Count == 0)
                 return null;
 
-            var ret = new Attendee
+            var ret = new CodeforcesAttendee
             {
                 userId = statuses.First().UserId,
+                isVirtual = statuses.First().IsVirtual,
                 detail = statuses
                     .GroupBy(x => x.ProblemId)
                     .Select(x => new Detail

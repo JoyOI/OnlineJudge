@@ -245,6 +245,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             var ret = new Attendee
             {
                 userId = statuses.First().UserId,
+                isVirtual = statuses.First().IsVirtual,
                 detail = statuses
                     .GroupBy(x => x.ProblemId)
                     .Select(x => new Detail

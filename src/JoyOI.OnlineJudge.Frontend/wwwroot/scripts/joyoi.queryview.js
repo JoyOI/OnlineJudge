@@ -101,7 +101,8 @@
             if (!this.__cache[key]) this.__cache[key] = { isPaged: true };
             this.__cache[key][result.data.current] = result;
         }
-        this.__cacheDictionary[endpoint].push(key);
+        if (!this.__cacheDictionary[endpoint].some(x => x == key))
+            this.__cacheDictionary[endpoint].push(key);
 
         if (expire)
             this.__cacheExpire[key] = new Date().getTime() + expire;

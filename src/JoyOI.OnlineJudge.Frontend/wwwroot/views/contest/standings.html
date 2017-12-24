@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(x, index) in attendees">
+                    <tr v-for="(x, index) in sortedStandings">
                         <td><span v-if="x.isVirtual">*</span>{{ !x.isInvisible ? index + 1 : '?' }}</td>
                         <td class="user-column"><img v-bind:src="x.avatarUrl" class="standings-avatar" /></td>
                         <td v-bind:class="x.roleClass">

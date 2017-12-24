@@ -25,6 +25,56 @@ component.data = function () {
     };
 };
 
+component.computed = {
+    sortedStandings: function () {
+        return this.attendees.sort(function (a, b) {
+            if (a.isInvisible == b.isInvisible) {
+                if (a.point == b.point) {
+                    if (a.point2 == b.point2) {
+                        if (a.point3 == b.point3) {
+                            if (a.point4 == b.point4) {
+                                if (a.timeSpan == b.timeSpan) {
+                                    if (a.timeSpan2 < b.timeSpan2) {
+                                        return -1;
+                                    } else {
+                                        return 1;
+                                    }
+                                } else if (a.timeSpan < b.timeSpan) {
+                                    return -1;
+                                } else {
+                                    return 1;
+                                }
+                            } else if (a.point4 < b.point4) {
+                                return -1;
+                            } else {
+                                return 1;
+                            }
+                        }
+                        else if (a.point3 < b.point3) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    } else if (a.point2 > b.point2) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                } else if (a.point > b.point) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            } else if (a.isInvisible) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        });
+    }
+};
+
 component.watch = {
     excludeVirtual: function (val) {
         if (val) {
@@ -164,5 +214,44 @@ component.methods = {
             .catch(err => {
                 app.notification('error', 'Hack提交失败', err.responseJSON.msg);
             });
+    },
+    updateStandings: async function (user, user2) {
+        var needSort = false;
+        if (user) {
+            var result = await this.getSingleStandings(user);
+            if (result) {
+                needSort = true;
+                if (this.attendees.some(x => x.userId == user)) {
+                    var existed = this.attendees.filter(x => x.userId == user)[0];
+                    for (var x in result) {
+                        existed[x] = result[x];
+                    }
+                } else {
+                    this.attendees.push(result);
+                }
+            }
+        }
+        if (user2) {
+            var result = await this.getSingleStandings(user2);
+            if (result) {
+                needSort = true;
+                if (this.attendees.some(x => x.userId == user2)) {
+                    var existed = this.attendees.filter(x => x.userId == user2)[0];
+                    for (var x in result) {
+                        existed[x] = result[x];
+                    }
+                } else {
+                    this.attendees.push(result);
+                }
+            }
+        }
+    },
+    getSingleStandings: async function (user) {
+        var attendee = (await qv.get('/api/contest/' + this.id + '/standings/' + user)).data;
+        if (excludeVirtual && attendee.isVirtual) return null;
+        await app.lookupUsers({ userIds: x.data.attendees.map(y => y.userId) });
+        attendee.roleClass = app.lookup.user[attendee.userId].class;
+        attendee.avatarUrl = app.lookup.user[attendee.userId].avatar;
+        attendee.username = app.lookup.user[attendee.userId].name;
     }
 };

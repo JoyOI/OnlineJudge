@@ -340,7 +340,10 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     .Single(x => x.Id == status.Id));
 
                 if (ce.PushNotificationSetting == PushNotificationType.All)
+                {
                     _hub.Clients.All.InvokeAsync("ItemUpdated", "judge", statusId);
+                    _hub.Clients.All.InvokeAsync("StandingsUpdated", status.ContestId, status.UserId);
+                }
                 else if (ce.PushNotificationSetting == PushNotificationType.Master)
                 {
                     _hub.Clients.Group("Masters").InvokeAsync("ItemUpdated", "judge", statusId);

@@ -67,6 +67,12 @@
                 return x.view.fetch(x.view._fetchFunc);
             });
         });
+        this.signalr.onlinejudge.connection.on('StandingsUpdated', (id, user, user2) => {
+            var current = LazyRouting.GetCurrentComponent();
+            if (current && current.updateStandings && current.id && current.id == id) {
+                current.updateStandings(user, user2);
+            }
+        });
         this.signalr.onlinejudge.connection.start()
 
         if (document.cookie.indexOf("AspNetCore") >= 0) {
