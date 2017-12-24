@@ -12,6 +12,7 @@ component.data = function () {
             isInHackMode: false
         },
         id: router.history.current.params.id,
+        title: null,
         attendees: [],
         problems: [],
         columns: {},
@@ -95,8 +96,11 @@ component.methods = {
             this.problems = x.data.problems;
             this.attendees = x.data.attendees;
             this.columns = x.data.columnDefinations;
-            app.links[1].text = x.data.title;
-            app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
+            if (!this.title) {
+                this.title = x.data.title;
+                app.links[1].text = x.data.title;
+                app.links[1].to = { name: '/contest/:id', path: '/contest/' + this.id, params: { id: this.id } };
+            }
 
             app.lookupUsers({ userIds: x.data.attendees.map(y => y.userId) })
                 .then(() => {
