@@ -99,6 +99,12 @@
                     <i class="fa fa-clock-o"></i>
                     <span>提交记录</span>
                 </a>
+                <a v-on:click="$root.redirect('/hack', '/hack', {}, { 'selectedContest.id': id, 'selectedContest.title': title });"
+                   v-bind:href="$root.resolveUrl({ name: '/hack', path: '/hack', params: {}, query: { 'selectedContest.id': id, 'selectedContest.title': title } })"
+                   class="sidebar-section-button vue-resolved">
+                    <i class="fa fa-shield"></i>
+                    <span>Hack记录</span>
+                </a>
                 <hr class="sidebar-hr" v-if="hasPermissionToEdit" />
                 <a v-if="hasPermissionToEdit"
                    v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id })"
