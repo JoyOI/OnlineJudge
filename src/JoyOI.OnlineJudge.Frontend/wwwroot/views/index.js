@@ -204,7 +204,20 @@
             }
         },
         marked: function (str) {
-            return filterXSS(marked(str || ""))
+            var dom = $(filterXSS(marked(str || "")));
+            var ret = [];
+            for (var i = 0; i < dom.length; i++) {
+                if ($(dom[i]).is('pre')) {
+                    hljs.highlightBlock(dom[i]);
+                } else {
+                    var blocks = $(dom[i]).find('pre code');
+                    for (var j = 0; j < blocks.length; j++) {
+                        hljs.highlightBlock(blocks[j]);
+                    }
+                }
+                ret.push(dom[i].outerHTML);
+            }
+            return ret.join('\r\n');
         },
         xss: function (str) {
             return filterXSS(str);
