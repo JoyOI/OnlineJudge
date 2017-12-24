@@ -202,12 +202,16 @@
         xss: function (str) {
             return filterXSS(str);
         },
-        notification: function (level, title, detail) {
-            this.control.notifications.push({ level: level, title: title, detail: detail });
+        notification: function (level, title, detail, button) {
+            var item = { level: level, title: title, detail: detail };
+            if (level === 'important') {
+                item.button = button;
+            }
+            this.control.notifications.push(item);
             if (this.control.currentNotification && this.control.currentNotification.level === 'pending') {
                 this.control.notificationLock = false;
             }
-            this._showNotification();
+            this._showNotification(level === 'important' ? true : false);
         },
         redirect: function (name, path, params, query) {
             if (name && !path)
@@ -248,23 +252,32 @@
             }
             return baseUrl += args.join('&');
         },
-        _showNotification: function () {
+        clickNotification: function () {
+            this._releaseNotification();
+        },
+        _showNotification: function (manualRelease) {
             var self = this;
             if (!this.control.notificationLock && this.control.notifications.length) {
                 this.control.notificationLock = true;
                 var notification = this.control.notifications[0];
                 this.control.notifications = this.control.notifications.slice(1);
                 this.control.currentNotification = notification;
-                setTimeout(function () {
-                    self.control.currentNotification = null;
+                if (!manualRelease) {
                     setTimeout(function () {
-                        self.control.notificationLock = false;
-                        if (self.control.notifications.length) {
-                            self._showNotification();
-                        }
-                    }, 250);
-                }, 4000);
+                        self._releaseNotification();
+                    }, 5000);
+                }
             }
+        },
+        _releaseNotification: function () {
+            var self = this;
+            self.control.currentNotification = null;
+            setTimeout(function () {
+                self.control.notificationLock = false;
+                if (self.control.notifications.length) {
+                    self._showNotification();
+                }
+            }, 250);
         },
         lookupUsers: function (query) {
             var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);

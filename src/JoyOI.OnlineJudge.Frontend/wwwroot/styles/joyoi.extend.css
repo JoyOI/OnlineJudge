@@ -1553,6 +1553,11 @@ dd {
         border-left: 5px solid #fb6666;
     }
 
+    .notification.important {
+        color: #ed5f82;
+        border-left: 5px solid #ed5f82;
+    }
+
     .notification.pending {
         color: #8fd6f8;
         border-left: 5px solid #8fd6f8;
@@ -1863,4 +1868,22 @@ dd {
 
     .standings-hackable:hover {
         background: #fef8e1;
+    }
+
+.notification-button-outer {
+    margin-top: 10px;
+}
+
+.notification-button {
+    background-color: #555;
+    color: #bbb;
+    font-size: 12px;
+    padding: 5px 10px;
+    transition: all 0.2s linear;
+}
+
+    .notification-button:hover {
+        background-color: #ed5f82;
+        color: #fff;
+        text-decoration: none;
     }

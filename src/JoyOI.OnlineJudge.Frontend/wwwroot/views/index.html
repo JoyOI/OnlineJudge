@@ -206,9 +206,12 @@
         <!-- end login -->
 
         <!-- start notifications -->
-        <div class="notification" v-bind:class="{ 'active': control.currentNotification !== null, 'pending': control.currentNotification && control.currentNotification.level === 'pending', 'succeeded': control.currentNotification && control.currentNotification.level === 'succeeded', 'warning': control.currentNotification && control.currentNotification.level === 'warning', 'error': control.currentNotification && control.currentNotification.level === 'error' }">
+        <div class="notification" v-bind:class="{ 'active': control.currentNotification !== null, 'pending': control.currentNotification && control.currentNotification.level === 'pending', 'succeeded': control.currentNotification && control.currentNotification.level === 'succeeded', 'warning': control.currentNotification && control.currentNotification.level === 'warning', 'error': control.currentNotification && control.currentNotification.level === 'error', 'important': control.currentNotification && control.currentNotification.level === 'important' }">
             <div class="notification-title">{{ control.currentNotification ? control.currentNotification.title : null }}</div>
             <div class="notification-detail" v-if="control.currentNotification && control.currentNotification.detail">{{ control.currentNotification ? control.currentNotification.detail : null }}</div>
+            <div class="notification-button-outer" v-if="control.currentNotification && control.currentNotification.button">
+                <a class="notification-button" v-on:click="clickNotification">{{ control.currentNotification.button }}</a>
+            </div>
         </div>
         <!-- end notifications -->
 
