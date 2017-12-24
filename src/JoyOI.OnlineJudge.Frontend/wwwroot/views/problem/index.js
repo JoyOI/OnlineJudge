@@ -115,7 +115,10 @@ component.created = function () {
         qv.createView('/api/contest/' + this.contest)
             .fetch(x => {
                 this.contestTitle = x.data.title;
-                app.links = [{ text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + this.contest, params: { id: this.contest } } }];
+                app.links = [
+                    { text: '比赛列表', to: { name: '/contest', path: '/contest' } },
+                    { text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + this.contest, params: { id: this.contest } } }
+                ];
             });
     }
 

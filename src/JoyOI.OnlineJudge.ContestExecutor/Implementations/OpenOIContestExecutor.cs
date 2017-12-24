@@ -97,7 +97,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
         {
             foreach (var x in src.detail.Values)
             {
-                x.display = x.point.ToString();
+                x.display = x.point.ToString() + "\r\n(" + x.point3 + ")";
             }
         }
 
@@ -124,7 +124,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
             }
             else
             {
-                return cpls.Point.ToString() + "\r\n(" + cpls.Point3 + ")";
+                return cpls.Point.ToString() + " (" + cpls.Point3 + ")";
             }
         }
 
