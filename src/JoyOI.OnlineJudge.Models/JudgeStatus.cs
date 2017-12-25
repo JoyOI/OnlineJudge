@@ -119,10 +119,17 @@ namespace JoyOI.OnlineJudge.Models
         public bool IsSelfTest { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that indicates whether the status is hackable.
+        /// Gets or sets the group id
         /// </summary>
-        [NotMapped]
-        public bool? IsHackable { get; set; }
+        /// <value>The group id</value>
+        [MaxLength(128)]
+        [ForeignKey("Group")]
+        public string GroupId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group
+        /// </summary>
+        public virtual Group Group { get; set; }
 
         /// <summary>
         /// Gets or sets the related state machine identifiers.
@@ -136,5 +143,11 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The sub statuses.</value>
         [ForceInclude]
         public virtual ICollection<SubJudgeStatus> SubStatuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the status is hackable.
+        /// </summary>
+        [NotMapped]
+        public bool? IsHackable { get; set; }
     }
 }

@@ -108,6 +108,19 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The time used in ms</value>
         public int TimeUsedInMs { get; set; }
 
+        /// <summary>
+        /// Gets or sets the group id
+        /// </summary>
+        /// <value>The group id</value>
+        [MaxLength(128)]
+        [ForeignKey("Group")]
+        public string GroupId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group
+        /// </summary>
+        public virtual Group Group { get; set; }
+
         public virtual ICollection<HackStatusStateMachine> RelatedStateMachineIds { get; set; }
     }
 }

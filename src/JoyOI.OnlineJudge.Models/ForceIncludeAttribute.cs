@@ -2,7 +2,5 @@
 
 namespace JoyOI.OnlineJudge.Models
 {
-    public class ForceIncludeAttribute : Attribute
-    {
-    }
+    public class ForceIncludeAttribute : Attribute { }
 }
