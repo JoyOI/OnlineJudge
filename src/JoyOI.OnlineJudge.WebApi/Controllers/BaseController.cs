@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
@@ -22,7 +23,24 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         public override void Prepare()
         {
             base.Prepare();
-            var touch = User.Current;
+
+            if (!string.IsNullOrWhiteSpace(HttpContext.Request.Headers["domain"].ToString()))
+            {
+                var defaultDomain = Configuration["JoyOI:OrganizationDefaultDomain"];
+                var postfix = defaultDomain.Replace("{ORG}", "");
+                var currentDomain = HttpContext.Request.Headers["domain"].ToString();
+                if (currentDomain.EndsWith(postfix))
+                {
+                    var groupId = currentDomain.Replace(postfix, "");
+                    this._currentGroup = DB.Groups.Single(x => x.Id == groupId);
+                }
+                else
+                {
+                    this._currentGroup = DB.Groups.Single(x => x.Domain == currentDomain);
+                }
+            }
+
+                var touch = User.Current;
             if (User.Current != null)
             {
                 if (User.Current.ActiveTime.AddMinutes(1) < DateTime.UtcNow)
@@ -73,6 +91,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             }
         }
 
+        public Group CurrentGroup => this._currentGroup;
+
         // [Inject]
         public IcM IcM { get; set; }
 
@@ -92,6 +112,20 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         private bool? _isRoot;
 
         private bool? _isMasterOrHigher;
+
+        private Group _currentGroup;
+
+        public bool IsGroupRequest()
+        {
+            if (_currentGroup != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         [Inject]
         public ManagementServiceClient ManagementService { get; set; }
