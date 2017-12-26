@@ -210,6 +210,12 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Status);
             });
 
+            builder.Entity<GroupProblem>(e =>
+            {
+                e.HasKey(x => new { x.GroupId, x.ProblemId });
+                e.HasIndex(x => x.CreatedTime);
+            });
+
             builder.Entity<HackStatus>(e =>
 			{
 				e.HasIndex(x => x.Time);
