@@ -68,6 +68,12 @@ namespace JoyOI.OnlineJudge.Models
         public DbSet<GroupMember> GroupMembers { get; set; }
 
         /// <summary>
+        /// Gets or sets the group problem set
+        /// </summary>
+        /// <value>The group problem set</value>
+        public DbSet<GroupProblem> GroupProblems { get; set; }
+
+        /// <summary>
         /// Gets or sets the hack statuses.
         /// </summary>
         /// <value>The hack statuses.</value>
