@@ -81,6 +81,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => ids.Contains(x.Id));
             }
 
+            if (IsGroupRequest())
+            {
+                ret = ret.Where(x => x.GroupId == CurrentGroup.Id);
+            }
+
             var result = await DoPaging(ret.OrderByDescending(x => x.CreatedTime), page ?? 1, 20, token);
             if (!IsMasterOrHigher && result.data.result.Any(x => !string.IsNullOrWhiteSpace(x.ContestId)))
             {
@@ -290,6 +295,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     },
                 };
 
+                if (IsGroupRequest())
+                {
+                    status.GroupId = CurrentGroup.Id;
+                }
+
                 DB.JudgeStatuses.Add(status);
                 await DB.SaveChangesAsync(token);
 
@@ -361,6 +371,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                         }
                     }
                 };
+                
+                if (IsGroupRequest())
+                {
+                    status.GroupId = CurrentGroup.Id;
+                }
 
                 DB.JudgeStatuses.Add(status);
                 await DB.SaveChangesAsync(token);
@@ -407,6 +422,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .Include(x => x.SubStatuses)
                 .Include(x => x.Problem)
                 .SingleOrDefaultAsync(x => x.Id == id, token);
+            
+            if (IsGroupRequest() && ret.GroupId != CurrentGroup.Id)
+            {
+                return Result(400, "No permission");
+            }
 
             var problem = ret.Problem;
             var username = ret.User.UserName;
@@ -428,7 +448,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 var hasPermissionToProblem = await HasPermissionToProblemAsync(problem.Id, token);
 
-                if (!problem.IsVisible && hasPermissionToProblem)
+                if (!problem.IsVisible && !hasPermissionToProblem && !IsGroupRequest() && !await HasPermissionToGroupAsync(token))
                 {
                     return Result<JudgeStatus>(403, "No permission");
                 }
@@ -444,7 +464,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!HasOwnership
                 && !await HasPermissionToProblemAsync(problem.Id, token)
                 && !await HasPermissionToContestAsync(ret.ContestId, token)
-                && !await IsStatusCodeCouldBeViewed(ret, cef, token))
+                && !await IsStatusCodeCouldBeViewed(ret, cef, token)
+                && !(IsGroupRequest() && await HasPermissionToGroupAsync(token)))
             {
                 ret.Code = null;
             }

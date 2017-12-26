@@ -82,6 +82,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.Status.ProblemId == problemId);
             }
 
+            if (IsGroupRequest())
+            {
+                ret = ret.Where(x => x.GroupId == CurrentGroup.Id);
+            }
+
             return await Paged(ret.OrderByDescending(x => x.Time)
                 .Select(x => new HackViewModel
                 {
@@ -113,6 +118,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 .Include(x => x.User)
                 .SingleOrDefaultAsync(x => x.Id == id, token);
 
+            if (IsGroupRequest() && ret.GroupId != CurrentGroup.Id)
+            {
+                return Result(400, "No permission");
+            }
+
             if (ret.HackDataBlobId.HasValue)
             {
                 ret.HackDataBody = Encoding.UTF8.GetString((await mgmt.GetBlobAsync(ret.HackDataBlobId.Value, token)).Body);
@@ -135,7 +145,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
             }
 
-            if (User.Current?.Id != ret.UserId && User.Current?.Id != ret.Status.UserId)
+            if (User.Current?.Id != ret.UserId 
+                && User.Current?.Id != ret.Status.UserId 
+                && !await HasPermissionToProblemAsync(ret.Status.ProblemId, token)
+                && !(IsGroupRequest() && await HasPermissionToGroupAsync(token)))
             {
                 ret.HackDataBody = null;
             }

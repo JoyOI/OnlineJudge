@@ -328,5 +328,23 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 }
             }
         }
+
+        [NonAction]
+        protected async Task<bool> HasPermissionToGroupAsync(CancellationToken token = default(CancellationToken))
+        {
+            if (!User.IsSignedIn())
+            {
+                return false;
+            }
+
+            if (IsMasterOrHigher || await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.UserId == User.Current.Id, token))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
