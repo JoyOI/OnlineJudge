@@ -8,7 +8,8 @@
             api: null,
             uc: null,
             forum: null,
-            blog: null
+            blog: null,
+            main: null
         },
         showUrlCover: router.history.current.fullPath != '/' && router.history.current.fullPath != '/home',
         fullScreen: false,
@@ -60,6 +61,7 @@
         this.hosts.forum = 'http://forum.joyoi.cn';
         this.hosts.api = 'http://localhost:5000';
         this.hosts.uc = 'http://uc.joyoi.cn';
+        this.hosts.main = ['localhost:5001', '127.0.0.1:5001', 'joyoi.cn', 'www.joyoi.cn', 'joyoi.org'];
         qv.__host = this.hosts.api;
 
         this.signalr.onlinejudge.connection = new signalR.HubConnection(this.hosts.api + '/signalr/onlinejudge');
@@ -354,6 +356,11 @@
             } else {
                 return Promise.resolve();
             }
+        }
+    },
+    computed: {
+        isGroup: function () {
+            return !this.hosts.main.some(x => x === window.location.host.toString());
         }
     }
 });

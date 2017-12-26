@@ -28,7 +28,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             {
                 var defaultDomain = Configuration["JoyOI:OrganizationDefaultDomain"];
                 var postfix = defaultDomain.Replace("{ORG}", "");
-                var currentDomain = HttpContext.Request.Headers["domain"].ToString();
+                var currentDomain = HttpContext.Request.Headers["joyoi_domain"].ToString();
                 if (currentDomain.EndsWith(postfix))
                 {
                     var groupId = currentDomain.Replace(postfix, "");
