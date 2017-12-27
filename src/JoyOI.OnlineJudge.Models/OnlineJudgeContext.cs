@@ -200,7 +200,6 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Level);
 				e.HasIndex(x => x.Point);
 				e.HasIndex(x => x.Name).ForMySqlIsFullText();
-                e.HasIndex(x => x.Type);
                 e.HasMany(x => x.JudgeStatuses).WithOne(x => x.Group).IsRequired(false);
                 e.HasMany(x => x.HackStatuses).WithOne(x => x.Group).IsRequired(false);
             });

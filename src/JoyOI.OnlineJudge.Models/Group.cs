@@ -14,15 +14,6 @@ namespace JoyOI.OnlineJudge.Models
     }
 
     /// <summary>
-    /// Group type.
-    /// </summary>
-    public enum GroupType
-    {
-        Private,
-        Public
-    }
-
-    /// <summary>
     /// Group.
     /// </summary>
     public class Group
@@ -94,13 +85,7 @@ namespace JoyOI.OnlineJudge.Models
         /// <value>The logo URL</value>
         [MaxLength(256)]
         public string LogoUrl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type.
-        /// </summary>
-        /// <value>The type.</value>
-        public GroupType Type { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the group owned judge statuses
         /// </summary>

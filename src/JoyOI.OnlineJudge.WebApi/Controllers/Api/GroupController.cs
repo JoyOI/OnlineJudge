@@ -16,13 +16,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         #region Group
         [HttpGet("all")]
-        public Task<IActionResult> Get(GroupType? type, string name, int? page, CancellationToken token)
+        public Task<IActionResult> Get(string name, int? page, CancellationToken token)
         {
             IQueryable<Group> ret = DB.Groups;
-            if (type.HasValue)
-            {
-                ret = ret.Where(x => x.Type == type.Value);
-            }
             if (!string.IsNullOrWhiteSpace(name))
             {
                 ret = ret.Where(x => x.Name.Contains(name) || name.Contains(x.Name));

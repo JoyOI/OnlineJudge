@@ -37,6 +37,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.UserName.Contains(username));
             }
 
+            if (IsGroupRequest())
+            {
+                var subQuery = DB.GroupMembers.Where(x => x.GroupId == CurrentGroup.Id).Select(x => x.UserId);
+                ret = ret.Where(x => subQuery.Contains(x.Id));
+            }
+
             var result = await DoPaging(ret.Select(x => new UserListViewModel
             {
                 Id = x.Id,
