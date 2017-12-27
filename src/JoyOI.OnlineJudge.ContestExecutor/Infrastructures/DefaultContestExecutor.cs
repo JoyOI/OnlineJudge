@@ -127,10 +127,18 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
             if (User.Manager.IsInAnyRolesAsync(user, Constants.MasterOrHigherRoles).Result)
                 return true;
+
             if (DB.UserClaims.Any(x => x.UserId == user.Id
                    && x.ClaimType == Constants.ContestEditPermission
                    && x.ClaimValue == ContestId))
                 return true;
+
+            if (Contest.AttendPermission == AttendPermission.Team
+                && DB.UserClaims.Any(x => x.UserId == user.Id
+                    && x.ClaimType == Constants.GroupEditPermission
+                    && x.ClaimValue == Contest.PasswordOrTeamId))
+                return true;
+
             return false;
         }
 
