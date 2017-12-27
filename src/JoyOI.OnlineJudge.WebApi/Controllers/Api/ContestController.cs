@@ -53,6 +53,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 ret = ret.Where(x => x.IsHighlighted);
             }
+            if (IsGroupRequest())
+            {
+                ret = ret.Where(x => x.AttendPermission == AttendPermission.Team && x.PasswordOrTeamId == CurrentGroup.Id); 
+            }
             if (!page.HasValue)
             {
                 page = 1;
@@ -106,7 +110,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     end = contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > contest.Begin,
                     isEnded = DateTime.UtcNow > contest.Begin.Add(contest.Duration),
-                    isStandingsAvailable = ce.IsAvailableToGetStandings() || await HasPermissionToContestAsync(contest.Id, token),
+                    isStandingsAvailable = ce.IsAvailableToGetStandings() || ce.HasPermissionToContest(),
                     allowLock = false
                 });
             }
@@ -120,7 +124,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     end = attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration),
                     isBegan = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime : contest.Begin),
                     isEnded = DateTime.UtcNow > (attendee.IsVirtual ? attendee.RegisterTime.Add(contest.Duration) : contest.Begin.Add(contest.Duration)),
-                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName) || await HasPermissionToContestAsync(contest.Id, token),
+                    isStandingsAvailable = ce.IsAvailableToGetStandings(User.Current.UserName) || ce.HasPermissionToContest(),
                     allowLock = ce.AllowLockProblem
                 });
             }
@@ -128,9 +132,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> Patch(string id, CancellationToken token)
+        public async Task<IActionResult> Patch(string id, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
-            if (!await HasPermissionToContestAsync(id, token))
+            var ce = cef.Create(id);
+            if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No Permission");
             }
@@ -205,13 +210,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpDelete("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> Delete(string id, CancellationToken token)
+        public async Task<IActionResult> Delete(string id, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
-            if (await DB.Contests.AnyAsync(x => x.Id == id, token))
-            {
-                return Result(400, "The contest id is already exists.");
-            }
-            else if (!await HasPermissionToContestAsync(id, token))
+            var ce = cef.Create(id);
+            if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
@@ -251,11 +253,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(404, "Contest not found");
             }
-            else if (contest.Begin > DateTime.UtcNow && !await HasPermissionToContestAsync(contestId, token))
+
+            var ce = cef.Create(contestId);
+            if (contest.Begin > DateTime.UtcNow && !ce.HasPermissionToContest())
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(400, "The contest has not started");
             }
-            else if (contest.End >= DateTime.UtcNow && !await IsRegisteredToContest(contestId, token) && !await HasPermissionToContestAsync(contestId, token))
+            else if (contest.End >= DateTime.UtcNow && !await IsRegisteredToContest(contestId, token) && !ce.HasPermissionToContest())
             {
                 return Result<IEnumerable<ContestProblemViewModel>>(new ContestProblemViewModel[] { });
             }
@@ -285,7 +289,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 if (User.IsSignedIn())
                 {
-                    var ce = cef.Create(contestId);
                     foreach (var x in ret)
                     {
                         x.status = ce.GenerateProblemStatusText(x.problemId, User.Current.UserName);
@@ -297,7 +300,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> PutContestProblem(string contestId, string problemId, CancellationToken token)
+        public async Task<IActionResult> PutContestProblem(string contestId, string problemId, [FromServices]ContestExecutorFactory cef, CancellationToken token)
         {
             var contest = await DB.Contests
                 .SingleOrDefaultAsync(x => x.Id == contestId, token);
@@ -312,11 +315,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(404, "Problem not found");
             }
-            else if (problemCount >= 26)
+
+            var ce = cef.Create(contestId);
+            if (problemCount >= 26)
             {
                 return Result(400, "The contest problem count cannot be greater than 26");
             }
-            else if (!await HasPermissionToContestAsync(contestId, token))
+            else if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission to this contest");
             }
@@ -354,7 +359,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         [HttpPost("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         [HttpPatch("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> PatchContestProblem(string contestId, string problemId, [FromBody] string value, CancellationToken token)
+        public async Task<IActionResult> PatchContestProblem(string contestId, string problemId, [FromServices] ContestExecutorFactory cef, [FromBody] string value, CancellationToken token)
         {
             var contestProblem = await DB.ContestProblems
                 .SingleOrDefaultAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
@@ -362,7 +367,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(404, "Contest problem not found");
             }
-            else if (!await HasPermissionToContestAsync(contestId, token))
+
+            var ce = cef.Create(contestId);
+            if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission to this contest");
             }
@@ -382,7 +389,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpDelete("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
-        public async Task<IActionResult> DeleteContestProblem(string contestId, string problemId, [FromBody] string value, CancellationToken token)
+        public async Task<IActionResult> DeleteContestProblem(string contestId, string problemId, [FromServices] ContestExecutorFactory cef, [FromBody] string value, CancellationToken token)
         {
             var contestProblem = await DB.ContestProblems
                 .SingleOrDefaultAsync(x => x.ContestId == contestId && x.ProblemId == problemId, token);
@@ -390,7 +397,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(404, "Contest problem not found");
             }
-            else if (!await HasPermissionToContestAsync(contestId, token))
+
+            var ce = cef.Create(contestId);
+            if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission to this contest");
             }
@@ -490,9 +499,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim")]
-        public async Task<IActionResult> PutClaims(string contestId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        public async Task<IActionResult> PutClaims(string contestId, [FromServices]ContestExecutorFactory cef, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
         {
-            if (!await HasPermissionToContestAsync(contestId, token))
+            var ce = cef.Create(contestId);
+            if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
@@ -514,9 +524,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{userId:Guid}")]
-        public async Task<IActionResult> DeleteClaim(Guid userId, string contestId, CancellationToken token)
+        public async Task<IActionResult> DeleteClaim(Guid userId, string contestId, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
-            if (!await HasPermissionToContestAsync(contestId, token))
+            var ce = cef.Create(contestId);
+            if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
@@ -544,7 +555,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> GetStandings(string contestId, bool? includingVirtual, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var ce = cef.Create(contestId);
-            if (!ce.IsAvailableToGetStandings(User.Current?.UserName) && !await HasPermissionToContestAsync(contestId, token))
+            if (!ce.IsAvailableToGetStandings(User.Current?.UserName) && !ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
@@ -584,7 +595,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         public async Task<IActionResult> GetStandings(string contestId, Guid userId, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var ce = cef.Create(contestId);
-            if (!ce.IsAvailableToGetStandings(User.Current?.UserName) && !await HasPermissionToContestAsync(contestId, token))
+            if (!ce.IsAvailableToGetStandings(User.Current?.UserName) && !ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
@@ -651,13 +662,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Private Functions
         private const string ProblemNumberString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-        private async Task<bool> HasPermissionToContestAsync(string contestId, CancellationToken token = default(CancellationToken))
-            => !(User.Current == null
-               || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
-               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
-                   && x.ClaimType == Constants.ContestEditPermission
-                   && x.ClaimValue == contestId));
 
         private async Task<bool> HasPermissionToProblemAsync(string problemId, CancellationToken token = default(CancellationToken))
             => !(User.Current == null
