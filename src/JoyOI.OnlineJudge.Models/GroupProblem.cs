@@ -18,6 +18,6 @@ namespace JoyOI.OnlineJudge.Models
 
         public virtual Problem Problem { get; set; }
 
-        public DateTime CreatedTime { get; set; }
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
     }
 }

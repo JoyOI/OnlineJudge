@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace JoyOI.OnlineJudge.Models
@@ -92,5 +93,17 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The type.</value>
         public GroupType Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group owned judge statuses
+        /// </summary>
+        /// <value>The group owned judge statuses</value>
+        public virtual ICollection<JudgeStatus> JudgeStatuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group owned hack statuses
+        /// </summary>
+        /// <value>The group owned hack statuses</value>
+        public virtual ICollection<HackStatus> HackStatuses { get; set; }
     }
 }
