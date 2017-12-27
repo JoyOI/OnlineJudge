@@ -38,17 +38,54 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 if (!IsMasterOrHigher)
                 {
-                    var editableProblemIds = await DB.UserClaims
+                    var editableProblemIds = DB.UserClaims
                         .Where(x => x.UserId == User.Current.Id && x.ClaimType == Constants.ProblemEditPermission)
-                        .Select(x => x.ClaimValue)
-                        .ToListAsync(token);
+                        .Select(x => x.ClaimValue);
 
-                    ret = ret.Where(x => x.IsVisible || editableProblemIds.Contains(x.Id));
+                    if (!IsGroupRequest())
+                    {
+                        ret = ret.Where(x => x.IsVisible || editableProblemIds.Contains(x.Id));
+                    }
+                    else
+                    {
+                        var groupProblems = DB.GroupProblems
+                            .Where(x => x.GroupId == CurrentGroup.Id)
+                            .Select(x => x.ProblemId);
+
+                        ret = ret.Where(x => groupProblems.Contains(x.Id));
+
+                        if (!await HasPermissionToGroupAsync(token))
+                        {
+                            ret = ret.Where(x => x.IsVisible);
+                        }
+                    }
+                }
+                else
+                {
+                    if (IsGroupRequest())
+                    {
+                        var groupProblems = DB.GroupProblems
+                            .Where(x => x.GroupId == CurrentGroup.Id)
+                            .Select(x => x.ProblemId);
+
+                        ret = ret.Where(x => groupProblems.Contains(x.Id));
+                    }
                 }
             }
             else
             {
-                ret = ret.Where(x => x.IsVisible);
+                if (IsGroupRequest())
+                {
+                    var groupProblems = DB.GroupProblems
+                        .Where(x => x.GroupId == CurrentGroup.Id)
+                        .Select(x => x.ProblemId);
+
+                    ret = ret.Where(x => x.IsVisible && groupProblems.Contains(x.Id));
+                }
+                else
+                {
+                    ret = ret.Where(x => x.IsVisible);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(title))

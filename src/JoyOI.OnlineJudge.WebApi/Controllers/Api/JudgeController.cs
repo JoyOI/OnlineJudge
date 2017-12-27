@@ -114,6 +114,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 }
             }
 
+            FilterResult(result.data.result);
             return Json(result);
         }
 
@@ -180,6 +181,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (problem.Source != ProblemSource.Local && request.isSelfTest)
             {
                 return Result(400, "You could not use self data to test with a remote problem.");
+            }
+
+            if (IsGroupRequest() && !await DB.GroupProblems.AnyAsync(x => x.ProblemId == problem.Id && x.GroupId == CurrentGroup.Id))
+            {
+                return Result(404, "The problem does not exist.");
             }
 
             #region Local Judge

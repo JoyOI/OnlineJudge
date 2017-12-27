@@ -125,12 +125,32 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
-        #region Logo
-        //[HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/logo")]
-        //public async Task<IActionResult> GetLogo(string id, CancellationToken token)
-        //{
-
-        //}
+        #region Group Session
+        [HttpGet("cur/session")]
+        public async Task<IActionResult> GetSession(CancellationToken token)
+        {
+            if (!IsGroupRequest())
+            {
+                return Result(400, "Invalid request");
+            }
+            else
+            {
+                if (await IsGroupMemberAsync(token))
+                {
+                    return Result(new
+                    {
+                        IsMember = true
+                    });
+                }
+                else
+                {
+                    return Result(new
+                    {
+                        IsMember = false
+                    });
+                }
+            }
+        }
         #endregion
 
         #region Group Member

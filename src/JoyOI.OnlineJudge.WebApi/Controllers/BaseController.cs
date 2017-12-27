@@ -202,6 +202,39 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
             };
         }
 
+        public void FilterResult<T>(IEnumerable<T> src)
+        {
+            var virtualProperty = typeof(T).GetProperties().Where(z => !z.PropertyType.IsValueType && z.GetCustomAttribute<ForceIncludeAttribute>() == null && z.GetAccessors().Any(y => y.IsVirtual));
+            var webapiAttributedProperty = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<WebApiAttribute>() != null);
+            foreach (var x in src)
+            {
+                foreach (var y in webapiAttributedProperty)
+                {
+                    var level = y.GetCustomAttribute<WebApiAttribute>().Level;
+                    if (level.HasFlag(FilterLevel.GetListDisabled))
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                    else if (level.HasFlag(FilterLevel.GetNeedRoot) && !IsRoot)
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                    else if (level.HasFlag(FilterLevel.GetNeedOwner) && !HasOwnership)
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                }
+
+                if (typeof(T).FullName.StartsWith("JoyOI.OnlineJudge"))
+                {
+                    foreach (var y in virtualProperty)
+                    {
+                        y.SetValue(x, y.PropertyType.IsValueType ? Activator.CreateInstance(y.PropertyType) : null);
+                    }
+                }
+            }
+        }
+
         [NonAction]
         public async Task<IActionResult> Paged<T>(IQueryable<T> src, int currentPage, int size = 100, CancellationToken token = default(CancellationToken))
         {

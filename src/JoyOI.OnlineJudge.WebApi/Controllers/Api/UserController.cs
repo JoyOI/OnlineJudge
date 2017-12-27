@@ -49,7 +49,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 UserName = x.UserName,
                 AvatarUrl = x.AvatarUrl
             }), page ?? 1, 50, token);
-
+            
+            FilterResult(result.data.result);
             return Json(result);
         }
 
