@@ -51,7 +51,8 @@
             chatInterval: null
         },
         notice: {
-        }
+        },
+        group: null
     },
     created: function () {
         var self = this;
@@ -59,7 +60,7 @@
         /* Initialize host addresses */
         this.hosts.blog = 'http://{USERNAME}.blog.joyoi.cn';
         this.hosts.forum = 'http://forum.joyoi.cn';
-        this.hosts.api = 'http://localhost:5000';
+        this.hosts.api = 'http://api.oj.joyoi.cn';
         this.hosts.uc = 'http://uc.joyoi.cn';
         this.hosts.main = ['localhost:5001', '127.0.0.1:5001', 'joyoi.cn', 'www.joyoi.cn', 'joyoi.org'];
         qv.__host = this.hosts.api;
@@ -133,10 +134,17 @@
             }
         })
             .catch(() => { });
+
+        if (this.isGroup) {
+            qv.createView('/api/group/cur', {})
+                .fetch(x => {
+                    this.group = x.data;
+                });
+        }
     },
     watch: {
         title: function (val) {
-            $('title').text(val + ' - JoyOI Online Judge');
+            $('title').text(val + (app.isGroup ? ' - ' + app.group.name : ' - JoyOI Online Judge'));
         },
         fullScreen: function (val) {
             if (val) {

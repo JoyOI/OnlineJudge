@@ -89,6 +89,13 @@ namespace JoyOI.OnlineJudge.Models
         public long CachedMemberCount { get; set; }
 
         /// <summary>
+        /// Gets or sets the logo URL.
+        /// </summary>
+        /// <value>The logo URL</value>
+        [MaxLength(256)]
+        public string LogoUrl { get; set; }
+
+        /// <summary>
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>

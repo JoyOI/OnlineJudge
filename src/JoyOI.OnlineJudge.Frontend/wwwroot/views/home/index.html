@@ -1,5 +1,5 @@
 ﻿<div class="container" id="home-index">
-    <div class="row">
+    <div class="row" v-if="!$root.isGroup">
         <div class="col-md-12 banner-outer">
             <div class="area-item banner">
                 <div class="area-title">JoyOI 公测开启</div>
@@ -8,6 +8,12 @@
     </div>
     <div class="row">
         <div class="col-md-9">
+            <div class="area-outer" v-if="$root.isGroup && $root.group.description">
+                <div class="area-item">
+                    <div v-html="$root.marked($root.group.description)"></div>
+                </div>
+            </div>
+
             <div class="area-outer">
                 <div class="area-item" v-for="contest in contests">
                     <router-link class="area-title pointer" :to="{ name: '/contest/:id', path: '/contest/' + contest.id, params: { 'id': contest.id } }">{{ contest.title }}</router-link>
@@ -21,8 +27,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="area-outer">
+            <div class="area-outer" v-if="!$root.isGroup">
                 <div class="area-item">
                     <div class="area-title">论坛帖子</div>
                     <div class="thread-revert-padding">

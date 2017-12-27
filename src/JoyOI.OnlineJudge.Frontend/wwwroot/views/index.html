@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="referrer" content="origin" />
     <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>首页 - JoyOI Online Judge</title>
+    <title>首页 - Joy OI</title>
     <link href="/styles/joyoi.base.min.css" rel="stylesheet" />
     <link href="/styles/joyoi.extend.css" rel="stylesheet" />
     <script src="/scripts/checkbrowser.js"></script>
@@ -42,7 +42,7 @@
                             <i class="fa fa-list mobile-menu"></i>
                         </button>
                         <!-- start logo -->
-                        <a href="javascript:;" class="navbar-logo"><img src="/images/logo-bk.png" /></a>
+                        <a href="javascript:;" class="navbar-logo"><img v-bind:src="isGroup && group && group.logoUrl ? group.logoUrl : '/images/logo-bk.png'" /></a>
                         <!-- end logo -->
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
@@ -50,10 +50,10 @@
                             <li class="home"><router-link to="/" id="redirect-to-home">首页</router-link></li>
                             <li class="home"><router-link to="/problem">题目</router-link></li>
                             <li class="home"><router-link to="/contest">比赛</router-link></li>
-                            <li class="home"><router-link to="/group">团队</router-link></li>
+                            <li class="home" v-if="!isGroup"><router-link to="/group">团队</router-link></li>
                             <li class="home"><router-link to="/judge">评测</router-link></li>
                             <li class="home"><router-link to="/hack">Hack</router-link></li>
-                            <li class="home"><a v-bind:href="hosts.forum" target="_blank">论坛</a></li>
+                            <li class="home" v-if="!isGroup"><a v-bind:href="hosts.forum" target="_blank">论坛</a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="logout" v-if="user.isSignedIn"><a v-bind:href="hosts.blog.replace('{USERNAME}', user.profile.username) + '/admin/login'" target="_blank">我的空间</a></li>
@@ -76,7 +76,7 @@
         <div id="cover" class="cover cover-single mobile-cover" v-bind:class="{ 'cover-url': showUrlCover, 'cover-without-url': !showUrlCover }">
             <div class="cont-wrap">
                 <div class="col-md-12 mobile-cover-center" style="text-align:left">
-                    <img src="/images/logo.png" class="mobile-cover-img" style="height:140px;margin-top:-60px;" />
+                    <img v-bind:src="isGroup && group && group.logoUrl ? group.logoUrl : '/images/logo.png'" class="mobile-cover-img" style="height:140px;margin-top:-60px;" />
                 </div>
             </div>
             <div class="cover-url-inner" v-show="showUrlCover">
@@ -84,7 +84,7 @@
                     <div class="col-md-12" style="text-align:left">
                         <div class="columns">
                             <div class="location-path">
-                                / <router-link to="/">Joy OI</router-link> /
+                                / <router-link to="/">{{ !isGroup ? 'Joy OI' : group.name }}</router-link> /
                                 <template v-for="link in links">
                                     <a class="vue-resolved" v-bind:href="resolveUrl(link.to)" v-on:click="redirect(typeof link.to === 'string' ? link.to : link.to.name, typeof link.to === 'string' ? link.to : link.to.path, typeof link.to === 'string' ? undefined : link.to.params), typeof link.to === 'string' ? undefined : link.to.query">{{ link.text }}</a> /
                                 </template>

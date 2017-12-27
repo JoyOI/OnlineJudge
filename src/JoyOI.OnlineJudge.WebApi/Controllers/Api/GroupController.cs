@@ -34,6 +34,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Paged(ret, page.Value, 20, token);
         }
 
+        [HttpGet("cur")]
+        public async Task<IActionResult> Get(CancellationToken token)
+        {
+            if (!IsGroupRequest())
+            {
+                return Result(404, "Group not found.");
+            }
+            else
+            {
+                return await Get(CurrentGroup.Id, token);
+            }
+        }
+
         [HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<IActionResult> Get(string id, CancellationToken token)
         {
@@ -114,6 +127,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(200, "Delete Succeeded");
             }
         }
+        #endregion
+
+        #region Logo
+        //[HttpGet("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/logo")]
+        //public async Task<IActionResult> GetLogo(string id, CancellationToken token)
+        //{
+
+        //}
         #endregion
 
         #region Group Member

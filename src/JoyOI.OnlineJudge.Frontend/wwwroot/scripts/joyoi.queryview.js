@@ -52,9 +52,7 @@
                 data: method == 'GET' ? params : JSON.stringify(params),
                 beforeSend: function(request) {
                     request.setRequestHeader('joyoi_cookie', document.cookie);
-                    if (app && app.isGroup) {
-                        request.setRequestHeader('joyoi_domain', window.location.host.toString());
-                    }
+                    request.setRequestHeader('joyoi_domain', window.location.host.toString());
                 },
                 success: function (ret) {
                     if (app) {

@@ -10,7 +10,9 @@ component.created = function () {
     app.links = [];
 
     this.loadContests();
-    this.loadThreads();
+    if (!app.isGroup) {
+        this.loadThreads();
+    }
 }
 
 component.methods = {

@@ -24,7 +24,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         {
             base.Prepare();
 
-            if (!string.IsNullOrWhiteSpace(HttpContext.Request.Headers["domain"].ToString()))
+            if (!string.IsNullOrWhiteSpace(HttpContext.Request.Headers["joyoi_domain"].ToString()))
             {
                 var defaultDomain = Configuration["JoyOI:OrganizationDefaultDomain"];
                 var postfix = defaultDomain.Replace("{ORG}", "");
@@ -32,11 +32,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 if (currentDomain.EndsWith(postfix))
                 {
                     var groupId = currentDomain.Replace(postfix, "");
-                    this._currentGroup = DB.Groups.Single(x => x.Id == groupId);
+                    this._currentGroup = DB.Groups.SingleOrDefault(x => x.Id == groupId);
                 }
                 else
                 {
-                    this._currentGroup = DB.Groups.Single(x => x.Domain == currentDomain);
+                    this._currentGroup = DB.Groups.SingleOrDefault(x => x.Domain == currentDomain);
                 }
             }
 
