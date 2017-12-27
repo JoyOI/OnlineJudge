@@ -139,14 +139,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(new
                     {
-                        IsMember = true
+                        IsMember = true,
+                        IsMaster = await HasPermissionToGroupAsync()
                     });
                 }
                 else
                 {
                     return Result(new
                     {
-                        IsMember = false
+                        IsMember = false,
+                        IsMaster = false
                     });
                 }
             }

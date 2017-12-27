@@ -201,6 +201,13 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     return Result(400, "The duration must lower than 7 days.");
                 }
+                if (IsGroupRequest())
+                {
+                    if (!await HasPermissionToGroupAsync(token))
+                    {
+                        return Result(400, "You don't have the permission to create a contest in this group.");
+                    }
+                }
 
                 DB.Contests.Add(contest);
                 DB.UserClaims.Add(new IdentityUserClaim<Guid> { ClaimType = Constants.ContestEditPermission, ClaimValue = id, UserId = User.Current.Id });

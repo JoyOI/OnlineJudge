@@ -52,7 +52,8 @@
         },
         notice: {
         },
-        group: null
+        group: null,
+        groupSession: null
     },
     created: function () {
         var self = this;
@@ -139,6 +140,10 @@
             qv.createView('/api/group/cur', {})
                 .fetch(x => {
                     this.group = x.data;
+                    qv.createView('/api/group/cur/session', {})
+                        .fetch(y => {
+                            this.groupSession = y.data;
+                        });
                 });
         }
     },

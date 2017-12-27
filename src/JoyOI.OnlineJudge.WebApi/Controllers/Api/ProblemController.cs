@@ -308,6 +308,22 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             problem.Id = id;
             problem.Tags = LocalProblemSetTag;
 
+            if (IsGroupRequest())
+            {
+                if (!await HasPermissionToGroupAsync(token))
+                {
+                    return Result(400, "You don't have the permission to create a problem in this group.");
+                }
+                else
+                {
+                    DB.GroupProblems.Add(new GroupProblem
+                    {
+                        GroupId = CurrentGroup.Id,
+                        ProblemId = problem.Id
+                    });
+                }
+            }
+
             // 处理比较器
             if (problem.ValidatorBlobId.HasValue)
             {
