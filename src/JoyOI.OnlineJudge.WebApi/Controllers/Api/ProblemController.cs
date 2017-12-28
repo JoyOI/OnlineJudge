@@ -137,9 +137,21 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     .Select(x => x.ProblemId)
                     .ToListAsync(token);
 
+                var groupStatistics = await ProblemStatisticsQueryBuilder.GenerateAsync(DB, CurrentGroup.Id, result.data.result.Select(x => x.Id), token);
+
                 foreach (var x in result.data.result)
                 {
                     x.IsAddedToGroup = addedProblems.Contains(x.Id);
+                    if (groupStatistics.ContainsKey(x.Id))
+                    {
+                        x.CachedAcceptedCount = groupStatistics[x.Id].Accepted;
+                        x.CachedSubmitCount = groupStatistics[x.Id].Total;
+                    }
+                    else
+                    {
+                        x.CachedAcceptedCount = 0;
+                        x.CachedSubmitCount = 0;
+                    }
                 }
                 
                 return Json(result);
