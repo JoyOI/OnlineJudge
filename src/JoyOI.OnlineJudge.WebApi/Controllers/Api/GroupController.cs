@@ -212,7 +212,59 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Group Contest Reference
+        [HttpPut("cur/contest/{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> PutContest(string contestId, CancellationToken token)
+        {
+            if (!IsGroupRequest())
+            {
+                return Result(400, "Invalid Request");
+            }
+            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            {
+                return Result(400, "No permission");
+            }
+            else if (await DB.GroupContestReferences.AnyAsync(x => x.ContestId == contestId && x.GroupId == CurrentGroup.Id, token))
+            {
+                return Result(400, "The contest was already existed.");
+            }
+            else
+            {
+                DB.GroupContestReferences.Add(new GroupContestReference
+                {
+                    GroupId = CurrentGroup.Id,
+                    ContestId = contestId
+                });
 
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Succeeded");
+            }
+        }
+
+        [HttpDelete("cur/contest/{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> DeleteContest(string contestId, CancellationToken token)
+        {
+            if (!IsGroupRequest())
+            {
+                return Result(400, "Invalid Request");
+            }
+            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            {
+                return Result(400, "No permission");
+            }
+            else if (!await DB.GroupContestReferences.AnyAsync(x => x.ContestId == contestId && x.GroupId == CurrentGroup.Id, token))
+            {
+                return Result(400, "The contest was not found.");
+            }
+            else
+            {
+                DB.GroupContestReferences
+                    .Where(x => x.GroupId == CurrentGroup.Id)
+                    .Where(x => x.ContestId == contestId)
+                    .Delete();
+
+                return Result(200, "Succeeded");
+            }
+        }
         #endregion
 
         #region Group Member
