@@ -21,6 +21,10 @@
                             </select>
                         </p>
                         <p>
+                            <label>域名绑定 (留空则不绑定)</label>
+                            <input type="text" class="form-control" v-model="domain" />
+                        </p>
+                        <p>
                             <a class="btn btn-default" v-on:click="save()"><i class="fa fa-save"></i> 保存</a>
                         </p>
                     </div>

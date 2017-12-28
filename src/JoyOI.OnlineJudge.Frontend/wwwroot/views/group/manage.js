@@ -2,7 +2,8 @@
     return {
         name: app.group.name,
         description: app.group.description,
-        joinMethod: app.group.joinMethod
+        joinMethod: app.group.joinMethod,
+        domain: app.group.domain
     };
 };
 
@@ -17,13 +18,15 @@ component.methods = {
         qv.patch('/api/group/' + app.group.id, {
             name: this.name,
             joinMethod: this.joinMethod,
-            description: this.description
+            description: this.description,
+            domain: this.domain
         })
             .then(x => {
                 app.notification('succeeded', '团队信息编辑成功', x.msg);
                 app.group.name = this.name;
                 app.group.description = this.description;
                 app.group.joinMethod = this.joinMethod;
+                app.group.domain = this.domain;
             })
             .catch(err => {
                 app.notification('error', '团队信息编辑失败', err.responseJSON.msg);
