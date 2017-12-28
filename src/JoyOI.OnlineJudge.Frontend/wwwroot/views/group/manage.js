@@ -14,7 +14,7 @@ component.created = function () {
 component.methods = {
     save: function () {
         this.description = $('.markdown-textbox')[0].smde.codemirror.getValue();
-        app.notification('pending', '正在团队信息');
+        app.notification('pending', '正在编辑团队信息');
         qv.patch('/api/group/' + app.group.id, {
             name: this.name,
             joinMethod: this.joinMethod,

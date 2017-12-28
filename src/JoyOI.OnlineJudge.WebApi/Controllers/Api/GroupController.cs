@@ -269,8 +269,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
         #region Group Member
         [HttpGet("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/all")]
-        public Task<IActionResult> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)
+        public async Task<IActionResult> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)
         {
+            var managers = await DB.UserClaims
+                .Where(x => x.ClaimType == Constants.GroupEditPermission)
+                .Where(x => x.ClaimValue == groupId)
+                .Select(x => x.UserId)
+                .ToListAsync(token);
+
             IQueryable<GroupMember> ret = DB.GroupMembers
                 .Where(x => x.GroupId == groupId);
 
@@ -279,41 +285,65 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 ret = ret.Where(x => x.Status == status.Value);
             }
 
-            ret = ret.OrderBy(x => x.CreatedTime);
+            ret = ret
+                .OrderByDescending(x => managers.Contains(x.UserId))
+                .ThenBy(x => x.CreatedTime);
 
             if (!page.HasValue)
             {
                 page = 1;
             }
 
-            return Paged(ret, page.Value, 20, token);
+            var hasPermissionToGroup = await HasPermissionToGroupAsync(groupId, token);
+
+            var result = DoPaging(ret.Select(x => new GroupMemberViewModel
+            {
+                IsMaster = managers.Contains(x.UserId),
+                Status = x.Status,
+                UserId = x.UserId,
+                JoinedTime = x.CreatedTime,
+                Request = hasPermissionToGroup ? x.Message : null,
+                Response = hasPermissionToGroup ? x.Feedback : null
+            }), page.Value, 20, token);
+
+            return Json(result);
         }
         
-        [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid?}")]
-        public async Task<IActionResult> PutMember(string groupId, Guid? userId, [FromBody] string value, CancellationToken token)
+        [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> PutMember(string groupId, string username, CancellationToken token)
         {
-            if (!await DB.Groups.AnyAsync(x => x.Id == groupId, token))
+            var user = await User.Manager.FindByNameAsync(username);
+            var group = await DB.Groups.SingleOrDefaultAsync(x => x.Id == groupId, token);
+            if (group == null)
             {
                 return Result(404, "Group Not Found");
             }
-            else if (userId.HasValue && userId.Value != User.Current.Id && !await HasPermissionToGroupAsync(groupId))
+            else if (username != User.Current.UserName && !await HasPermissionToGroupAsync(groupId))
             {
                 return Result(401, "No permission");
             }
+            else if (await DB.GroupMembers.AnyAsync(x => x.GroupId == groupId && x.UserId == user.Id && x.Status == GroupMemberStatus.Approved, token))
+            {
+                return Result(400, "Already joined the group.");
+            }
+            else if (group.JoinMethod == GroupJoinMethod.Verification && await DB.GroupMembers.AnyAsync(x => x.GroupId == groupId && x.UserId == user.Id && x.Status == GroupMemberStatus.Pending, token))
+            {
+                return Result(400, "Already submitted the request.");
+            }
             else
             {
+                DB.GroupMembers
+                    .Where(x => x.GroupId == groupId && x.UserId == user.Id)
+                    .Delete();
+
+                var value = RequestBody;
                 var groupMember = PutEntity<GroupMember>(value).Entity;
                 groupMember.GroupId = groupId;
-                if (userId.HasValue)
+                groupMember.UserId = user.Id;
+                if (await HasPermissionToGroupAsync(token) || group.JoinMethod == GroupJoinMethod.Everyone)
                 {
-                    groupMember.UserId = userId.Value;
                     groupMember.Status = GroupMemberStatus.Approved;
                 }
-                else
-                {
-                    groupMember.UserId = User.Current.Id;
-                }
-
                 groupMember.CreatedTime = DateTime.UtcNow;
                 DB.GroupMembers.Add(groupMember);
                 await DB.SaveChangesAsync(token);

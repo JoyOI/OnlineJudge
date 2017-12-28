@@ -13,6 +13,7 @@
     '/contest/:id': { id: '[a-zA-Z0-9-_]{4,128}' },
     '/group': null,
     '/group/new': null,
+    '/group/join': null,
     '/group/manage': null,
     '/judge/all': null,
     '/judge/:id': { id: '[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}' },

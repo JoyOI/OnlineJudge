@@ -53,7 +53,8 @@
         notice: {
         },
         group: null,
-        groupSession: null
+        groupSession: null,
+        groupSessionView: null
     },
     created: function () {
         var self = this;
@@ -140,9 +141,20 @@
             qv.createView('/api/group/cur', {})
                 .fetch(x => {
                     this.group = x.data;
-                    qv.createView('/api/group/cur/session', {})
+                    this.groupSessionView = qv.createView('/api/group/cur/session', {});
+                    this.groupSessionView
                         .fetch(y => {
                             this.groupSession = y.data;
+                            if (this.user.isSignedIn && !this.groupSession.isMember) {
+                                if (this.group.joinMethod === 0) {
+                                    qv.put('/api/group/' + app.group.id + '/member/' + app.user.profile.username, {})
+                                        .then(x => {
+                                            this.groupSessionView.refresh();
+                                        });
+                                } else {
+                                    this.redirect('/group/join', '/group/join');
+                                }
+                            }
                         });
                 });
         }
@@ -203,6 +215,10 @@
                     self.control.chatIframeUrl = x.data.chat;
                     self.notification("succeeded", "登录成功");
                     self.toggleLoginBox();
+
+                    if (this.isGroup && this.groupSessionView) {
+                        this.groupSessionView.refresh();
+                    }
 
                     qv.reset();
 
