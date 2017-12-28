@@ -62,6 +62,12 @@ namespace JoyOI.OnlineJudge.Models
         public DbSet<Group> Groups { get; set; }
 
         /// <summary>
+        /// Gets or sets the group contest references
+        /// </summary>
+        /// <value>The group contest references</value>
+        public DbSet<GroupContestReference> GroupContestReferences { get; set; }
+
+        /// <summary>
         /// Gets or sets the group join requests.
         /// </summary>
         /// <value>The group join requests.</value>
@@ -202,6 +208,11 @@ namespace JoyOI.OnlineJudge.Models
 				e.HasIndex(x => x.Name).ForMySqlIsFullText();
                 e.HasMany(x => x.JudgeStatuses).WithOne(x => x.Group).IsRequired(false);
                 e.HasMany(x => x.HackStatuses).WithOne(x => x.Group).IsRequired(false);
+            });
+
+            builder.Entity<GroupContestReference>(e => 
+            {
+                e.HasKey(x => new { x.ContestId, x.GroupId });
             });
 
             builder.Entity<GroupMember>(e =>

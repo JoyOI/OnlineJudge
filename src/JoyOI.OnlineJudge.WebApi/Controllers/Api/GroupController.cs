@@ -211,6 +211,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Group Contest Reference
+
+        #endregion
+
         #region Group Member
         [HttpGet("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/all")]
         public Task<IActionResult> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)

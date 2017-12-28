@@ -431,7 +431,14 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             
             if (IsGroupRequest() && ret.GroupId != CurrentGroup.Id)
             {
-                return Result(400, "No permission");
+                if (string.IsNullOrEmpty(ret.ContestId))
+                {
+                    return Result(400, "No permission");
+                }
+                else if (!await DB.GroupContestReferences.AnyAsync(x => x.ContestId == ret.ContestId && x.GroupId == CurrentGroup.Id, token))
+                {
+                    return Result(400, "No permission");
+                }
             }
 
             var problem = ret.Problem;

@@ -55,7 +55,9 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
             if (IsGroupRequest())
             {
-                ret = ret.Where(x => x.AttendPermission == AttendPermission.Team && x.PasswordOrTeamId == CurrentGroup.Id); 
+                ret = ret.Where(x => x.AttendPermission == AttendPermission.Team 
+                && x.PasswordOrTeamId == CurrentGroup.Id 
+                || DB.GroupContestReferences.Where(y => y.GroupId == CurrentGroup.Id).Select(y => y.ContestId).Contains(x.Id)); 
             }
             if (!page.HasValue)
             {
