@@ -183,7 +183,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "You could not use self data to test with a remote problem.");
             }
 
-            if (IsGroupRequest() && !await DB.GroupProblems.AnyAsync(x => x.ProblemId == problem.Id && x.GroupId == CurrentGroup.Id))
+            if (IsGroupRequest() && !await DB.GroupProblems.AnyAsync(x => x.ProblemId == problem.Id && x.GroupId == CurrentGroup.Id) && string.IsNullOrEmpty(request.contestId))
             {
                 return Result(404, "The problem does not exist.");
             }

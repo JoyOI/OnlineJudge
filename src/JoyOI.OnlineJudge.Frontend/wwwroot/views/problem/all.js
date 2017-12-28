@@ -95,6 +95,30 @@ component.methods = {
             args['request.title'] = this.request.title;
         }
         return args;
+    },
+    addToGroup: function (id) {
+        var self = this;
+        app.notification('pending', '正在添加题目');
+        qv.put('/api/group/cur/problem/' + id)
+            .then(x => {
+                app.notification('succeeded', '题目添加成功', x.msg);
+                self.view.refresh();
+            })
+            .catch(err => {
+                app.notification('error', '题目添加失败', err.responseJSON.msg);
+            });
+    },
+    removeFromGroup: function (id) {
+        var self = this;
+        app.notification('pending', '正在删除题目');
+        qv.delete('/api/group/cur/problem/' + id)
+            .then(x => {
+                app.notification('succeeded', '题目删除成功', x.msg);
+                self.view.refresh();
+            })
+            .catch(err => {
+                app.notification('error', '题目删除失败', err.responseJSON.msg);
+            });
     }
 };
 

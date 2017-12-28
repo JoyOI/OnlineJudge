@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="problem in result" v-bind:class="{ 'alpha-03': !problem.isVisible }">
+                    <tr v-for="problem in result" v-bind:class="{ 'alpha-03': !problem.isVisible || ($root.isGroup && $root.groupSession.isMaster && !problem.isAddedToGroup) }">
                         <td v-if="$root.user.isSignedIn"
                             class="problem-list-status"
                             v-bind:class="{ 'judge-blue': $root.user.tried.some(x => x == problem.id) && !$root.user.passed.some(x => x == problem.id), 'judge-green': $root.user.passed.some(x => x == problem.id) }">
@@ -29,6 +29,10 @@
                         <td class="problem-list-title">
                             <router-link :to="{ name: '/problem/:id', path: '/problem/' + problem.id, params: { 'id': problem.id } }">{{ problem.title }}</router-link>
                             <span v-if="!problem.isVisible">(被隐藏)</span>
+                            <template v-if="$root.isGroup && $root.groupSession.isMaster">
+                                <a v-if="!problem.isAddedToGroup" v-on:click="addToGroup(problem.id)">(添加到团队)</a>
+                                <a v-else v-on:click="removeFromGroup(problem.id)">(从团队中删除)</a>
+                            </template>
                             <div class="problem-tag"
                                  v-on:click="triggerTag(tag)"
                                  v-for="tag in problem.tags ? problem.tags.split(',').map(x => x.trim()).sort() : []">{{ tag.split(':').slice(-1).pop() }}</div>

@@ -52,23 +52,15 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                             .Where(x => x.GroupId == CurrentGroup.Id)
                             .Select(x => x.ProblemId);
 
-                        ret = ret.Where(x => groupProblems.Contains(x.Id));
 
                         if (!await HasPermissionToGroupAsync(token))
                         {
-                            ret = ret.Where(x => x.IsVisible);
+                            ret = ret.Where(x => groupProblems.Contains(x.Id) && x.IsVisible);
                         }
-                    }
-                }
-                else
-                {
-                    if (IsGroupRequest())
-                    {
-                        var groupProblems = DB.GroupProblems
-                            .Where(x => x.GroupId == CurrentGroup.Id)
-                            .Select(x => x.ProblemId);
-
-                        ret = ret.Where(x => groupProblems.Contains(x.Id));
+                        else
+                        {
+                            ret = ret.Where(x => x.IsVisible || editableProblemIds.Contains(x.Id));
+                        }
                     }
                 }
             }
@@ -114,8 +106,44 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 page = 1;
             }
+            
+            if (!IsGroupRequest())
+            {
+                var result = await DoPaging(ret
+                    .OrderBy(x => x.Source)
+                    .ThenBy(x => x.CreatedTime), 
+                    page.Value, 
+                    100, 
+                    token);
+                FilterResult(result.data.result);
+                return Json(result);
+            }
+            else
+            {
+                var result = await DoPaging(ret
+                    .OrderBy(x => x.Source)
+                    .ThenBy(x => x.CreatedTime)
+                    .Select(x => new GroupProblemListItem(x)), 
+                    page.Value, 
+                    100, 
+                    token);
 
-            return await Paged(ret.OrderBy(x => x.Source).ThenBy(x => x.CreatedTime), page.Value, 100, token);
+                var problemIds = result.data.result
+                    .Select(y => y.Id)
+                    .ToList();
+
+                var addedProblems = await DB.GroupProblems
+                    .Where(x => x.GroupId == CurrentGroup.Id && problemIds.Contains(x.ProblemId))
+                    .Select(x => x.ProblemId)
+                    .ToListAsync(token);
+
+                foreach (var x in result.data.result)
+                {
+                    x.IsAddedToGroup = addedProblems.Contains(x.Id);
+                }
+                
+                return Json(result);
+            }
         }
 
         [HttpGet("title")]

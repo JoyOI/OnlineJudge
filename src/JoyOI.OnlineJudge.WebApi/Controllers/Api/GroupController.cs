@@ -155,6 +155,62 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
         #endregion
 
+        #region Group Problem
+        [HttpPut("cur/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> PutProblem(string problemId, CancellationToken token)
+        {
+            if (!IsGroupRequest())
+            {
+                return Result(400, "Invalid Request");
+            }
+            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            {
+                return Result(400, "No permission");
+            }
+            else if (await DB.GroupProblems.AnyAsync(x => x.ProblemId == problemId && x.GroupId == CurrentGroup.Id, token))
+            {
+                return Result(400, "The problem was already existed.");
+            }
+            else
+            {
+                DB.GroupProblems.Add(new GroupProblem
+                {
+                    GroupId = CurrentGroup.Id,
+                    ProblemId = problemId
+                });
+
+                await DB.SaveChangesAsync(token);
+                return Result(200, "Succeeded");
+            }
+        }
+
+        [HttpDelete("cur/problem/{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
+        public async Task<IActionResult> DeleteProblem(string problemId, CancellationToken token)
+        {
+            if (!IsGroupRequest())
+            {
+                return Result(400, "Invalid Request");
+            }
+            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            {
+                return Result(400, "No permission");
+            }
+            else if (!await DB.GroupProblems.AnyAsync(x => x.ProblemId == problemId && x.GroupId == CurrentGroup.Id, token))
+            {
+                return Result(400, "The problem was not found.");
+            }
+            else
+            {
+                DB.GroupProblems
+                    .Where(x => x.GroupId == CurrentGroup.Id)
+                    .Where(x => x.ProblemId == problemId)
+                    .Delete();
+                
+                return Result(200, "Succeeded");
+            }
+        }
+        #endregion
+
         #region Group Member
         [HttpGet("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/all")]
         public Task<IActionResult> GetMember(string groupId, GroupMemberStatus? status, int? page, CancellationToken token)
