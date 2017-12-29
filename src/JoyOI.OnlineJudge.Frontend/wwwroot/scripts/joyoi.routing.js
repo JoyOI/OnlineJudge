@@ -15,6 +15,8 @@
     '/group/new': null,
     '/group/join': null,
     '/group/manage': null,
+    '/group/manage/member': null,
+    '/group/manage/contest': null,
     '/judge/all': null,
     '/judge/:id': { id: '[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}' },
     '/hack/all': null,
