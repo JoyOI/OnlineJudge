@@ -61,6 +61,7 @@
 
         /* Initialize host addresses */
         this.hosts.blog = 'http://{USERNAME}.blog.joyoi.cn';
+        this.hosts.group = 'http://{GROUPID}.joyoi.org';
         this.hosts.forum = 'http://forum.joyoi.cn';
         this.hosts.api = 'http://api.oj.joyoi.cn';
         this.hosts.uc = 'http://uc.joyoi.cn';
@@ -390,6 +391,9 @@
     computed: {
         isGroup: function () {
             return !this.hosts.main.some(x => x === window.location.host.toString());
+        },
+        loginUrl: function () {
+            return encodeURIComponent(window.location.origin + '/login');
         }
     }
 });

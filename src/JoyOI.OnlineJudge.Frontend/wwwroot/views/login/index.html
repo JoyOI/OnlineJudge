@@ -1,1 +1,22 @@
-﻿
+﻿<div class="container" id="login">
+    <div class="row">
+        <div class="col-md-offset-3 col-offset col-md-6">
+            <div class="area-outer">
+                <div class="area-item">
+                    <div class="area-title">登录{{ $root.isGroup ? $root.group.name : 'Joy OI' }}</div>
+                    <div>
+                        <p>
+                            <label>用户名</label>
+                            <input type="text" class="form-control" v-model="username" />
+                        </p>
+                        <p>
+                            <label>密码</label>
+                            <input type="password" class="form-control" v-model="password" />
+                        </p>
+                        <a v-on:click="login()" class="btn btn-default">登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1912,3 +1912,76 @@ dd {
     border-radius: 50%;
     margin-right: 5px;
 }
+
+.group-list tbody td {
+    padding: 0;
+    text-indent: 0;
+    height: 100px;
+    overflow: hidden;
+    text-align: left;
+    background-color:#fff;
+    transition: background 0.2s linear;
+}
+
+.group-outer {
+    height: 100px;
+}
+
+.group-counter {
+    width: 100px;
+    float: left;
+    height: 100px;
+    padding: 25px 20px 0 20px;
+    text-align: center;
+}
+
+    .group-counter div {
+        font-size: 22px;
+    }
+
+    .group-counter span {
+        color: #888;
+    }
+
+.group-main {
+    width: calc(70% - 100px);
+    height: 100px;
+    float: left;
+}
+
+.group-logo {
+    width: 30%;
+    height: 100px;
+    float: left;
+    padding-right: 25px
+}
+
+.group-logo-img {
+    height: 80px;
+    margin: 10px 0;
+    max-width: 100%;
+    float: right;
+}
+
+.group-main-inner {
+    padding: 20px 30px 20px 0;
+}
+
+.group-name {
+    font-size: 22px;
+    font-weight: lighter;
+    margin-top: 5px;
+    display: block;
+}
+
+.group-verify {
+    background-color: #eb6363;
+    color: #fff;
+    padding: 2px 5px;
+}
+
+.group-open {
+    background-color: #81ba6c;
+    color: #fff;
+    padding: 2px 5px;
+}

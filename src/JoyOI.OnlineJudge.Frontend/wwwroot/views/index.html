@@ -69,7 +69,7 @@
                             </li>
                             <li v-if="user.isSignedIn"><a v-on:click="logout()">注销</a></li>
                             <li><a v-if="!user.isSignedIn" v-on:click="toggleLoginBox()" class="login">登录</a></li>
-                            <li v-if="!user.isSignedIn"><a v-bind:href="hosts.uc + '/Register'" target="_blank">注册</a></li>
+                            <li v-if="!user.isSignedIn"><a v-bind:href="hosts.uc + '/Register?from=' + loginUrl" target="_blank">注册</a></li>
                         </ul>
                     </div>
 
@@ -177,12 +177,14 @@
             <div class="login-box-outer" v-bind:class="{ 'active': layout.loginBoxOpened }">
                 <div class="login-box-set">
                     <h1>还没有账号？</h1>
-                    <p>注册一个 Joy OI 通行证，您就可以畅游我们的在线评测、论坛、个人空间、在线课程等多项服务。</p>
-                    <a class="login-register" v-bind:href="hosts.uc + '/Register'" target="_blank">现在注册</a>
+                    <p v-if="!isGroup">注册一个 Joy OI 通行证，您就可以畅游我们的在线评测、论坛、个人空间、在线课程等多项服务。</p>
+                    <p v-if="isGroup">注册一个账号，您就可以畅游{{ group.name }}的在线评测等多项服务。</p>
+                    <a class="login-register" v-bind:href="hosts.uc + '/Register?from=' + loginUrl" target="_blank">现在注册</a>
                 </div>
                 <div class="login-box-main">
                     <h1>登录</h1>
-                    <p class="login-box-note">使用Joy OI通行证登录</p>
+                    <p v-if="!isGroup" class="login-box-note">使用Joy OI通行证登录</p>
+                    <p v-if="isGroup" class="login-box-note">登录到{{ group.name }}</p>
                     <label class="login-column">
                         用户名
                         <input id="username"

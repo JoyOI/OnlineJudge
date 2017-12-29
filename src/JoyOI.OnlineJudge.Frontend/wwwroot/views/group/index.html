@@ -1,1 +1,79 @@
-﻿
+﻿<div id="group-all" class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <table class="table-list group-list">
+                <tbody>
+                    <tr v-for="x in result">
+                        <td>
+                            <div class="group-outer">
+                                <div class="group-counter">
+                                    <div>{{ x.memberCount }}</div>
+                                    <span>成员</span>
+                                </div>
+                                <div class="group-main">
+                                    <div class="group-main-inner">
+                                        <a target="_blank" class="group-name" v-bind:href="x.domain ? ('//' + x.domain) : ($root.hosts.group.replace('{GROUPID}', x.id))">{{ x.name }}</a>
+                                        <div>
+                                            <span v-if="x.joinMethod === 'Everyone'" class="group-open">任何人可加入</span>
+                                            <span v-if="x.joinMethod === 'Verification'" class="group-verify">需要通过身份验证</span>
+                                            管理员:
+                                            <router-link v-for="y in x.masters" :to="{ name: '/user/:username', path: '/user/' + y, params: { 'username': y } }">
+                                                {{ y }}
+                                            </router-link>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="group-logo">
+                                    <img v-if="x.logoUrl" v-bind:src="x.logoUrl" class="group-logo-img" />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" class="tfoot-paging">
+                            <div class="tfoot-paging-outer">
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (1)">首页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.max(paging.current - 1, 1))">上一页</a>
+                                <div class="tfoot-paging-item" v-if="paging.current > 3">...</div>
+                                <a class="tfoot-paging-item"
+                                   v-for="p in 5"
+                                   v-if="paging.current + p - 3 >= 1 && paging.current + p - 3 <= paging.count"
+                                   v-on:click="paging.current = paging.current + p - 3"
+                                   v-bind:class="{ 'current': paging.current + p - 3 === paging.current }">
+                                    {{ paging.current + p - 3 }}
+                                </a>
+                                <div class="tfoot-paging-item" v-if="paging.current < paging.count - 2">...</div>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.min(paging.current + 1, paging.count))">下一页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (paging.count)">尾页</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="col-md-3">
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <h1>搜索团队</h1>
+                </div>
+                <div class="sidebar-section-body">
+                    <p><input type="text" class="form-control" id="txtSearchGroupTitle" placeholder="团队名称" /></p>
+                    <p><a class="sidebar-button" v-on:click="filterGroup()"><i class="fa fa-search"></i> 搜索</a></p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <h1>统计</h1>
+                </div>
+                <div class="sidebar-section-body">
+                    <p>{{ paging.total }} 个团队</p>
+                    <p v-if="$root.user.isSignedIn"><a class="vue-resolved" v-bind:href="$root.resolveUrl('/group/new')" v-on:click="$root.redirect('/group/new')">我要创建团队</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -17,18 +17,55 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
     {
         #region Group
         [HttpGet("all")]
-        public Task<IActionResult> Get(string name, int? page, CancellationToken token)
+        public async Task<IActionResult> Get(string name, int? page, CancellationToken token)
         {
             IQueryable<Group> ret = DB.Groups;
             if (!string.IsNullOrWhiteSpace(name))
             {
-                ret = ret.Where(x => x.Name.Contains(name) || name.Contains(x.Name));
+                ret = ret.Where(x => x.Name.Contains(name));
             }
             if (!page.HasValue)
             {
                 page = 1;
             }
-            return Paged(ret, page.Value, 20, token);
+
+            var result = await DoPaging(ret.Select(x => new GroupViewModel
+            {
+                Id = x.Id,
+                JoinMethod = x.JoinMethod,
+                LogoUrl = x.LogoUrl,
+                Name = x.Name,
+                Domain = x.Domain
+            }), page.Value, 20, token);
+
+            var groupIds = result.data.result.Select(x => x.Id);
+
+            var memberCount = await DB.GroupMembers
+                .Where(x => groupIds.Contains(x.GroupId))
+                .GroupBy(x => x.GroupId)
+                .Select(x => new { Id = x.Key, Count = x.Count() })
+                .ToDictionaryAsync(x => x.Id, token);
+
+            var masters = await DB.UserClaims
+                .Where(x => x.ClaimType == Constants.GroupEditPermission)
+                .Where(x => groupIds.Contains(x.ClaimValue))
+                .GroupBy(x => x.ClaimValue)
+                .Select(x => new { Id = x.Key, Masters = x.Select(y => y.UserId.ToString()) })
+                .ToDictionaryAsync(x => x.Id, token);
+
+            var userIds = masters.Values.SelectMany(x => x.Masters).Select(Guid.Parse);
+            var usernames = await DB.Users
+                .Where(x => userIds.Contains(x.Id))
+                .Select(x => new { Id = x.Id.ToString(), x.UserName })
+                .ToDictionaryAsync(x => x.Id, token);
+            
+            foreach (var x in result.data.result)
+            {
+                x.MemberCount = memberCount.ContainsKey(x.Id) ? memberCount[x.Id].Count : 0;
+                x.Masters = masters.ContainsKey(x.Id) ? masters[x.Id].Masters.Select(y => usernames[y].UserName).ToArray() : new string[] { };
+            }
+
+            return Json(result);
         }
 
         [HttpGet("cur")]
