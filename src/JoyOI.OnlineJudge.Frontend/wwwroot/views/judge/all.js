@@ -198,8 +198,9 @@ component.methods = {
                     }
                 ];
             }
-
+            
             self.paging.count = x.data.count;
+            self.paging.total = x.data.total;
             self.result = x.data.result.map(y =>
             {
                 var ret = clone(y);

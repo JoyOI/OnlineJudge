@@ -296,7 +296,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             var hasPermissionToGroup = await HasPermissionToGroupAsync(groupId, token);
 
-            var result = DoPaging(ret.Select(x => new GroupMemberViewModel
+            var result = await DoPaging(ret.Select(x => new GroupMemberViewModel
             {
                 IsMaster = managers.Contains(x.UserId),
                 Status = x.Status,

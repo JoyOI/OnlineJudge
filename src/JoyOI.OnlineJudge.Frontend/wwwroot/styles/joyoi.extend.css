@@ -1887,3 +1887,19 @@ dd {
         color: #fff;
         text-decoration: none;
     }
+
+.group-master {
+    background-color: #ff9251;
+    color: #fff;
+    padding: 2px 5px;
+}
+
+.group-member-list th:nth-child(1), .group-member-list td:nth-child(1), .group-member-list th:nth-child(2), .group-member-list td:nth-child(2) {
+    text-align: left;
+    border-right: 1px solid #ddd;
+}
+
+.group-member-list th:nth-child(4), .group-member-list td:nth-child(4) {
+    text-align: left;
+    border-left: 1px solid #ddd;
+}
