@@ -199,6 +199,12 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 var contest = PutEntity<Contest>(RequestBody).Entity;
                 contest.Id = id;
+
+                if (IsGroupRequest() && contest.AttendPermission == AttendPermission.Team)
+                {
+                    contest.PasswordOrTeamId = CurrentGroup.Id;
+                }
+
                 if (contest.Begin < DateTime.UtcNow)
                 {
                     return Result(400, "The begin time is invalid.");
@@ -225,6 +231,16 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
                 DB.Contests.Add(contest);
                 DB.UserClaims.Add(new IdentityUserClaim<Guid> { ClaimType = Constants.ContestEditPermission, ClaimValue = id, UserId = User.Current.Id });
+
+                if (IsGroupRequest() && contest.AttendPermission == AttendPermission.Everyone)
+                {
+                    DB.GroupContestReferences.Add(new GroupContestReference
+                    {
+                        ContestId = contest.Id,
+                        GroupId = CurrentGroup.Id
+                    });
+                }
+
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Put succeeded");
             }
@@ -463,7 +479,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(400, "This password is incorrect");
             }
 
-            if (contest.AttendPermission == AttendPermission.Team && !(await DB.GroupMembers.AnyAsync(x => x.UserId == User.Current.Id && x.GroupId == contest.PasswordOrTeamId)))
+            if (contest.AttendPermission == AttendPermission.Team && !IsMasterOrHigher && !(await DB.GroupMembers.AnyAsync(x => x.UserId == User.Current.Id && x.GroupId == contest.PasswordOrTeamId)))
             {
                 return Result(400, $"You are not a member of team '{ contest.PasswordOrTeamId }'");
             }

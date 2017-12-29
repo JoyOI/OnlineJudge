@@ -4,7 +4,7 @@
         title: null,
         begin: null,
         duration: '3:00:00',
-        attendPermission: 0,
+        attendPermission: app.isGroup ? 2 : 0,
         type: 0,
         passwordOrTeamId: null
     };
@@ -23,6 +23,12 @@ component.methods = {
         })
             .then((x) => {
                 app.notification('succeeded', '比赛创建成功', x.msg);
+                var contestView = qv.createView('/api/contest/all', {
+                    title: self.request.title,
+                    type: self.request.type,
+                    page: self.paging.current
+                });
+                contestView.refresh();
                 app.redirect('/contest/:id/edit', '/contest/' + this.id + '/edit', { id: this.id });
             })
             .catch(err => {

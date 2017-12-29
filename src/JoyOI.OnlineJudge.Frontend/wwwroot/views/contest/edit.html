@@ -42,7 +42,7 @@
                             <select v-if="new Date(begin) > new Date()" v-model="attendPermission" class="form-control">
                                 <option value="0">允许所有人参赛</option>
                                 <option value="1">输入密码参赛</option>
-                                <!--<option value="2">指定团队参赛</option>-->
+                                <option value="2" v-if="$root.isGroup">{{ $root.group.name + '的团队成员' }}</option>
                             </select>
                         </p>
                         <p v-if="new Date(begin) <= new Date()">{{ attendPermission == 0 ? '允许所有人参赛' : '输入密码参赛' }}</p>
