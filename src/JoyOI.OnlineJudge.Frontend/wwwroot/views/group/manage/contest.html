@@ -1,0 +1,100 @@
+﻿<div class="container" id="contest-manage">
+    <div class="row">
+        <div class="col-md-9">
+            <table class="table-list group-contest-list">
+                <colgroup>
+                    <col />
+                    <col />
+                    <col />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>比赛名称</th>
+                        <th>开始时间</th>
+                        <th>时长</th>
+                        <th>类型</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="x in result">
+                        <td>
+                            <router-link :to="{ name: '/contest/:id', path: '/contest/' + x.id, params: { 'id': x.id } }">{{ x.title }}</router-link>
+                            <span class="group-master">{{ x.type }}</span>
+                        </td>
+                        <td>{{ $root.toLocalTime(x.begin) }}</td>
+                        <td>{{ x.duration }}</td>
+                        <td>{{ x.attendPermission !== 2 ? '外部比赛' : '内部比赛' }}</td>
+                        <td>
+                            <a v-if="x.attendPermission !== 2" v-on:click="cancelLink(x.id)">取消链接</a>
+                            <a v-if="x.attendPermission === 2" 
+                                   v-on:click="$root.redirect('/contest/:id/edit', '/contest/' + id + '/edit', { id: id })"
+                                   v-bind:href="$root.resolveUrl({ name: '/contest/:id/edit', path: '/contest/' + id + '/edit', params: { id: id } })">管理比赛</a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" class="tfoot-paging">
+                            <div class="tfoot-paging-outer">
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (1)">首页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.max(paging.current - 1, 1))">上一页</a>
+                                <div class="tfoot-paging-item" v-if="paging.current > 3">...</div>
+                                <a class="tfoot-paging-item"
+                                   v-for="p in 5"
+                                   v-if="paging.current + p - 3 >= 1 && paging.current + p - 3 <= paging.count"
+                                   v-on:click="paging.current = paging.current + p - 3"
+                                   v-bind:class="{ 'current': paging.current + p - 3 === paging.current }">
+                                    {{ paging.current + p - 3 }}
+                                </a>
+                                <div class="tfoot-paging-item" v-if="paging.current < paging.count - 2">...</div>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (Math.min(paging.current + 1, paging.count))">下一页</a>
+                                <a class="tfoot-paging-item" v-on:click="paging.current = (paging.count)">尾页</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="col-md-3">
+            <div class="sidebar-section all-buttons">
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/group/manage', '/group/manage')"
+                   src="/group/manage">
+                    <i class="fa fa-edit"></i>
+                    <span>基本信息</span>
+                </a>
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/group/manage/member', '/group/manage/member')"
+                   src="/group/manage">
+                    <i class="fa fa-user"></i>
+                    <span>成员管理</span>
+                </a>
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/group/manage/member', '/group/member', {}, { status: 'Pending' })"
+                   src="/group/manage/member?status=Pending">
+                    <i class="fa fa-minus-circle"></i>
+                    <span>待审核</span>
+                </a>
+                <a class="sidebar-section-button vue-resolved active"
+                   v-on:click="$root.redirect('/group/manage/contest', '/group/contest')"
+                   src="/group/manage/contest">
+                    <i class="fa fa-trophy"></i>
+                    <span>比赛管理</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-header">
+                    <h1>链接外部比赛</h1>
+                </div>
+                <div class="sidebar-section-body">
+                    <p><input type="text" class="form-control" id="txtContestId" placeholder="比赛ID" /></p>
+                    <p><a class="sidebar-button" v-on:click="addLink()"><i class="fa fa-link"></i> 链接</a></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

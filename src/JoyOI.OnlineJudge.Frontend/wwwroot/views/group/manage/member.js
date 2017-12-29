@@ -21,6 +21,7 @@ component.watch = {
 
 component.created = function () {
     app.title = '成员管理';
+    app.links = [];
     if (!app.isGroup || !app.groupSession || !app.groupSession.isMaster) {
         app.redirect('/', '/');
     }

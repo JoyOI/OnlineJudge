@@ -1894,11 +1894,15 @@ dd {
     padding: 2px 5px;
 }
 
-.group-member-list th, .group-member-list td {
+.group-member-list th, .group-member-list td, .group-contest-list th, .group-contest-list td {
     text-align: left;
 }
 
 .group-member-list th:nth-child(1), .group-member-list td:nth-child(1), .group-member-list th:nth-child(2), .group-member-list td:nth-child(2), .group-member-list th:nth-child(3), .group-member-list td:nth-child(3) {
+    border-right: 1px solid #ddd;
+}
+
+.group-contest-list th:nth-child(1), .group-contest-list td:nth-child(1), .group-contest-list th:nth-child(2), .group-contest-list td:nth-child(2), .group-contest-list th:nth-child(3), .group-contest-list td:nth-child(3), .group-contest-list th:nth-child(4), .group-contest-list td:nth-child(4) {
     border-right: 1px solid #ddd;
 }
 

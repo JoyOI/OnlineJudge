@@ -9,6 +9,7 @@
 
 component.created = function () {
     app.title = '管理团队';
+    app.links = [];
     if (!app.isGroup || !app.groupSession || !app.groupSession.isMaster) {
         app.redirect('/', '/');
     }

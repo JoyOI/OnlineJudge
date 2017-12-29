@@ -220,6 +220,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "Invalid Request");
             }
+            if (!await DB.Contests.AnyAsync(x => x.Id == contestId))
+            {
+                return Result(404, "Contest was not found");
+            }
             else if (!await HasPermissionToSpecifiedGroupAsync(CurrentGroup.Id, token))
             {
                 return Result(400, "No permission");
