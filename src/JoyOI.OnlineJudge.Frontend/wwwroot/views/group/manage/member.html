@@ -10,26 +10,33 @@
                 <thead>
                     <tr>
                         <th>用户名</th>
-                        <th>团队身份</th>
-                        <th>加入时间</th>
+                        <th v-show="status === 'Pending'">申请消息</th>
+                        <th>{{ status === 'Approved' ? '加入时间' : '申请时间' }}</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="x in result">
                         <td v-bind:class="x.roleClass">
-                            <router-link :to="{ name: '/user/:username', path: '/user/' + x.userName, params: { 'username': x.username } }">
+                            <img class="group-member-avatar" v-bind:src="x.avatarUrl" />
+                            <router-link :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
                                 {{ x.username }}
                             </router-link>
                             <span v-if="x.isMaster" class="group-master">管理员</span>
                         </td>
-                        <td>
-                            <span v-if="x.status === 'Pending'">待审核</span>
-                            <span v-else-if="x.status === 'Approved'">正式成员</span>
-                            <span v-else>审核未通过</span>
-                        </td>
+                        <td v-show="status === 'Pending'">{{ x.request }}</td>
                         <td>{{ $root.toLocalTime(x.joinedTime) }}</td>
-                        <td></td>
+                        <td>
+                            <div v-if="x.username !== $root.user.profile.userName && x.status === 'Approved'">
+                                <a v-if="!x.isMaster" v-on:click="remove(x.username)">移除成员</a>
+                                <a v-if="!x.isMaster" v-on:click="promote(x.username)">提升为管理员</a>
+                                <a v-if="x.isMaster" v-on:click="demote(x.username)">撤销管理员</a>
+                            </div>
+                            <div v-if="x.status === 'Pending'">
+                                <a v-on:click="approve(x.username)">同意</a>
+                                <a v-on:click="reject(x.username)">拒绝</a>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -56,7 +63,7 @@
             </table>
         </div>
 
-        <div class="col-md-3 title-align">
+        <div class="col-md-3">
             <div class="sidebar-section all-buttons">
                 <a class="sidebar-section-button vue-resolved" 
                    v-on:click="$root.redirect('/group/manage', '/group/manage')"

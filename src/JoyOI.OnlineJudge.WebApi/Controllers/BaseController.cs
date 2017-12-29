@@ -365,12 +365,30 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
         [NonAction]
         protected async Task<bool> HasPermissionToGroupAsync(CancellationToken token = default(CancellationToken))
         {
+            if (!User.IsSignedIn() || !IsGroupRequest())
+            {
+                return false;
+            }
+
+            if (IsMasterOrHigher || await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.UserId == User.Current.Id && x.ClaimValue == CurrentGroup.Id, token))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        [NonAction]
+        protected async Task<bool> HasPermissionToSpecifiedGroupAsync(string groupId, CancellationToken token = default(CancellationToken))
+        {
             if (!User.IsSignedIn())
             {
                 return false;
             }
 
-            if (IsMasterOrHigher || await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.UserId == User.Current.Id, token))
+            if (IsMasterOrHigher || await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.UserId == User.Current.Id && x.ClaimValue == groupId, token))
             {
                 return true;
             }

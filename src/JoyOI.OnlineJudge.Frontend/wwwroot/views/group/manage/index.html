@@ -1,9 +1,8 @@
 ﻿<div class="container" id="group-manage">
     <div class="row">
         <div class="col-md-9">
-            <div class="area-outer">
+            <div>
                 <div class="area-item">
-                    <div class="area-title">基本信息</div>
                     <div>
                         <p>
                             <label>团队名称</label>
@@ -32,21 +31,29 @@
             </div>
         </div>
 
-        <div class="col-md-3 title-align">
+        <div class="col-md-3">
             <div class="sidebar-section all-buttons">
-                <a class="sidebar-section-button active">
+                <a class="sidebar-section-button vue-resolved active"
+                   v-on:click="$root.redirect('/group/manage', '/group/manage')"
+                   src="/group/manage">
                     <i class="fa fa-edit"></i>
                     <span>基本信息</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/group/manage/member', '/group/manage/member')"
+                   src="/group/manage">
                     <i class="fa fa-user"></i>
                     <span>成员管理</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/group/manage/member', '/group/member', {}, { status: 'Pending' })"
+                   src="/group/manage/member?status=Pending">
                     <i class="fa fa-minus-circle"></i>
                     <span>待审核</span>
                 </a>
-                <a class="sidebar-section-button">
+                <a class="sidebar-section-button vue-resolved"
+                   v-on:click="$root.redirect('/group/manage/contest', '/group/contest')"
+                   src="/group/manage/contest">
                     <i class="fa fa-trophy"></i>
                     <span>比赛管理</span>
                 </a>

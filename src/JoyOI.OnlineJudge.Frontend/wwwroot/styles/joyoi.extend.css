@@ -1894,12 +1894,17 @@ dd {
     padding: 2px 5px;
 }
 
-.group-member-list th:nth-child(1), .group-member-list td:nth-child(1), .group-member-list th:nth-child(2), .group-member-list td:nth-child(2) {
+.group-member-list th, .group-member-list td {
     text-align: left;
+}
+
+.group-member-list th:nth-child(1), .group-member-list td:nth-child(1), .group-member-list th:nth-child(2), .group-member-list td:nth-child(2), .group-member-list th:nth-child(3), .group-member-list td:nth-child(3) {
     border-right: 1px solid #ddd;
 }
 
-.group-member-list th:nth-child(4), .group-member-list td:nth-child(4) {
-    text-align: left;
-    border-left: 1px solid #ddd;
+.group-member-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 5px;
 }

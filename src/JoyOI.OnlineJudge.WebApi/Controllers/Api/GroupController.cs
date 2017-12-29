@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Models;
 
@@ -54,7 +55,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpPatch("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<IActionResult> Patch(string id, CancellationToken token)
         {
-            if (!await HasPermissionToGroupAsync(id, token))
+            if (!await HasPermissionToSpecifiedGroupAsync(id, token))
             {
                 return Result(401, "No permission");
             }
@@ -107,7 +108,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         [HttpDelete("{id:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}")]
         public async Task<IActionResult> Delete(string id, CancellationToken token)
         {
-            if (!await HasPermissionToGroupAsync(id, token))
+            if (!await HasPermissionToSpecifiedGroupAsync(id, token))
             {
                 return Result(401, "No Permission");
             }
@@ -163,7 +164,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "Invalid Request");
             }
-            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            else if (!await HasPermissionToSpecifiedGroupAsync(CurrentGroup.Id, token))
             {
                 return Result(400, "No permission");
             }
@@ -191,7 +192,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "Invalid Request");
             }
-            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            else if (!await HasPermissionToSpecifiedGroupAsync(CurrentGroup.Id, token))
             {
                 return Result(400, "No permission");
             }
@@ -219,7 +220,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "Invalid Request");
             }
-            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            else if (!await HasPermissionToSpecifiedGroupAsync(CurrentGroup.Id, token))
             {
                 return Result(400, "No permission");
             }
@@ -247,7 +248,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "Invalid Request");
             }
-            else if (!await HasPermissionToGroupAsync(CurrentGroup.Id, token))
+            else if (!await HasPermissionToSpecifiedGroupAsync(CurrentGroup.Id, token))
             {
                 return Result(400, "No permission");
             }
@@ -294,7 +295,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 page = 1;
             }
 
-            var hasPermissionToGroup = await HasPermissionToGroupAsync(groupId, token);
+            var hasPermissionToGroup = await HasPermissionToSpecifiedGroupAsync(groupId, token);
 
             var result = await DoPaging(ret.Select(x => new GroupMemberViewModel
             {
@@ -318,7 +319,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(404, "Group Not Found");
             }
-            else if (username != User.Current.UserName && !await HasPermissionToGroupAsync(groupId))
+            else if (username != User.Current.UserName && !await HasPermissionToSpecifiedGroupAsync(groupId))
             {
                 return Result(401, "No permission");
             }
@@ -351,46 +352,48 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPost("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid}")]
-        [HttpPatch("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid}")]
-        public async Task<IActionResult> PatchMember(string groupId, Guid userId, [FromBody] string value, CancellationToken token)
+        [HttpPost("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        [HttpPatch("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> PatchMember(string groupId, string username, CancellationToken token)
         {
-            if (!await HasPermissionToGroupAsync(groupId, token))
+            var request = JsonConvert.DeserializeObject<GroupMemberPatchModel>(RequestBody);
+
+            if (!await HasPermissionToSpecifiedGroupAsync(groupId, token))
             {
                 return Result(401, "No permission");
             }
 
-            var groupMember = await DB.GroupMembers.SingleOrDefaultAsync(x => x.GroupId == groupId && x.UserId == userId, token);
+            var user = await User.Manager.FindByNameAsync(username);
+
+            var groupMember = await DB.GroupMembers.SingleOrDefaultAsync(x => x.GroupId == groupId && x.UserId == user.Id, token);
             if (groupMember == null)
             {
                 return Result(404, "Member Not Found");
             }
 
-            PatchEntity(groupMember, value);
+            groupMember.Feedback = request.Response;
+            groupMember.Status = request.Status;
             await DB.SaveChangesAsync(token);
             return Result(200, "Patch Succeeded");
         }
 
-        [HttpDelete("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{userId:Guid?}")]
-        public async Task<IActionResult> DeleteMember(string groupId, Guid? userId, CancellationToken token)
+        [HttpDelete("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/member/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> DeleteMember(string groupId, string username, CancellationToken token)
         {
-            if (userId.HasValue && userId.Value != User.Current.Id && !await HasPermissionToGroupAsync(groupId, token))
+            var user = await User.Manager.FindByNameAsync(username);
+
+            if (user.Id != User.Current.Id && !await HasPermissionToSpecifiedGroupAsync(groupId, token))
             {
                 return Result(401, "No permission");
             }
 
-            if (!userId.HasValue)
-            {
-                userId = User.Current.Id;
-            }
-
-            if (await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.ClaimValue == groupId && x.UserId == userId.Value, token))
+            if (await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.ClaimValue == groupId && x.UserId == user.Id, token))
             {
                 return Result(400, "Cannot remove an owner from the group");
             }
 
             await DB.GroupMembers
-                .Where(x => x.UserId == userId.Value)
+                .Where(x => x.UserId == user.Id)
                 .Where(x => x.GroupId == groupId)
                 .DeleteAsync(token);
 
@@ -399,24 +402,25 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Claims
-        [HttpGet("{problemid:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
-        public async Task<IActionResult> GetClaims(string problemId, CancellationToken token)
+        [HttpGet("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/all")]
+        public async Task<IActionResult> GetClaims(string groupId, CancellationToken token)
         {
             var ret = await DB.UserClaims
-                .Where(x => x.ClaimType == Constants.ProblemEditPermission)
-                .Where(x => x.ClaimValue == problemId)
+                .Where(x => x.ClaimType == Constants.GroupEditPermission)
+                .Where(x => x.ClaimValue == groupId)
                 .ToListAsync(token);
             return Result(ret);
         }
 
-        [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim")]
-        public async Task<IActionResult> PutClaims(string groupId, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> PutClaims(string groupId, string username, CancellationToken token)
         {
-            if (!await HasPermissionToGroupAsync(groupId, token))
+            var user = await User.Manager.FindByNameAsync(username);
+            if (!await HasPermissionToSpecifiedGroupAsync(groupId, token))
             {
                 return Result(401, "No permission");
             }
-            else if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == value.UserId, token))
+            else if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == user.Id, token))
             {
                 return Result(400, "Already exists");
             }
@@ -425,7 +429,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 DB.UserClaims.Add(new IdentityUserClaim<Guid>
                 {
                     ClaimType = Constants.GroupEditPermission,
-                    UserId = value.UserId,
+                    UserId = user.Id,
                     ClaimValue = groupId
                 });
                 await DB.SaveChangesAsync(token);
@@ -433,25 +437,26 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPut("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{userId:Guid}")]
-        public async Task<IActionResult> DeleteClaim(Guid userId, string groupId, CancellationToken token)
+        [HttpDelete("{groupId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> DeleteClaim(string username, string groupId, CancellationToken token)
         {
-            if (!await HasPermissionToGroupAsync(groupId, token))
+            var user = await User.Manager.FindByNameAsync(username);
+            if (!await HasPermissionToSpecifiedGroupAsync(groupId, token))
             {
                 return Result(401, "No permission");
             }
-            else if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == userId, token))
+            else if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == user.Id, token))
             {
                 return Result(404, "Claim not found");
             }
-            else if (userId == User.Current.Id)
+            else if (username == User.Current.UserName)
             {
                 return Result(400, "Cannot remove yourself");
             }
             else
             {
                 await DB.UserClaims
-                    .Where(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == userId)
+                    .Where(x => x.ClaimValue == groupId && x.ClaimType == Constants.GroupEditPermission && x.UserId == user.Id)
                     .DeleteAsync(token);
 
                 return Result(200, "Delete succeeded");
@@ -462,13 +467,6 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #region Private Functions
         private Task<bool> IsMemberOfGroup(string groupId, Guid userId, CancellationToken token)
             => DB.GroupMembers.AnyAsync(x => x.GroupId == groupId && x.UserId == userId, token);
-
-        private async Task<bool> HasPermissionToGroupAsync(string groupId, CancellationToken token = default(CancellationToken))
-            => !(User.Current == null
-               || !await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles)
-               && !await DB.UserClaims.AnyAsync(x => x.UserId == User.Current.Id
-                   && x.ClaimType == Constants.GroupEditPermission
-                   && x.ClaimValue == groupId));
         #endregion
     }
 }
