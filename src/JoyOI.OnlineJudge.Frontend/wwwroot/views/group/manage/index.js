@@ -3,7 +3,8 @@
         name: app.group.name,
         description: app.group.description,
         joinMethod: app.group.joinMethod,
-        domain: app.group.domain
+        domain: app.group.domain,
+        logoUrl: app.group.logoUrl
     };
 };
 
@@ -23,7 +24,8 @@ component.methods = {
             name: this.name,
             joinMethod: this.joinMethod,
             description: this.description,
-            domain: this.domain
+            domain: this.domain,
+            logoUrl: this.logoUrl
         })
             .then(x => {
                 app.notification('succeeded', '团队信息编辑成功', x.msg);
