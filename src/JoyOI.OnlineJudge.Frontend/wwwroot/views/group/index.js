@@ -1,5 +1,5 @@
 ﻿component.created = function () {
-    app.title = '团队';
+    app.title = '团队列表';
     app.links = [];
 
     this.view = qv.createView('/api/group/all', {

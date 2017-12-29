@@ -1,1 +1,30 @@
-﻿
+﻿<div class="container" id="group-new">
+    <div class="row">
+        <div class="col-md-offset-2 col-offset col-md-8">
+            <div class="area-outer">
+                <div class="area-item">
+                    <div class="area-title">创建团队</div>
+
+                    <table class="infobox" style="margin-bottom: 25px;">
+                        <tr>
+                            <td class="infobox-icon"><i class="fa fa-exclamation-circle" style="color: #4c99c4"></i></td>
+                            <td class="infobox-text">创建一个团队，您将拥有相对独立的在线评测系统环境，拥有对子域的完全控制权，并支持域名绑定。</td>
+                        </tr>
+                    </table>
+
+                    <div>
+                        <p>
+                            <label>团队ID</label>
+                            <input type="text" class="form-control" v-model="groupId" placeholder="4~128个字符，允许大小写英文字母，连字符与下划线" />
+                        </p>
+                        <p>
+                            <label>团队名称</label>
+                            <input type="text" class="form-control" v-model="name" />
+                        </p>
+                        <a v-on:click="create()" class="btn btn-default">创建</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

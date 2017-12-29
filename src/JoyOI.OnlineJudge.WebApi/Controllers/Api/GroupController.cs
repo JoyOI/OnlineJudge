@@ -29,7 +29,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 page = 1;
             }
 
-            var result = await DoPaging(ret.Select(x => new GroupViewModel
+            var result = await DoPaging(ret.OrderByDescending(x => x.CreatedTime).Select(x => new GroupViewModel
             {
                 Id = x.Id,
                 JoinMethod = x.JoinMethod,
@@ -139,6 +139,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             });
 
             await DB.SaveChangesAsync(token);
+            await User.Manager.AddClaimAsync(User.Current, new System.Security.Claims.Claim(Constants.GroupEditPermission, group.Id));
+
             return Result(200, "Put Succeeded");
         }
 
