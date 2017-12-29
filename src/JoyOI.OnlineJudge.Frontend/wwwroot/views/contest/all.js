@@ -2,7 +2,8 @@
     return {
         paging: {
             current: 1,
-            count: 1
+            count: 1,
+            total: 0
         },
         contestTypes: contestTypes,
         result: [],
@@ -12,6 +13,24 @@
         }
     }
 }
+
+component.watch = {
+    'paging.current': function () {
+        var args = this.generateQuery();
+        app.redirect('/contest', '/contest', {}, args);
+    },
+    'request.title': function () {
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/contest', '/contest', {}, args);
+    },
+    'request.type': function () {
+        var args = this.generateQuery();
+        delete args['paging.current'];
+        app.redirect('/contest', '/contest', {}, args);
+    },
+    deep: true
+};
 
 component.created = function () {
     app.title = '比赛';
@@ -23,11 +42,14 @@ component.methods = {
     filterContests: function () {
         this.request.title = $('#txtSearchContestTitle').val();
         this.request.type = $('#lstSearchContestType').val();
-        this.loadContests();
     },
     loadContests: function () {
         var self = this;
-        qv.createView('/api/contest/all', self.request, 60000)
+        qv.createView('/api/contest/all', {
+            title: self.request.title,
+            type: self.request.type,
+            page: self.paging.current
+        }, 60000)
             .fetch(x => {
                 self.paging.count = x.data.count;
                 self.paging.current = x.data.current;
@@ -54,5 +76,18 @@ component.methods = {
             .catch(err => {
                 app.notification('error', '获取比赛失败', err.responseJSON.msg);
             });
+    },
+    generateQuery: function () {
+        var ret = {};
+        if (this.paging.current > 1) {
+            ret['paging.current'] = this.paging.current;
+        }
+        if (this.request.title) {
+            ret['request.title'] = this.request.title;
+        }
+        if (this.request.type) {
+            ret['request.type'] = this.request.type;
+        }
+        return ret;
     }
 };

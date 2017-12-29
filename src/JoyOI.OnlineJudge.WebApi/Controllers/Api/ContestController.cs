@@ -26,6 +26,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             DateTime? begin, 
             DateTime? end,
             int? page,
+            int? pageSize,
             CancellationToken token)
         {
             IQueryable<Contest> ret = DB.Contests;
@@ -63,11 +64,17 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 page = 1;
             }
+
+            if (!pageSize.HasValue)
+            {
+                pageSize = 5;
+            }
+
             return Paged(ret
                 .OrderByDescending(x => x.Begin.Add(x.Duration))
                 .ThenByDescending(x => x.Begin), 
-                page.Value, 
-                20, 
+                page.Value,
+                pageSize.Value, 
                 token);
         }
 

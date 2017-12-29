@@ -305,7 +305,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 JoinedTime = x.CreatedTime,
                 Request = hasPermissionToGroup ? x.Message : null,
                 Response = hasPermissionToGroup ? x.Feedback : null
-            }), page.Value, 20, token);
+            }), page.Value, 50, token);
 
             return Json(result);
         }
