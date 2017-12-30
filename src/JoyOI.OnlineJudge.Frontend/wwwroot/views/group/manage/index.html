@@ -32,7 +32,7 @@
                             <table v-if="domain" class="infobox" style="margin: 25px 0;">
                                 <tr>
                                     <td class="infobox-icon"><i class="fa fa-exclamation-circle" style="color: #4c99c4"></i></td>
-                                    <td class="infobox-text">域名绑定仅在您需要绑定到自己购买的外部域名时需要设置，请在域名管理平台添加CNAME记录，解析至 {{ $root.hosts.group.replace('{GROUPID}', $root.group.id) }}。您填写的域名不要包含'http://'或'https://'。</td>
+                                    <td class="infobox-text">域名绑定仅在您需要绑定到自己购买的外部域名时需要设置，请在域名管理平台添加CNAME记录，解析至 {{ $root.hosts.group.replace('{GROUPID}', $root.group.id).replace('http://', '') }}。您填写的域名不要包含'http://'或'https://'。</td>
                                 </tr>
                             </table>
 
