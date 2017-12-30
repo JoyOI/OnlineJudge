@@ -222,7 +222,7 @@
                     }
 
                     qv.reset();
-
+                    
                     var current = LazyRouting.GetCurrentComponent();
                     if (current && current.$options.created.length) {
                         current.$options.created[0].call(current);

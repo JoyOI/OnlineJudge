@@ -2,6 +2,16 @@
     cursor: pointer;
 }
 
+.cover-group {
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    color: #fff;
+    background-color: #512da8;
+    margin-top: -64px;
+    background-image: url(../images/bg-cover-group.jpg)
+}
+
 .avatar-section {
     display: none;
 }

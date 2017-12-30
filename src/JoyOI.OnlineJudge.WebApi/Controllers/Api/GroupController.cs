@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -104,7 +105,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(404, "Not Found");
                 }
 
-                PatchEntity(group, RequestBody);
+                var fields = PatchEntity(group, RequestBody);
+                if (fields.Contains(nameof(Group.Domain)) && !string.IsNullOrEmpty(group.Domain) && !IsMasterOrHigher)
+                {
+                    var userHost = Dns.GetHostByName(group.Domain);
+                    var userIp = userHost.AddressList[0].ToString();
+                    var masterHost = Dns.GetHostByName(Configuration["JoyOI:OrganizationDefaultDomain"].Replace("{ORG}", group.Id));
+                    var masterIp = masterHost.AddressList[0].ToString();
+                    if (userIp != masterIp)
+                    {
+                        return Result(400, "Your domain has not been bounded to CNAME " + Configuration["JoyOI:OrganizationDefaultDomain"].Replace("{ORG}", group.Id));
+                    }
+                }
+
                 await DB.SaveChangesAsync(token);
                 return Result(200, "Patch Succeeded");
             }

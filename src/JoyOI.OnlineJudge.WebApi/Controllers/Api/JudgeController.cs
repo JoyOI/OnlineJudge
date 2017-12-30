@@ -135,7 +135,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
 
             if (problem == null)
             {
-                return Result(400, "The problem does not exist.");
+                return Result(400, "The problem is not exist.");
             }
 
             if (!problem.IsVisible && string.IsNullOrWhiteSpace(request.contestId) && !await HasPermissionToProblemAsync(problem.Id, token))

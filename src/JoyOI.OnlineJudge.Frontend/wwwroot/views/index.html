@@ -78,7 +78,7 @@
         </header>
         <!-- end header -->
 
-        <div id="cover" class="cover cover-single mobile-cover" v-bind:class="{ 'cover-url': showUrlCover, 'cover-without-url': !showUrlCover }">
+        <div id="cover" class="cover cover-single mobile-cover" v-bind:class="{ 'cover-url': showUrlCover, 'cover-without-url': !showUrlCover, 'cover': !isGroup, 'cover-group': isGroup }">
             <div class="cont-wrap">
                 <div class="col-md-12 mobile-cover-center" style="text-align:left">
                     <img v-bind:src="isGroup && group && group.logoUrl ? group.logoUrl : '/images/logo.png'" class="mobile-cover-img" style="height:140px;margin-top:-60px;" />

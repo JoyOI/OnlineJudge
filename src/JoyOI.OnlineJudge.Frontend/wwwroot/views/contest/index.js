@@ -47,7 +47,13 @@ component.computed = {
             return this.endTimestamp;
     },
     hasPermissionToEdit: function () {
-        return app.user.isSignedIn && (app.user.profile.role === 'Root' || app.user.profile.role === 'Master' || this.claims.some(x => x === app.user.profile.username));
+        if (app.user.profile.role === 'Root' || app.user.profile.role === 'Master')
+            return true;
+        else if (!app.isGroup) {
+            return app.user.isSignedIn && this.claims.some(x => x === app.user.profile.username);
+        } else {
+            return app.groupSession.isMaster;
+        }
     }
 };
 

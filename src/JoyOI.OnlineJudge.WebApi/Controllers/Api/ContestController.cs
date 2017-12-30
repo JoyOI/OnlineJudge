@@ -227,6 +227,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     {
                         return Result(400, "You don't have the permission to create a contest in this group.");
                     }
+                    else if (contest.AttendPermission == AttendPermission.Team)
+                    {
+                        contest.PasswordOrTeamId = CurrentGroup.Id;
+                    }
                 }
 
                 DB.Contests.Add(contest);

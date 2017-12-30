@@ -28,7 +28,9 @@ component.methods = {
                     type: self.request.type,
                     page: self.paging.current
                 });
-                contestView.refresh();
+                if (self.contestView) {
+                    self.contestView.refresh();
+                }
                 app.redirect('/contest/:id/edit', '/contest/' + this.id + '/edit', { id: this.id });
             })
             .catch(err => {

@@ -406,7 +406,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers
                 return false;
             }
 
-            if (IsMasterOrHigher || await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.UserId == User.Current.Id, token) || await DB.GroupMembers.AnyAsync(x => x.GroupId == CurrentGroup.Id && x.UserId == User.Current.Id && x.Status == GroupMemberStatus.Approved))
+            if (IsMasterOrHigher || await DB.UserClaims.AnyAsync(x => x.ClaimType == Constants.GroupEditPermission && x.UserId == User.Current.Id && x.ClaimValue == CurrentGroup.Id, token) || await DB.GroupMembers.AnyAsync(x => x.GroupId == CurrentGroup.Id && x.UserId == User.Current.Id && x.Status == GroupMemberStatus.Approved))
             {
                 return true;
             }
