@@ -39,7 +39,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public override void OnShowJudgeResult(JudgeStatus status)
         {
-            if (IsContestInProgress())
+            if (IsContestInProgress(status.User.UserName) || IsContestInProgress(User.Current?.UserName))
             {
                 var testCases = GetValidTestCasesAsync(status.ProblemId, status.UserId, default(CancellationToken)).Result;
                 var hack = DB.HackStatuses.FirstOrDefault(x => x.ContestId == ContestId && x.JudgeStatusId == status.Id && x.Result == HackResult.Succeeded);

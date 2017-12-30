@@ -58,7 +58,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 return Contest.Status == ContestStatus.Live;
             }
             var attendee = DB.Attendees.SingleOrDefault(x => x.UserId == user.Id && x.ContestId == ContestId);
-            if (username == null || attendee == null || !attendee.IsVirtual)
+            if (user == null || attendee == null || !attendee.IsVirtual)
             {
                 return Contest.Status == ContestStatus.Live;
             }
@@ -76,7 +76,7 @@ namespace JoyOI.OnlineJudge.ContestExecutor
                 return Contest.Status == ContestStatus.Done;
             }
             var attendee = DB.Attendees.SingleOrDefault(x => x.UserId == user.Id && x.ContestId == ContestId);
-            if (username == null || attendee == null || !attendee.IsVirtual)
+            if (user == null || attendee == null || !attendee.IsVirtual)
             {
                 return Contest.Status == ContestStatus.Done;
             }

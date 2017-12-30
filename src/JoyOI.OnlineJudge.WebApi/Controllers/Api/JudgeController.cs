@@ -547,7 +547,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             if (!string.IsNullOrEmpty(status.ContestId))
             {
                 var ce = cef.Create(status.ContestId);
-                if (ce.IsContestInProgress(status.User.UserName) || ce.IsContestInProgress())
+                if (ce.IsContestInProgress(status.User.UserName) || ce.IsContestInProgress(User.Current?.UserName))
                 {
                     return ce.IsStatusHackable(status);
                 }
