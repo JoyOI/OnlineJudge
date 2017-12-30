@@ -17153,3 +17153,7 @@ span.CodeMirror-selectedtext {
 .CodeMirror-fullscreen {
     top: 100px !important;
 }
+
+p label {
+    font-weight: lighter;
+}

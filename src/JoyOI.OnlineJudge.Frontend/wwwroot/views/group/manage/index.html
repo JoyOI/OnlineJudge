@@ -11,8 +11,10 @@
                         <p>
                             <label>团队Logo URL</label>
                             <input type="text" class="form-control" v-model="logoUrl" />
-                            <br />
-                            <img v-bind:src="logoUrl" />
+                            <template v-if="logoUrl">
+                                <br />
+                                <img v-bind:src="logoUrl" />
+                            </template>
                         </p>
                         <p>
                             <label>团队首页内容</label>
