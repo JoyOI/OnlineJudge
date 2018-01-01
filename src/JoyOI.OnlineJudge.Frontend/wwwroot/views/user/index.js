@@ -12,8 +12,21 @@
         posts: [],
         postCount: 0,
         motto: null,
-        tab: 'passed'
+        tab: 'passed',
+        groups: {
+            current: 1,
+            count: 1,
+            total: 0,
+            result: []
+        }
     };
+};
+
+component.watch = {
+    deep: true,
+    'groups.current': function () {
+        app.redirect('/group', '/group', {}, { 'groups.current': this.paging.current });
+    }
 };
 
 component.created = function () {
@@ -66,6 +79,14 @@ component.created = function () {
         .fetch(x => {
             self.posts = x.data.result;
             self.postCount = x.data.count;
+        });
+
+    qv.createView('/api/user/' + router.history.current.params.username + '/group', 3600 * 1000)
+        .fetch(x => {
+            self.groups.count = x.data.count;
+            self.groups.current = x.data.current;
+            self.groups.total = x.data.total;
+            self.groups.result = x.data.result;
         });
 };
 

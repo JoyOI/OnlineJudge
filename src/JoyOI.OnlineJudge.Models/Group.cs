@@ -97,5 +97,11 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         /// <value>The group owned hack statuses</value>
         public virtual ICollection<HackStatus> HackStatuses { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group members
+        /// </summary>
+        /// <value>The group memberss</value>
+        public virtual ICollection<GroupMember> Members { get; set; }
     }
 }

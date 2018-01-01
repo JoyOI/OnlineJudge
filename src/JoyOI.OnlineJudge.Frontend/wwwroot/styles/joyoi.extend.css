@@ -1995,3 +1995,9 @@ dd {
     color: #fff;
     padding: 2px 5px;
 }
+
+.profile-tabs-section .group-list {
+    margin: -30px -20px;
+    width: calc(100% + 40px);
+    box-shadow: none;
+}
