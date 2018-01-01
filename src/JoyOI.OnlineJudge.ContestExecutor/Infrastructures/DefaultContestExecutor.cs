@@ -13,10 +13,10 @@ namespace JoyOI.OnlineJudge.ContestExecutor
     {
         public OnlineJudgeContext DB;
         public SmartUser<User, Guid> User;
-
         public string ContestId { get; set; }
 
         private Contest _contest;
+        private Dictionary<string, bool> _hasPermissionToContestCache = new Dictionary<string, bool>();
 
         public Contest Contest
         {
@@ -121,25 +121,36 @@ namespace JoyOI.OnlineJudge.ContestExecutor
 
         public virtual bool HasPermissionToContest(string username = null)
         {
-            var user = GetSpecifiedOrCurrentUser(username);
-            if (user == null)
-                return false;
-
-            if (User.Manager.IsInAnyRolesAsync(user, Constants.MasterOrHigherRoles).Result)
-                return true;
-
-            if (DB.UserClaims.Any(x => x.UserId == user.Id
-                   && x.ClaimType == Constants.ContestEditPermission
-                   && x.ClaimValue == ContestId))
-                return true;
-
-            if (Contest.AttendPermission == AttendPermission.Team
-                && DB.UserClaims.Any(x => x.UserId == user.Id
-                    && x.ClaimType == Constants.GroupEditPermission
-                    && x.ClaimValue == Contest.PasswordOrTeamId))
-                return true;
-
-            return false;
+            if (!_hasPermissionToContestCache.ContainsKey(username ?? "_"))
+            {
+                var user = GetSpecifiedOrCurrentUser(username);
+                if (user == null)
+                {
+                    _hasPermissionToContestCache.Add(username ?? "_", false);
+                }
+                else if (User.Manager.IsInAnyRolesAsync(user, Constants.MasterOrHigherRoles).Result)
+                {
+                    _hasPermissionToContestCache.Add(username ?? "_", true);
+                }
+                else if (DB.UserClaims.Any(x => x.UserId == user.Id
+                       && x.ClaimType == Constants.ContestEditPermission
+                       && x.ClaimValue == ContestId))
+                {
+                    _hasPermissionToContestCache.Add(username ?? "_", true);
+                }
+                else if (Contest.AttendPermission == AttendPermission.Team
+                    && DB.UserClaims.Any(x => x.UserId == user.Id
+                        && x.ClaimType == Constants.GroupEditPermission
+                        && x.ClaimValue == Contest.PasswordOrTeamId))
+                {
+                    _hasPermissionToContestCache.Add(username ?? "_", true);
+                }
+                else
+                {
+                    _hasPermissionToContestCache.Add(username ?? "_", false);
+                }
+            }
+            return _hasPermissionToContestCache[username ?? "_"];
         }
 
         protected virtual User GetSpecifiedOrCurrentUser(string username = null)
