@@ -58,7 +58,8 @@
                         </table>
                     </div>
                     <div class="profile-tabs-section" v-if="tab === 'org'">
-                        <table class="table-list group-list">
+                        <div v-if="!groups.total">该用户目前还没有加入任何团队</div>
+                        <table class="table-list group-list" v-if="groups.total">
                             <tbody>
                                 <tr v-for="x in groups.result">
                                     <td>
