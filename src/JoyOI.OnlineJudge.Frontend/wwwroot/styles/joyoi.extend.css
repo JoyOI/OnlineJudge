@@ -2025,3 +2025,7 @@ dd {
         text-decoration: none;
         background: #e45e81;
     }
+
+.margin-bottom-none {
+    margin-bottom: 0;
+}

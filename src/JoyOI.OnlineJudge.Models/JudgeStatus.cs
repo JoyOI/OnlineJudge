@@ -149,5 +149,11 @@ namespace JoyOI.OnlineJudge.Models
         /// </summary>
         [NotMapped]
         public bool? IsHackable { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the status is rejudgable.
+        /// </summary>
+        [NotMapped]
+        public bool? IsRejudgable { get; set; }
     }
 }

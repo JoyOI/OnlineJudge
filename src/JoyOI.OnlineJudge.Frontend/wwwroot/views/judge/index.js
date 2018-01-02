@@ -24,7 +24,8 @@ component.data = function () {
         user: { id: null, username: null, roleClass: null, avatarUrl: null },
         view: null,
         hackView: null,
-        hackResult: null
+        hackResult: null,
+        isRejudgable: false
     };
 };
 
@@ -43,6 +44,7 @@ component.created = function () {
             self.contestId = x.data.contestId;
             self.user.id = x.data.userId.substr(0, 8);
             self.isHackable = x.data.isHackable;
+            self.isRejudgable = x.data.isRejudgable;
             self.substatuses = x.data.subStatuses.map(y =>
             {
                 return { hint: y.hint, status: formatJudgeResult(y.result), time: y.timeUsedInMs, memory: y.memoryUsedInByte };
@@ -215,6 +217,16 @@ component.methods = {
             })
             .catch(err => {
                 app.notification('error', 'Hack提交失败', err.responseJSON.msg);
+            });
+    },
+    rejudge: function () {
+        app.notification('pending', '正在提交重新评测请求...');
+        qv.patch('/api/judge/' + this.id, { result: 'Pending' })
+            .then(x => {
+                app.notification('succeeded', '重新评测请求已被处理...', x.msg);
+            })
+            .catch(err => {
+                app.notification('error', '重新评测请求提交失败', err.responseJSON.msg);
             });
     }
 };

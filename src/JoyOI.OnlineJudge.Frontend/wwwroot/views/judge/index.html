@@ -69,6 +69,14 @@
                         <dt>提交时间</dt>
                         <dd v-bind:title="$root.toLocalTime(time)">{{ $root.toLocalTime(time) }}</dd>
                     </dl>
+                    <div class="hack-sidebar-outer" v-bind:class="{ 'margin-bottom-none': isHackable }" v-if="isRejudgable">
+                        <hr class="sidebar-hr">
+                        <a v-on:click="rejudge()"
+                           class="sidebar-section-button">
+                            <i class="fa fa-refresh"></i>
+                            <span>重新评测</span>
+                        </a>
+                    </div>
                     <div class="hack-sidebar-outer" v-if="isHackable">
                         <hr class="sidebar-hr">
                         <a v-on:click="goToEditMode()"

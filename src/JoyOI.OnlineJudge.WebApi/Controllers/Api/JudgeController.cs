@@ -484,8 +484,57 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             ret.SubStatuses = ret.SubStatuses.OrderBy(x => x.SubId).ToList();
+            ret.IsRejudgable = !(!User.IsSignedIn() || ret.UserId != User.Current.Id && !IsMasterOrHigher && !await HasPermissionToProblemAsync(ret.ProblemId) && !await HasPermissionToContestAsync(ret.ContestId, token) && !await HasPermissionToSpecifiedGroupAsync(ret.GroupId, token));
 
             return Result(ret);
+        }
+
+        [HttpPost("{id:Guid}")]
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> Patch(
+            Guid id, 
+            [FromServices] ManagementServiceClient mgmt,
+            [FromServices] IHubContext<OnlineJudgeHub> hub,
+            CancellationToken token)
+        {
+            var judge = await DB.JudgeStatuses
+                .Include(x => x.RelatedStateMachineIds)
+                .Include(x => x.SubStatuses)
+                .SingleOrDefaultAsync(x => x.Id == id, token);
+
+            if (judge == null)
+            {
+                return Result(404, "Not found");
+            }
+
+            var request = JsonConvert.DeserializeObject<JudgeStatus>(RequestBody);
+            if (request.Result != JudgeResult.Pending)
+            {
+                return Result(400, "Operation is not supported");
+            }
+
+            if (judge.RelatedStateMachineIds.Count < 1) {
+                return Result(404, "State machine is not found");
+            }
+
+            if (!User.IsSignedIn() || judge.UserId != User.Current.Id && !IsMasterOrHigher && !await HasPermissionToProblemAsync(judge.ProblemId) && !await HasPermissionToContestAsync(judge.ContestId, token) && !await HasPermissionToSpecifiedGroupAsync(judge.GroupId, token))
+            {
+                return Result(401, "No permission");
+            }
+
+            foreach (var x in judge.SubStatuses)
+            {
+                x.Result = JudgeResult.Pending;
+                x.Hint = null;
+                x.TimeUsedInMs = 0;
+                x.MemoryUsedInByte = 0;
+            }
+            judge.Result = JudgeResult.Pending;
+
+            await DB.SaveChangesAsync(token);
+            await mgmt.PatchStateMachineInstanceAsync(judge.RelatedStateMachineIds.Last().StateMachineId, "Start", token);
+            hub.Clients.All.InvokeAsync("ItemUpdated", "judge", judge.Id);
+            return Result(200, "Patch succeeded");
         }
 
         #region Private Functions
