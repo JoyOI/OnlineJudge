@@ -522,6 +522,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(401, "No permission");
             }
 
+            if ((judge.Result == JudgeResult.Pending || judge.Result == JudgeResult.Running) && !IsMasterOrHigher)
+            {
+                return Result(400, "The state machine is running.");
+            }
+
             foreach (var x in judge.SubStatuses)
             {
                 x.Result = JudgeResult.Pending;
