@@ -1904,6 +1904,18 @@ dd {
     padding: 2px 5px;
 }
 
+.group-escape {
+    background-color: #cf70ab;
+    color: #fff!important;
+    padding: 2px 5px;
+    transition: background 0.2s linear;
+}
+
+.group-escape:hover {
+    background-color: #fb6666;
+    text-decoration: none;
+}
+
 .group-member-list th, .group-member-list td, .group-contest-list th, .group-contest-list td {
     text-align: left;
 }

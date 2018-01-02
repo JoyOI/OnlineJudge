@@ -76,8 +76,11 @@
                                                 <div class="group-main-inner">
                                                     <a target="_blank" class="group-name" v-bind:href="x.domain ? ('//' + x.domain) : ($root.hosts.group.replace('{GROUPID}', x.id))">{{ x.name }}</a>
                                                     <div>
-                                                        <span v-if="x.joinMethod === 'Everyone'" class="group-open">任何人可加入</span>
-                                                        <span v-if="x.joinMethod === 'Verification'" class="group-verify">需要通过身份验证</span>
+                                                        <template v-if="!$root.user.isSignedIn || $root.user.profile.username !== username">
+                                                            <span v-if="x.joinMethod === 'Everyone'" class="group-open">任何人可加入</span>
+                                                            <span v-if="x.joinMethod === 'Verification'" class="group-verify">需要通过身份验证</span>
+                                                        </template>
+                                                        <a v-if="$root.user.isSignedIn && $root.user.profile.username === username" class="group-escape" v-on:click="escapeGroup(x.id)">退出该团队</a>
                                                         管理员:
                                                         <router-link v-for="y in x.masters" :to="{ name: '/user/:username', path: '/user/' + y, params: { 'username': y } }">
                                                             {{ y }}

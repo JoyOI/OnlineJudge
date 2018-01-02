@@ -14,6 +14,7 @@
         motto: null,
         tab: 'passed',
         groups: {
+            view: null,
             current: 1,
             count: 1,
             total: 0,
@@ -81,13 +82,13 @@ component.created = function () {
             self.postCount = x.data.count;
         });
 
-    qv.createView('/api/user/' + router.history.current.params.username + '/group', 3600 * 1000)
-        .fetch(x => {
-            self.groups.count = x.data.count;
-            self.groups.current = x.data.current;
-            self.groups.total = x.data.total;
-            self.groups.result = x.data.result;
-        });
+    self.groups.view = qv.createView('/api/user/' + router.history.current.params.username + '/group', 3600 * 1000);
+    self.groups.view.fetch(x => {
+        self.groups.count = x.data.count;
+        self.groups.current = x.data.current;
+        self.groups.total = x.data.total;
+        self.groups.result = x.data.result;
+    });
 };
 
 component.watch = {
@@ -96,6 +97,23 @@ component.watch = {
             app.redirect('/user/:username', '/user/' + this.id, { id: this.id });
         } else {
             app.redirect('/user/:username', '/user/' + this.id, { id: this.id }, { tab: val });
+        }
+    }
+};
+
+component.methods = {
+    escapeGroup: function (groupId) {
+        var self = this;
+        if (confirm("您确定要退出该团队吗？")) {
+            app.notification('pending', '正在退出团队...');
+            qv.delete('/api/group/' + groupId + '/member/' + app.user.profile.username)
+                .then(x => {
+                    app.notification('succeeded', '您已成功退出该团队', x.msg);
+                    self.groups.view.refresh();
+                })
+                .catch(err => {
+                    app.notification('error', '退出团队失败', err.responseJSON.msg);
+                });
         }
     }
 };
