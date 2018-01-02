@@ -1,8 +1,8 @@
 ﻿<div class="container" id="home-index">
-    <div class="row" v-if="!$root.isGroup">
-        <div class="col-md-12 banner-outer">
-            <div class="area-item banner">
-                <div class="area-title">JoyOI 公测开启</div>
+    <div class="row" v-if="!$root.isGroup && carousel.current >= 0">
+        <div class="col-md-12 banner-outer" v-for="(x, index) in carousel.items" v-show="index === carousel.current">
+            <div class="area-item banner" v-bind:style="{ 'background-image': 'url('+ x.picture + ')' }">
+                <a class="area-title" v-bind:href="x.url">{{ x.title }}</a>
             </div>
         </div>
     </div>

@@ -1,7 +1,11 @@
 ﻿component.data = function () {
     return {
         contests: [],
-        threads: []
+        threads: [],
+        carousel: {
+            items: [],
+            current: -1
+        }
     }
 }
 
@@ -12,6 +16,7 @@ component.created = function () {
     this.loadContests();
     if (!app.isGroup) {
         this.loadThreads();
+        this.startCarousel();
     }
 }
 
@@ -51,5 +56,24 @@ component.methods = {
             .catch(err => {
                 app.notification('error', '获取比赛失败', err.responseJSON.msg);
             });
+    },
+    startCarousel: function () {
+        qv.createView('/api/configuration/carousel')
+            .fetch(x => {
+                this.carousel.items = JSON.parse(x.data.value);
+                this.carousel.current = 0;
+                this._moveNext();
+            });
+    },
+    _moveNext: function () {
+        var self = this;
+        setTimeout(function () {
+            if (self.carousel.current + 1 === self.carousel.items.length) {
+                self.carousel.current = 0;
+            } else {
+                self.carousel.current = self.carousel.current + 1;
+            }
+            self._moveNext();
+        }, 15000);
     }
 };
