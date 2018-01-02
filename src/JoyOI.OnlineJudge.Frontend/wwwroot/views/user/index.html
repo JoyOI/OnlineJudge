@@ -57,10 +57,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div v-for="x in uploadedProblems" class="accepted-problem-item">
-                            <router-link :to="{ name: '/problem/:id', path: '/problem/' + x.id, params: { 'id': x.id } }">{{ x.title || x.id }}</router-link>
-                        </div>
-                        <div v-if="!passedProblems.length">该用户目前还没有上传任何题目</div>
                     </div>
                     <div class="profile-tabs-section" v-if="tab === 'org'">
                         <table class="table-list group-list">
