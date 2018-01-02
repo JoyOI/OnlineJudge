@@ -2001,3 +2001,15 @@ dd {
     width: calc(100% + 40px);
     box-shadow: none;
 }
+
+.next-page {
+    background: #5e90ac;
+    color: #fff;
+    padding: 5px 10px;
+    box-shadow: 0 0.375rem 1.375rem rgba(175,190,201, .5);
+}
+
+    .next-page:hover {
+        text-decoration: none;
+        background: #e45e81;
+    }

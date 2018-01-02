@@ -24,16 +24,15 @@ component.methods = {
             .then((x) => {
                 app.notification('succeeded', '比赛创建成功', x.msg);
                 var contestView = qv.createView('/api/contest/all', {
-                    title: self.request.title,
-                    type: self.request.type,
-                    page: self.paging.current
+                    title: null,
+                    type: null,
+                    page: 1
                 });
-                if (self.contestView) {
-                    self.contestView.refresh();
-                }
+                contestView.refresh();
                 app.redirect('/contest/:id/edit', '/contest/' + this.id + '/edit', { id: this.id });
             })
             .catch(err => {
+                console.error(err);
                 app.notification('error', '比赛创建失败', err.responseJSON.msg);
             });
     }

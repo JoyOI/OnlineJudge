@@ -50,7 +50,7 @@ component.computed = {
         if (app.user.profile.role === 'Root' || app.user.profile.role === 'Master')
             return true;
         else if (!app.isGroup) {
-            return app.user.isSignedIn && this.claims.some(x => x === app.user.profile.username);
+            return app.user.isSignedIn && this.claims.some(x => x.userId === app.user.profile.id);
         } else {
             return app.groupSession.isMaster;
         }
