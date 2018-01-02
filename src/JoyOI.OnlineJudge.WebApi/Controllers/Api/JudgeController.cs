@@ -143,6 +143,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(403, "You have no permission to the problem.");
             }
 
+            if (IsGroupRequest() && !await IsGroupMemberAsync(token))
+            {
+                return Result(401, "You are not a member of this group.");
+            }
+
             if (!Constants.SupportedLanguages.Contains(request.language))
             {
                 return Result(400, "The language has not been supported.");

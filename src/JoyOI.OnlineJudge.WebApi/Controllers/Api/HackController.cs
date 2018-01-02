@@ -188,6 +188,11 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "You cannot hack yourself.");
             }
+            
+            if (IsGroupRequest() && !await IsGroupMemberAsync(token))
+            {
+                return Result(401, "You are not a member of this group.");
+            }
 
             if (!string.IsNullOrEmpty(request.ContestId))
             {

@@ -74,6 +74,6 @@ component.methods = {
                 self.carousel.current = self.carousel.current + 1;
             }
             self._moveNext();
-        }, 15000);
+        }, 20000);
     }
 };
