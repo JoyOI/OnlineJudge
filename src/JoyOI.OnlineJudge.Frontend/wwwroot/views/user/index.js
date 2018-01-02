@@ -72,9 +72,9 @@ component.created = function () {
                 app.notification('error', '获取用户信息失败', err.responseJSON.msg);
             }
         });;
-    qv.createView('/api/user' + router.history.current.params.username + '/uploadedproblem', 600 * 1000)
+    qv.createView('/api/user/' + router.history.current.params.username + '/uploadedproblem', 600 * 1000)
         .fetch(x => {
-            self.uploadedProblems = x.data.result;
+            self.uploadedProblems = x.data;
         });
     qv.createView('/api/user/' + router.history.current.params.username + '/blog/posts', 1800 * 1000)
         .fetch(x => {
