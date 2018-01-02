@@ -7,7 +7,7 @@
                     <div>
                         <p v-if="step === 0">该团队要求您提交申请并通过该团队管理员审核方能加入，您可以在本页面中提交申请。</p>
                         <p v-if="step === 1">您已经成功提交团队加入申请，请耐心等待管理员审核。</p>
-                        <p v-if="step === 0"><input type="text" class="form-control" id="txtMessage" /></p>
+                        <p v-if="step === 0"><input type="text" class="form-control" id="txtMessage" placeholder="请填写您的身份信息，留言给该团队管理员" /></p>
                         <a v-if="step === 0" v-on:click="submit()" class="btn btn-default">提交</a>
                     </div>
                 </div>
