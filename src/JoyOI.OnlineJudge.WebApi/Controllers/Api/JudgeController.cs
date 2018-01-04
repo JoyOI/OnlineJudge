@@ -539,6 +539,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 x.TimeUsedInMs = 0;
                 x.MemoryUsedInByte = 0;
             }
+            judge.Hint = null;
             judge.Result = JudgeResult.Pending;
 
             await DB.SaveChangesAsync(token);
