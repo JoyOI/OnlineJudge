@@ -284,7 +284,7 @@ namespace JoyOI.OnlineJudge.Models
 
             builder.Entity<TestCasePurchase>(e =>
             {
-                e.HasKey(x => new { x.UserId, x.TestCaseId });
+                e.HasKey(x => new { x.UserId, x.ProblemId });
             });
 
             builder.Entity<User>(e =>

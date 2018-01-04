@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
+using JoyOI.UserCenter.SDK;
 using JoyOI.ManagementService.SDK;
 using JoyOI.OnlineJudge.Models;
 using JoyOI.OnlineJudge.WebApi.Lib;
@@ -468,7 +469,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 foreach (var x in ret)
                 {
-                    if (x.Type == TestCaseType.Sample || await IsAbleToAccessTestCaseContentAsync(x.Id, token))
+                    if (x.Type == TestCaseType.Sample || await IsAbleToAccessTestCaseContentAsync(x.ProblemId, token))
                     {
                         x.Input = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(x.InputBlobId, token)).Body);
                         x.Output = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(x.OutputBlobId, token)).Body);
@@ -513,7 +514,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result<TestCaseWithContent>(404, "Not Found");
             }
             else if (!await HasPermissionToProblemAsync(problemId, token)
-                || !await DB.TestCasePurchases.AnyAsync(x => x.TestCaseId == id && x.UserId == User.Current.Id, token))
+                || !await DB.TestCasePurchases.AnyAsync(x => x.ProblemId == problemId && x.UserId == User.Current.Id, token))
             {
                 return Result<TestCaseWithContent>(401, "No Permission");
             }
@@ -521,7 +522,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 if (showContent.HasValue && showContent.Value)
                 {
-                    if (await IsAbleToAccessTestCaseContentAsync(ret.Id, token))
+                    if (await IsAbleToAccessTestCaseContentAsync(ret.ProblemId, token))
                     {
                         ret.Input = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(ret.InputBlobId, token)).Body);
                         ret.Output = Encoding.UTF8.GetString((await MgmtSvc.GetBlobAsync(ret.OutputBlobId, token)).Body);
@@ -719,32 +720,36 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         #endregion
 
         #region Test Case Purchase
-        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/purchase")]
-        [HttpPost("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/purchase")]
-        [HttpPatch("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/purchase")]
-        public async Task<IActionResult> PutTestCasePurchase(string problemId, Guid id, CancellationToken token)
+        [HttpPut("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/purchase")]
+        [HttpPost("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/purchase")]
+        [HttpPatch("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/purchase")]
+        public async Task<IActionResult> PutTestCasePurchase(
+            [FromServices] JoyOIUC UC,
+            string problemId, 
+            CancellationToken token)
         {
             // 判断是否已经购买
-            if (await DB.TestCasePurchases.AnyAsync(x => x.TestCaseId == id && x.UserId == User.Current.Id, token))
+            if (await DB.TestCasePurchases.AnyAsync(x => x.ProblemId == problemId && x.UserId == User.Current.Id, token))
             {
                 return Result(400, "Already purchased");
             }
-            else if (!await ProblemIsVisiableAsync(problemId, token))
+            else if (!await ProblemIsVisiableAsync(problemId, token) && !IsMasterOrHigher && !await HasPermissionToProblemAsync(problemId, token))
             {
                 return Result(401, "No permission");
             }
             else
             {
-                // TODO: 扣除积分
-                if (true == false)
+                var coins = (await UC.GetExtensionCoinAsync(User.Current.OpenId, null, Constants.CoinField)).data;
+                if (coins < TestCasePurchase.Cost && !IsMasterOrHigher && !await HasPermissionToProblemAsync(problemId, token))
                 {
                     return Result(400, "Not enough point");
                 }
                 else
                 {
+                    await UC.DecreaseExtensionCoinAsync(User.Current.OpenId, null, Constants.CoinField, TestCasePurchase.Cost);
                     DB.TestCasePurchases.Add(new TestCasePurchase
                     {
-                        TestCaseId = id,
+                        ProblemId = problemId,
                         CreatedTime = DateTime.UtcNow,
                         UserId = User.Current.Id
                     });
@@ -856,8 +861,8 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                    && x.ClaimType == Constants.ContestEditPermission
                    && x.ClaimValue == contestId, token));
 
-        private async Task<bool> IsAbleToAccessTestCaseContentAsync(Guid testCaseId, CancellationToken token)
-            => await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles) || await DB.TestCasePurchases.AnyAsync(x => x.UserId == User.Current.Id && x.TestCaseId == testCaseId);
+        private async Task<bool> IsAbleToAccessTestCaseContentAsync(string problemId, CancellationToken token)
+            => await User.Manager.IsInAnyRolesAsync(User.Current, Constants.MasterOrHigherRoles) || await DB.TestCasePurchases.AnyAsync(x => x.UserId == User.Current.Id && x.ProblemId == problemId);
 
         private async Task CompileAsync(string id, string code, string language, CancellationToken token)
         {

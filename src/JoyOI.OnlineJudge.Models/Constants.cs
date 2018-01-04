@@ -72,5 +72,8 @@
 
         // StateMachine
         public const string CompileOnlyStateMachine = "CompileValidatorStateMachine";
+
+        // Coins field
+        public const string CoinField = "Coin";
     }
 }

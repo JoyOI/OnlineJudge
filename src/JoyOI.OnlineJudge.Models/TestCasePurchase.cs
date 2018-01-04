@@ -1,14 +1,22 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JoyOI.OnlineJudge.Models
 {
     public class TestCasePurchase
     {
-        [ForeignKey("TestCase")]
-        public Guid TestCaseId { get; set; }
+        /// <summary>
+        /// Cost of test case per problem
+        /// </summary>
+        [NotMapped]
+        public const int Cost = 100;
 
-        public virtual TestCase TestCase { get; set; }
+        [MaxLength(128)]
+        [ForeignKey("Problem")]
+        public string ProblemId{ get; set; }
+
+        public virtual Problem Problem { get; set; }
 
         [ForeignKey("User")]
         public Guid UserId { get; set; }
