@@ -7,8 +7,11 @@ component.data = function () {
         body: null,
         contest: null,
         contestTitle: null,
+        isTestCasePurchased: false,
+        testCasePurchaseView: null,
         template: null,
         sampleData: [],
+        testCases: [],
         source: null,
         time: null,
         memory: null,
@@ -67,6 +70,9 @@ component.computed = {
         return this.$root.user.profile.role == 'Root'
             || this.$root.user.profile.root === 'Master'
             || this.claims.some(x => x.toLowerCase() === this.$root.user.profile.id.toLowerCase());
+    },
+    cookieString: function () {
+        return encodeURIComponent(document.cookie);
     }
 };
 
@@ -120,12 +126,30 @@ component.created = function () {
                     { text: x.data.title, to: { name: '/contest/:id', path: '/contest/' + this.contest, params: { id: this.contest } } }
                 ];
             });
-    }
+    } 
 
-    qv.get('/api/problem/' + router.history.current.params.id + '/claim/all')
-        .then((x) => {
+    qv.createView('/api/problem/' + router.history.current.params.id + '/claim/all')
+        .fetch((x) => {
             self.claims = x.data.map(x => x.userId);
+            if (!self.contest && app.user.isSignedIn) {
+                self.testCasePurchaseView = qv.createView('/api/problem/' + self.id + '/testcase/purchase');
+                self.testCasePurchaseView
+                    .fetch(y => {
+                        self.isTestCasePurchased = y.data;
+                        if (!y.data && (app.user.profile.role === 'Root' || app.user.profile.role === 'Master' || self.claims.some(z => z === app.user.profile.id)))
+                        {
+                            qv.put('/api/problem/' + self.id + '/testcase/purchase')
+                                .then(z => {
+                                    self.testCasePurchaseView.refresh();
+                                });
+                        }
+                    });
+            }
         });
+
+    qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all').fetch(x => {
+        self.testCases = x.data;
+    });
 
     this.isSpecialJudge = false;
     this.form.language = app.preferences.language;
@@ -281,6 +305,18 @@ component.methods = {
                 self.resolution.paging.total = x.data.total;
                 self.resolution.data = x.data.result;
                 $(window).scrollTop(0);
+            });
+    },
+    purchaseTestCase: function () {
+        var self = this;
+        app.notification('pending', '正在购买测试数据...');
+        qv.put('/api/problem/' + self.id + '/testcase/purchase')
+            .then(z => {
+                self.testCasePurchaseView.refresh();
+                app.notification('succeeded', '测试数据购买成功');
+            })
+            .catch(err => {
+                app.notification('error', '测试数据购买失败', err.responseJSON.msg);
             });
     }
 };

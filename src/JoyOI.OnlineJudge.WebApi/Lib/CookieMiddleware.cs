@@ -23,10 +23,9 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
             {
                 httpContext.Request.Headers["Cookie"] = httpContext.Request.Headers["joyoi_cookie"];
             }
-
-            if (!string.IsNullOrWhiteSpace(httpContext.Request.Query["cookie"].ToString()))
+            else if (!string.IsNullOrWhiteSpace(httpContext.Request.Query["joyoi_cookie"].ToString()))
             {
-                httpContext.Request.Headers["Cookie"] = httpContext.Request.Query["cookie"].ToString();
+                httpContext.Request.Headers["Cookie"] = httpContext.Request.Query["joyoi_cookie"].ToString();
             }
 
             return _next(httpContext);

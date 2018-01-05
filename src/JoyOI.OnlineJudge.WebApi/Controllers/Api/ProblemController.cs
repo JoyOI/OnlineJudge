@@ -514,7 +514,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result<TestCaseWithContent>(404, "Not Found");
             }
             else if (!await HasPermissionToProblemAsync(problemId, token)
-                || !await DB.TestCasePurchases.AnyAsync(x => x.ProblemId == problemId && x.UserId == User.Current.Id, token))
+                && !await DB.TestCasePurchases.AnyAsync(x => x.ProblemId == problemId && x.UserId == User.Current.Id, token))
             {
                 return Result<TestCaseWithContent>(401, "No Permission");
             }
@@ -717,6 +717,93 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 return Result(200, "Succeeded");
             }
         }
+
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/input")]
+        public async Task<IActionResult> GetTestCaseInput(
+            [FromServices] ManagementServiceClient MgmtSvc,
+            string problemId,
+            Guid id,
+            CancellationToken token)
+        {
+            this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
+            var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
+            if (problem == null || !problem.IsVisible && !this.HasOwnership)
+            {
+                return Result<Problem>(404, "Not Found");
+            }
+
+            var ret = await DB.TestCases
+                .Select(x => new TestCaseWithContent
+                {
+                    Id = x.Id,
+                    ContestId = x.ContestId,
+                    InputBlobId = x.InputBlobId,
+                    InputSizeInByte = x.InputSizeInByte,
+                    OutputBlobId = x.OutputBlobId,
+                    OutputSizeInByte = x.OutputSizeInByte,
+                    ProblemId = x.ProblemId,
+                    Type = x.Type
+                })
+                .SingleOrDefaultAsync(x => x.ProblemId == problemId && x.Id == id, token);
+
+            if (ret == null)
+            {
+                return Result<TestCaseWithContent>(404, "Not Found");
+            }
+            else if (!await HasPermissionToProblemAsync(problemId, token)
+                && !await DB.TestCasePurchases.AnyAsync(x => x.ProblemId == problemId && x.UserId == User.Current.Id, token))
+            {
+                return Result<TestCaseWithContent>(401, "No Permission");
+            }
+            else
+            {
+                return File((await MgmtSvc.GetBlobAsync(ret.InputBlobId, token)).Body, "text/plain", "input.txt");
+            }
+        }
+
+
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/{id:Guid}/output")]
+        public async Task<IActionResult> GetTestCaseOutput(
+            [FromServices] ManagementServiceClient MgmtSvc,
+            string problemId,
+            Guid id,
+            CancellationToken token)
+        {
+            this.HasOwnership = await HasPermissionToProblemAsync(problemId, token);
+            var problem = await DB.Problems.SingleOrDefaultAsync(x => x.Id == problemId, token);
+            if (problem == null || !problem.IsVisible && !this.HasOwnership)
+            {
+                return Result<Problem>(404, "Not Found");
+            }
+
+            var ret = await DB.TestCases
+                .Select(x => new TestCaseWithContent
+                {
+                    Id = x.Id,
+                    ContestId = x.ContestId,
+                    InputBlobId = x.InputBlobId,
+                    InputSizeInByte = x.InputSizeInByte,
+                    OutputBlobId = x.OutputBlobId,
+                    OutputSizeInByte = x.OutputSizeInByte,
+                    ProblemId = x.ProblemId,
+                    Type = x.Type
+                })
+                .SingleOrDefaultAsync(x => x.ProblemId == problemId && x.Id == id, token);
+
+            if (ret == null)
+            {
+                return Result<TestCaseWithContent>(404, "Not Found");
+            }
+            else if (!await HasPermissionToProblemAsync(problemId, token)
+                && !await DB.TestCasePurchases.AnyAsync(x => x.ProblemId == problemId && x.UserId == User.Current.Id, token))
+            {
+                return Result<TestCaseWithContent>(401, "No Permission");
+            }
+            else
+            {
+                return File((await MgmtSvc.GetBlobAsync(ret.OutputBlobId, token)).Body, "text/plain", "output.txt");
+            }
+        }
         #endregion
 
         #region Test Case Purchase
@@ -742,7 +829,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 var coins = (await UC.GetExtensionCoinAsync(User.Current.OpenId, null, Constants.CoinField)).data;
                 if (coins < TestCasePurchase.Cost && !IsMasterOrHigher && !await HasPermissionToProblemAsync(problemId, token))
                 {
-                    return Result(400, "Not enough point");
+                    return Result(400, string.Format("You only have {0} coins, but the problem requires {1}", coins, TestCasePurchase.Cost));
                 }
                 else
                 {
@@ -757,6 +844,18 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                     return Result(200, "Succeeded");
                 }
             }
+        }
+
+        [HttpGet("{problemId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/testcase/purchase")]
+        public async Task<IActionResult> GetTestCasePurchase(string problemId, CancellationToken token)
+        {
+            if (!User.IsSignedIn())
+            {
+                return Result(403, "Not authroized");
+            }
+
+            var isPurchased = await DB.TestCasePurchases.AnyAsync(x => x.UserId == User.Current.Id && x.ProblemId == problemId, token);
+            return Result(isPurchased);
         }
         #endregion
 

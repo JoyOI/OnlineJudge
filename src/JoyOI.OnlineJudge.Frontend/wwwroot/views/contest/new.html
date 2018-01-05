@@ -59,10 +59,16 @@
                         </div>
                         <div class="contest-icon-outer">
                             <div><img src="/images/openoi.png" class="contest-icon" v-bind:class="{ 'active': type === 3 }" v-on:click="type = 3" /></div>
-                            <div><input type="radio" v-model="type"  value="3" />Open OI赛制</div>
+                            <div><input type="radio" v-model="type" value="3" />Open OI赛制</div>
                         </div>
                         <div class="clear"></div>
                     </div>
+                    <table class="infobox" style="margin-top: 25px;">
+                        <tr>
+                            <td class="infobox-icon"><i class="fa fa-exclamation-circle" style="color: #4c99c4"></i></td>
+                            <td class="infobox-text">不同的赛制，比赛的排名、进行的逻辑均不同，<a target="_blank" href="http://help.joyoi.cn/online-judge/contest/type.md">点击这里了解各项赛制</a>。</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <p><input type="button" id="btnCreateContest" value="创建比赛" v-on:click="createContest" class="btn btn-default" /></p>

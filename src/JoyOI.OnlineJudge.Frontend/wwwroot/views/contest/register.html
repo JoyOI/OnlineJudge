@@ -11,6 +11,7 @@
                         <p class="message-manual" v-if="needPassword"><input class="textbox" type="password" id="txtPassword" placeholder="请输入参赛密码" /></p>
                         <a v-if="!contestEnd" v-on:click="register(false)" class="btn btn-default">参加比赛</a>
                         <a v-on:click="register(true)" class="btn btn-warning" v-if="!virtualDisabled && contestBegin">参加模拟赛</a>
+                        <small v-if="!virtualDisabled && contestBegin"><a href="http://help.joyoi.cn/online-judge/contest/virtual.md" target="_blank">什么是模拟赛？</a></small>
                     </div>
                 </div>
             </div>

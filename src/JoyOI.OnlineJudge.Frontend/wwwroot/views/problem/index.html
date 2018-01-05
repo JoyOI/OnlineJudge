@@ -73,6 +73,35 @@
                         </div>
                     </div>
                 </div>
+                <div class="area-item" v-if="display === 'testcase' && isTestCasePurchased">
+                    <div class="area-title">查看测试数据</div>
+                    <table class="table-inline">
+                        <thead>
+                            <tr>
+                                <th>输入文件</th>
+                                <th>输出文件</th>
+                                <th>类型</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(x,index) in testCases">
+                                <td><a v-bind:href="$root.hosts.api + '/api/problem/' + id + '/testcase/' + x.id + '/input?joyoi_cookie=' + cookieString" target="_blank">input{{ index + 1 }}.txt ({{ (x.inputSizeInByte / 1024.0).toFixed(1) }} KiB)</a></td>
+                                <td><a v-bind:href="$root.hosts.api + '/api/problem/' + id + '/testcase/' + x.id + '/output?joyoi_cookie=' + cookieString" target="_blank">output{{ index + 1 }}.txt ({{ (x.outputSizeInByte / 1024.0).toFixed(1) }} KiB)</a></td>
+                                <td>{{ x.type }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="area-item" v-if="display === 'testcase' && !isTestCasePurchased">
+                    <div class="area-title">查看测试数据</div>
+                    <template v-if="$root.user.isSignedIn">
+                        <p>您需要花费 100 枚金币来购买本题目的测试数据。<small><a href="http://help.joyoi.cn/user-center/coin.md" target="_blank">如何获得金币？</a></small></p>
+                        <p><input type="button" value="确认购买" v-on:click="purchaseTestCase" class="btn btn-default" /></p>
+                    </template>
+                    <template v-else>
+                        <p>请先登录</p>
+                    </template>
+                </div>
             </div>
         </div>
 
@@ -90,9 +119,9 @@
                     <i class="fa fa-key login"></i>
                     <span class="login">登录后提交</span>
                 </a>
-                <a class="sidebar-section-button" v-if="source === 'Local' && !contest">
+                <a class="sidebar-section-button" v-if="source === 'Local' && !contest &&!$root.isGroup" v-bind:class="{ 'active': display === 'testcase' }" v-on:click="display = display === 'testcase' ? 'problem' : 'testcase'">
                     <i class="fa fa-database"></i>
-                    <span>查看测试数据</span>
+                    <span>{{ display === 'testcase' ? '返回题目' : '查看测试数据' }}</span>
                 </a>
                 <a v-on:click="$root.redirect('/judge', '/judge', {}, contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title })"
                    v-bind:href="$root.resolveUrl({ name: '/judge', path: '/judge', params: {}, query: contest ? { 'selectedProblem.id': id, 'selectedProblem.title': title, 'selectedContest.id': contest, 'selectedContest.title': contestTitle } : { 'selectedProblem.id': id, 'selectedProblem.title': title } })"

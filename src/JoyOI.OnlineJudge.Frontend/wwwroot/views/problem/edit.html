@@ -18,13 +18,14 @@
                             <input type="text" class="form-control" v-model="memoryLimitationPerCaseInByte" />
                         </p>
                         <p>
-                            <label>题目难度 (0-9)</label>
+                            <label>题目难度 (0-9) <small><a href="http://help.joyoi.cn/online-judge/problem/create.md" target="_blank">如何评定题目难度？</a></small></label>
                             <input type="text" class="form-control" v-model="difficulty" />
                         </p>
                         <p>
                             <label>
                                 是否展示题目
                                 <input type="checkbox" v-model="isVisible" />
+                                <small><a href="http://help.joyoi.cn/online-judge/problem/create.md" target="_blank">什么时候需要隐藏题目？</a></small>
                             </label>
                         </p>
                         <p>
@@ -140,13 +141,18 @@
                         <span>点击此处上传打包测试数据</span>
                     </div>
                     <div class="test-case-type-outer">
-                        <div 
-                             class="tag-item"
-                             v-for="(x,y) in testCaseType" 
+                        <div class="tag-item"
+                             v-for="(x,y) in testCaseType"
                              v-on:click="zipSelectedTestCaseType = y"
-                             v-bind:data-value="y" 
+                             v-bind:data-value="y"
                              v-bind:class="{ 'active': zipSelectedTestCaseType === y }">{{ x }}</div>
                     </div>
+                    <table class="infobox" style="margin-top: 25px;">
+                        <tr>
+                            <td class="infobox-icon"><i class="fa fa-exclamation-circle" style="color: #4c99c4"></i></td>
+                            <td class="infobox-text">对于不同的数据类型，将对日常评测和比赛评测造成不同的影响，<a target="_blank" href="http://help.joyoi.cn/online-judge/problem/create.md">点击这里了解更多</a>。请将测试数据打包成*.zip文件，并确保.in文件与.out或.ans文件名称一一对应。</td>
+                        </tr>
+                    </table>
                     <input type="file" id="fileUpload" class="upload-button-hidden" />
                 </div>
                 <div class="area-item" v-if="active === 'testcase' && (uploadMode === 'input' || !testCases.length)">
@@ -164,6 +170,12 @@
                                 <td><textarea id="txtOutput" class="form-control" style="height: 200px;"></textarea></td>
                             </tr>
                         </tbody>
+                    </table>
+                    <table class="infobox" style="margin: 25px 0;">
+                        <tr>
+                            <td class="infobox-icon"><i class="fa fa-exclamation-circle" style="color: #4c99c4"></i></td>
+                            <td class="infobox-text">对于不同的数据类型，将对日常评测和比赛评测造成不同的影响，<a target="_blank" href="http://help.joyoi.cn/online-judge/problem/create.md">点击这里了解更多</a></td>
+                        </tr>
                     </table>
                     <div class="test-case-type-outer text-left">
                         <div class="tag-item primary" v-on:click="uploadInputTestCase()"><i class="fa fa-cloud-upload"></i> 上传测试用例</div>
