@@ -152,6 +152,10 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             {
                 return Result(400, "The language has not been supported.");
             }
+            if (string.IsNullOrEmpty(request.code))
+            {
+                return Result(400, "Code could not be empty.");
+            }
 
             if (!string.IsNullOrEmpty(request.contestId))
             {

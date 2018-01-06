@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using ElectronNET.API;
+using ElectronNET.API.Entities;
 
 namespace JoyOI.OnlineJudge.Frontend
 {
@@ -28,6 +24,23 @@ namespace JoyOI.OnlineJudge.Frontend
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
             app.UseVueMiddleware();
+            if (HybridSupport.IsElectronActive)
+            {
+                ElectronBootstrap();
+            }
+        }
+
+        public async void ElectronBootstrap()
+        {
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
+            {
+                Width = 1280,
+                Height = 864,
+                Show = false,
+            }, "http://localhost:5001");
+
+            browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.SetTitle("Electron.NET API Demos");
         }
     }
 }

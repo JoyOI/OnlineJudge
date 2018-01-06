@@ -42,7 +42,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             var groupIds = result.data.result.Select(x => x.Id);
 
             var memberCount = await DB.GroupMembers
-                .Where(x => groupIds.Contains(x.GroupId))
+                .Where(x => groupIds.Contains(x.GroupId) && x.Status == GroupMemberStatus.Approved)
                 .GroupBy(x => x.GroupId)
                 .Select(x => new { Id = x.Key, Count = x.Count() })
                 .ToDictionaryAsync(x => x.Id, token);
