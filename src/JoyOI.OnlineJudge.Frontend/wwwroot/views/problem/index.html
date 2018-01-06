@@ -20,7 +20,7 @@
                             </tr>
                         </table>
                     </div>
-                    <div v-html="$root.marked(body)" class="problem-render"></div>
+                    <div v-html="$root.marked(body)" class="problem-render markdown-body"></div>
                     <h1 v-if="sampleData.length">样例数据</h1>
                     <div v-if="sampleData.length" v-for="(data,index) in sampleData" v-bind:class="{ 'sample-data-outer': index > 0 }">
                         <table class="sample-data-table">

@@ -635,12 +635,12 @@
     margin-bottom: 20px;
 }
 
-.sample-data-table, .limitation-table {
+.sample-data-table, .limitation-table, .markdown-body table {
     width: 100%;
     border-collapse: collapse;
 }
 
-    .sample-data-table td, .sample-data-table th, .sample-data-table pre, .limitation-table td {
+    .sample-data-table td, .sample-data-table th, .sample-data-table pre, .limitation-table td, .markdown-body table td, .markdown-body table th {
         padding: 10px;
         color: #666;
         border: 1px solid #ddd;

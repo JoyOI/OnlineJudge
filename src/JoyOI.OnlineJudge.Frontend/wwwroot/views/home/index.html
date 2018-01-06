@@ -10,14 +10,14 @@
         <div class="col-md-9">
             <div class="area-outer problem-body" v-if="$root.isGroup && $root.group.description">
                 <div class="area-item">
-                    <div v-html="$root.marked($root.group.description)"></div>
+                    <div v-html="$root.marked($root.group.description)" class="markdown-body"></div>
                 </div>
             </div>
 
             <div class="area-outer">
                 <div class="area-item" v-for="contest in contests">
                     <router-link class="area-title pointer" :to="{ name: '/contest/:id', path: '/contest/' + contest.id, params: { 'id': contest.id } }">{{ contest.title }}</router-link>
-                    <div v-html="$root.marked(contest.description)"></div>
+                    <div v-html="$root.marked(contest.description)" class="markdown-body"></div>
                     <div class="contest-footer">
                         <div class="contest-footer-icon" v-bind:class="contest.statusClass"><i class="fa fa-arrow-circle-right"></i> {{ contest.status }}</div>
                         <div class="contest-footer-icon"><i class="fa fa-trophy"></i> {{ contest.type }}</div>
