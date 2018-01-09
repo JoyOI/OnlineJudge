@@ -18,10 +18,10 @@
 component.watch = {
     deep: true,
     'paging.current': function () {
-        app.redirect('/group', '/group', {}, { 'paging.current': this.paging.current, 'request.name': this.request.name });
+        app.redirect('/group', '/group', {}, { 'paging.current': this.paging.current || 1, 'request.name': this.request.name || '' });
     },
     'request.name': function () {
-        app.redirect('/group', '/group', {}, { 'request.name': this.request.name });
+        app.redirect('/group', '/group', {}, { 'request.name': this.request.name || '' });
     }
 };
 
