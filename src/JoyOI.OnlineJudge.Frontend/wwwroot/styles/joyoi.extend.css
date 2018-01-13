@@ -2063,3 +2063,17 @@ dd {
 .contest-referee-item-name {
     float: left;
 }
+
+.contest-edit-referee-item-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    float: left;
+    margin-right: 5px;
+}
+
+.contest-edit-referee-item-name {
+    font-size: 12px;
+    float: left;
+    line-height: 20px;
+}

@@ -14,13 +14,15 @@
         type: null,
         disableVirtual: null,
         claims: [],
+        referees: [],
         view: null,
         problemView: null,
         selectedProblem: null,
         problems: [],
         problemSearchResult: [],
         allLanguages: languages,
-        languages: []
+        languages: [],
+        claimView: null
     };
 };
 
@@ -53,9 +55,23 @@ component.methods = {
             this.view.refresh();
         }
 
-        qv.createView('/api/contest/' + this.id + '/claim/all')
+        this.claimView = qv.createView('/api/contest/' + this.id + '/claim/all')
+        this.claimView
             .fetch(x => {
-                this.claims = x.data;
+                var self = this;
+                self.claims = x.data;
+                self.referees = x.data.map(y => {
+                    return { userId: y.userId };
+                });
+                app.lookupUsers({ userIds: self.referees.map(y => y.userId) })
+                    .then(() => {
+                        for (var i = 0; i < self.referees.length; i++) {
+                            self.referees[i].username = app.lookup.user[self.referees[i].userId].name;
+                            self.referees[i].roleClass = app.lookup.user[self.referees[i].userId].class;
+                            self.referees[i].avatarUrl = app.lookup.user[self.referees[i].userId].avatar;
+                        }
+                        self.$forceUpdate();
+                    });
             });
     },
     loadContestProblem: function () {
@@ -169,6 +185,29 @@ component.methods = {
             })
             .catch(err => {
                 app.notification('error', '比赛语言设置失败', err.responseJSON.msg);
+            });
+    },
+    addReferee: function () {
+        app.notification('pending', '正在添加比赛裁判');
+        qv.put('/api/contest/' + this.id + '/claim/' + $('#txtUsername').val())
+            .then((x) => {
+                app.notification('succeeded', '比赛裁判添加成功', x.msg);
+                $('#txtUsername').val('');
+                this.claimView.refresh();
+            })
+            .catch(err => {
+                app.notification('error', '裁判添加失败', err.responseJSON.msg);
+            });
+    },
+    removeReferee: function (username) {
+        app.notification('pending', '正在删除比赛裁判');
+        qv.delete('/api/contest/' + this.id + '/claim/' + username)
+            .then((x) => {
+                app.notification('succeeded', '比赛裁判删除成功', x.msg);
+                this.claimView.refresh();
+            })
+            .catch(err => {
+                app.notification('error', '裁判删除失败', err.responseJSON.msg);
             });
     }
 };

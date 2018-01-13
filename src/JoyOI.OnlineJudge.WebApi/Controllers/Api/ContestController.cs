@@ -539,24 +539,37 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result(ret);
         }
 
-        [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim")]
-        public async Task<IActionResult> PutClaims(string contestId, [FromServices]ContestExecutorFactory cef, [FromBody] IdentityUserClaim<Guid> value, CancellationToken token)
+        [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> PutClaims(string contestId, string username, [FromServices]ContestExecutorFactory cef, CancellationToken token)
         {
             var ce = cef.Create(contestId);
             if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
-            else if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == value.UserId, token))
+            var user = await User.Manager.FindByNameAsync(username);
+            if (await DB.UserClaims.AnyAsync(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == user.Id, token))
             {
                 return Result(400, "Already exists");
             }
             else
             {
+                if (user == null)
+                {
+                    return Result(404, "User is not found");
+                }
+                else if (!(IsGroupRequest() && await HasPermissionToGroupAsync(token) && await DB.GroupMembers.AnyAsync(x => x.GroupId == CurrentGroup.Id && x.UserId == user.Id && x.Status == GroupMemberStatus.Approved)) && !IsMasterOrHigher)
+                {
+                    return Result(401, user.UserName + " is not a member of your group.");
+                }
+                else if (await DB.UserClaims.Where(x => x.ClaimType == Constants.ContestEditPermission && x.ClaimValue == contestId).CountAsync(token) >= 5)
+                {
+                    return Result(400, "Max 5 referees in a contest.");
+                }
                 DB.UserClaims.Add(new IdentityUserClaim<Guid>
                 {
                     ClaimType = Constants.ContestEditPermission,
-                    UserId = value.UserId,
+                    UserId = user.Id,
                     ClaimValue = contestId
                 });
                 await DB.SaveChangesAsync(token);
@@ -564,26 +577,29 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
         }
 
-        [HttpPut("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{userId:Guid}")]
-        public async Task<IActionResult> DeleteClaim(Guid userId, string contestId, [FromServices] ContestExecutorFactory cef, CancellationToken token)
+        [HttpDelete("{contestId:regex(^[[a-zA-Z0-9-_]]{{4,128}}$)}/claim/{username:regex(^[[\u3040-\u309F\u30A0-\u30FF\u4e00-\u9fa5A-Za-z0-9_-]]{{4,128}}$)}")]
+        public async Task<IActionResult> DeleteClaim(string username, string contestId, [FromServices] ContestExecutorFactory cef, CancellationToken token)
         {
             var ce = cef.Create(contestId);
             if (!ce.HasPermissionToContest())
             {
                 return Result(401, "No permission");
             }
-            else if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == userId, token))
+
+            var user = await User.Manager.FindByNameAsync(username);
+
+            if (!await DB.UserClaims.AnyAsync(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == user.Id, token))
             {
                 return Result(404, "Claim not found");
             }
-            else if (userId == User.Current.Id)
+            else if (username == User.Current.UserName)
             {
                 return Result(400, "Cannot remove yourself");
             }
             else
             {
                 await DB.UserClaims
-                    .Where(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == userId)
+                    .Where(x => x.ClaimValue == contestId && x.ClaimType == Constants.ContestEditPermission && x.UserId == user.Id)
                     .DeleteAsync(token);
 
                 return Result(200, "Delete succeeded");
