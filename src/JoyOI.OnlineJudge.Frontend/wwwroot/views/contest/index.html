@@ -56,7 +56,7 @@
                 <div class="area-item">
                     <div v-html="$root.marked(body)" class="markdown-body"></div>
                     <div class="contest-referee">
-                        <div class="contest-referee-item">比赛裁判: </div>
+                        <div class="contest-referee-label">比赛裁判: </div>
                         <div class="contest-referee-item" v-for="x in referees">
                             <img v-bind:src="x.avatarUrl" class="contest-referee-item-avatar" />
                             <router-link v-bind:class="x.roleClass" class="contest-referee-item-name" :to="{ name: '/user/:username', path: '/user/' + x.username, params: { 'username': x.username } }">
