@@ -8,6 +8,7 @@
         end: null,
         type: null,
         claims: [],
+        referees: [],
         problems: [],
         sessionView: null,
         session: {
@@ -77,10 +78,24 @@ component.methods = {
                     app.notification('error', '获取题目信息失败', err.responseJSON.msg);
                 }
             });
+
+        var self = this;
         qv.createView('/api/contest/' + this.id + '/claim/all')
             .fetch(x => {
-                this.claims = x.data;
-            });
+                self.claims = x.data;
+                self.referees = x.data.map(y => {
+                    return { userId: y.userId };
+                });
+                app.lookupUsers({ userIds: self.referees.map(y => y.userId) })
+                    .then(() => {
+                        for (var i = 0; i < self.referees.length; i++) {
+                            self.referees[i].username = app.lookup.user[self.referees[i].userId].name;
+                            self.referees[i].roleClass = app.lookup.user[self.referees[i].userId].class;
+                            self.referees[i].avatarUrl = app.lookup.user[self.referees[i].userId].avatar;
+                        }
+                        self.$forceUpdate();
+                    });
+                });
     },
     loadContestProblem: function () {
         var self = this;

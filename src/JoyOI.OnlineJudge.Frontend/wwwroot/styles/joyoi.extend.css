@@ -2029,3 +2029,37 @@ dd {
 .margin-bottom-none {
     margin-bottom: 0;
 }
+
+.contest-referee {
+    font-size: 12px;
+    height: 40px;
+    margin: 0 -25px -25px -25px;
+    padding: 0 25px;
+    border-top: 1px solid #ddd;
+}
+
+.contest-referee-item, .contest-referee-label {
+    float: left;
+    height: 42px;
+    line-height: 40px;
+    vertical-align: top;
+    margin-right: 10px;
+}
+
+.contest-referee-label {
+    color: #888;
+}
+
+    .contest-referee-item-avatar {
+        width: 20px;
+        height: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+        float: left;
+    }
+
+.contest-referee-item-name {
+    float: left;
+}
