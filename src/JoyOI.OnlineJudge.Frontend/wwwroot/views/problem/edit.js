@@ -156,7 +156,7 @@ component.methods = {
     saveStd: function () {
         var self = this;
         app.notification('pending', '正在保存题目');
-        this.validator.code = $('.stdEditor')[0].editor.session.getValue();
+        this.standard.code = $('.stdEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
             standardCode: this.standard.code,
             standardLanguage: this.standard.language
@@ -173,7 +173,7 @@ component.methods = {
     saveRange: function () {
         var self = this;
         app.notification('pending', '正在保存题目');
-        this.validator.code = $('.rangeEditor')[0].editor.session.getValue();
+        this.range.code = $('.rangeEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
             rangeCode: this.range.code,
             rangeLanguage: this.range.language
