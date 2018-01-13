@@ -224,16 +224,23 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
                 {
                     blobs.TryAdd(-3, new[]
                     {
-                    new BlobInfo
-                    {
-                        Id = Guid.Parse(Config["JoyOI:StandardValidatorBlobId"]),
-                        Name = "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage)
-                    }
-                });
+                        new BlobInfo
+                        {
+                            Id = Guid.Parse(Config["JoyOI:StandardValidatorBlobId"]),
+                            Name = "Validator.out"
+                        }
+                    });
                 }
                 else
                 {
-                    // TODO: Special Judge
+                    blobs.TryAdd(-3, new[]
+                    {
+                        new BlobInfo
+                        {
+                            Id = problem.ValidatorBlobId.Value,
+                            Name = "Validator" + Constants.GetBinaryExtension(problem.ValidatorLanguage)
+                        }
+                    });
                 }
 
                 List<TestCase> testCases = null;
