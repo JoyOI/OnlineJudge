@@ -40,7 +40,7 @@
                 <div class="area-item dark" v-if="code">
                     <div class="area-title">选手代码 ({{ language }})</div>
                     <div class="code-box-outer">
-                        <pre class="code-box">{{ code }}</pre>
+                        <pre class="code-box judge-code" v-bind:data-language="language">{{ code }}</pre>
                     </div>
                 </div>
             </div>

@@ -50,53 +50,50 @@ component.created = function () {
     var self = this;
     self.problemView = qv.createView('/api/problem/' + router.history.current.params.id);
     self.problemView.fetch(x => {
-            self.title = x.data.title;
-            app.links[1].text = x.data.title;
-            app.links[1].to = { name: '/problem/:id', path: '/problem/' + router.history.current.params.id, params: { id: router.history.current.params.id } };
-            self.timeLimitationPerCaseInMs = x.data.timeLimitationPerCaseInMs;
-            self.memoryLimitationPerCaseInByte = x.data.memoryLimitationPerCaseInByte;
-            self.body = x.data.body;
-            self.difficulty = x.data.difficulty;
-            self.source = x.data.source;
-            self.isVisible = x.data.isVisible;
-            self.validator.code = x.data.validatorCode;
-            self.validator.language = x.data.validatorLanguage || app.preferences.language;
-            self.validator.error = x.data.validatorError;
-            self.validator.blob = x.data.validatorBlobId;
-            self.standard.code = x.data.standardCode;
-            self.standard.language = x.data.standardLanguage || app.preferences.language;
-            self.standard.error = x.data.standardError;
-            self.standard.blob = x.data.standardBlobId;
-            self.range.code = x.data.RangeCode;
-            self.range.langauge = x.data.rangeLanguage || app.preferences.language;
-            self.range.error = x.data.rangeError;
-            self.range.blob = x.data.rangeBlobId;
-            self.selected = x.data.tags ? x.data.tags.split(',').map(x => x.trim()) : [];
-            try {
-                if ($('.markdown-textbox').length && $('.markdown-textbox')[0].smde) {
-                    $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
-                }
+        self.title = x.data.title;
+        app.links[1].text = x.data.title;
+        app.links[1].to = { name: '/problem/:id', path: '/problem/' + router.history.current.params.id, params: { id: router.history.current.params.id } };
+        self.timeLimitationPerCaseInMs = x.data.timeLimitationPerCaseInMs;
+        self.memoryLimitationPerCaseInByte = x.data.memoryLimitationPerCaseInByte;
+        self.body = x.data.body;
+        self.difficulty = x.data.difficulty;
+        self.source = x.data.source;
+        self.isVisible = x.data.isVisible;
+        self.validator.code = x.data.validatorCode || '';
+        self.validator.language = x.data.validatorLanguage || app.preferences.language;
+        self.validator.error = x.data.validatorError;
+        self.validator.blob = x.data.validatorBlobId;
+        self.standard.code = x.data.standardCode || '';
+        self.standard.language = x.data.standardLanguage || app.preferences.language;
+        self.standard.error = x.data.standardError;
+        self.standard.blob = x.data.standardBlobId;
+        self.range.code = x.data.rangeCode || '';
+        self.range.language = x.data.rangeLanguage || app.preferences.language;
+        self.range.error = x.data.rangeError;
+        self.range.blob = x.data.rangeBlobId;
+        self.selected = x.data.tags ? x.data.tags.split(',').map(x => x.trim()) : [];
+        if ($('.markdown-textbox').length && $('.markdown-textbox')[0].smde) {
+            $('.markdown-textbox')[0].smde.codemirror.setValue(x.data.body);
+        }
 
-                if ($('.spjEditor').length && $('.spjEditor')[0].editor) {
-                    var editor = $('.spjEditor')[0].editor;
-                    editor.setValue(this.validator.code);
-                    editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.validatorLanguage]);
-                }
+        if ($('.spjEditor').length && $('.spjEditor')[0].editor) {
+            $('.spjEditor')[0].editor.setValue(this.validator.code);
+            $('.spjEditor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[self.validator.language]);
+            $('.spjEditor')[0].editor.selection.moveCursorToPosition({ row: 0, column: 0 });
+        }
 
-                if ($('.stdEditor').length && $('.stdEditor')[0].editor) {
-                    var editor = $('.stdEditor')[0].editor;
-                    editor.setvalue(self.standard.code);
-                    editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.standardLanguage]);
-                }
+        if ($('.stdEditor').length && $('.stdEditor')[0].editor) {
+            $('.stdEditor')[0].editor.setValue(self.standard.code);
+            $('.stdEditor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[self.standard.language]);
+            $('.stdEditor')[0].editor.selection.moveCursorToPosition({ row: 0, column: 0 });
+        }
 
-                if ($('.rangeEditor').length && $('.rangeEditor')[0].editor) {
-                    var editor = $('.rangeEditor')[0].editor;
-                    editor.setvalue(self.range.code);
-                    editor.session.setMode('ace/mode/' + syntaxHighlighter[x.data.rangeLanguage]);
-                }
-
-            } catch (ex) { console.error(ex); }
-        });
+        if ($('.rangeEditor').length && $('.rangeEditor')[0].editor) {
+            $('.rangeEditor')[0].editor.setValue(self.range.code);
+            $('.rangeEditor')[0].editor.session.setMode('ace/mode/' + syntaxHighlighter[self.range.language]);
+            $('.rangeEditor')[0].editor.selection.moveCursorToPosition({ row: 0, column: 0 });
+        }
+    });
 
     qv.createView('/api/configuration/problemtags').fetch(x => {
         self.tags = JSON.parse(x.data.value);
@@ -161,8 +158,8 @@ component.methods = {
         app.notification('pending', '正在保存题目');
         this.validator.code = $('.stdEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
-            standardCode: this.validator.code,
-            standardLanguage: this.validator.language
+            standardCode: this.standard.code,
+            standardLanguage: this.standard.language
         })
             .then(x => {
                 app.notification('succeeded', '题目编辑成功', x.msg);
@@ -178,8 +175,8 @@ component.methods = {
         app.notification('pending', '正在保存题目');
         this.validator.code = $('.rangeEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
-            rangeCode: this.validator.code,
-            rangeLanguage: this.validator.language
+            rangeCode: this.range.code,
+            rangeLanguage: this.range.language
         })
             .then(x => {
                 app.notification('succeeded', '题目编辑成功', x.msg);
@@ -227,7 +224,7 @@ component.methods = {
                         .catch(err => {
                             app.notification('error', '上传失败', err.responseJSON.msg);
                         });
-                };  
+                };
                 reader.readAsDataURL(file);
             });
         $('#fileUpload').click();

@@ -281,7 +281,7 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             }
 
             // Put validator into blob collection
-            if (judge.Problem.ValidatorBlobId.HasValue && string.IsNullOrEmpty(judge.Problem.ValidatorError))
+            if (judge.Problem.ValidatorBlobId.HasValue)
             {
                 blobs.Add(new BlobInfo(judge.Problem.ValidatorBlobId.Value, "Validator" + Constants.GetBinaryExtension(judge.Problem.ValidatorLanguage)));
             }

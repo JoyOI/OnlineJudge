@@ -236,6 +236,9 @@ $(document).bind('DOMNodeInserted', function (e) {
             if (!dom.find('.code-box.editable').length) {
                 editor.setReadOnly(true);
             } 
+            if ($(boxes[i]).attr('data-language')) {
+                editor.session.setMode('ace/mode/' + syntaxHighlighter[$(boxes[i]).attr('data-language')]);
+            }
             editor.setAutoScrollEditorIntoView(true);
             editor.setOption("maxLines", 100);
         }

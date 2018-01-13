@@ -67,7 +67,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
 
             if (hack != null)
             {
-                await HandleSingleHackAsync(statemachine.StartedActors.Where(x => x.Tag == "Hackee=" + hack.JudgeStatusId), hack, hack.Status, hack.Status.Problem, null, token);
+                await HandleSingleHackAsync(statemachine.StartedActors, hack, hack.Status, hack.Status.Problem, null, token);
 
                 // Refresh
                 hack = await _db.HackStatuses
@@ -81,7 +81,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                 {
                     var ce = _cef.Create(hack.ContestId);
                     ce.OnHackCompleted(hack);
-                    
+
                     if (ce.PushNotificationSetting == PushNotificationType.All)
                     {
                         _hub.Clients.All.InvokeAsync("ItemUpdated", "hack", hack.Id, hack.Status.UserId, hack.Result.ToString(), hack.Status.ProblemId);
@@ -125,29 +125,39 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
 
             if (actors.Count(x => x.Name == "CompareActor") == 0)
             {
-                var runActor = actors.First(x => x.Stage == "GenerateHackeeAnswer");
-                var runner = await _mgmt.ReadBlobAsObjectAsync<Runner>(runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                var rangeValidateActor = actors.FirstOrDefault(x => x.Stage == "ValidateData");
+                var rangeRunner = rangeValidateActor == null ? null : await _mgmt.ReadBlobAsObjectAsync<Runner>(rangeValidateActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
+                var runActor = actors.FirstOrDefault(x => x.Stage == "GenerateHackeeAnswer");
+                var runRunner = runActor == null ? null : await _mgmt.ReadBlobAsObjectAsync<Runner>(runActor.Outputs.Single(x => x.Name == "runner.json").Id, token);
 
-                if (runner.IsTimeout)
+                if (rangeRunner != null && rangeRunner.ExitCode != 0)
+                {
+                    isBadData = true;
+                    sub.TimeUsedInMs = 0;
+                    sub.MemoryUsedInByte = 0;
+                    sub.Result = JudgeResult.Accepted;
+                    sub.Hint = string.Join(Environment.NewLine, rangeValidateActor.Exceptions) + Environment.NewLine + rangeRunner.Error;
+                }
+                else if (runRunner.IsTimeout)
                 {
                     sub.TimeUsedInMs = problem.TimeLimitationPerCaseInMs;
-                    sub.MemoryUsedInByte = runner.PeakMemory;
+                    sub.MemoryUsedInByte = runRunner.PeakMemory;
                     sub.Result = JudgeResult.TimeExceeded;
-                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runRunner.Error;
                 }
-                else if (runner.ExitCode == 139 || runActor.Exceptions.Any(x => x.Contains("May cause by out of memory")) || runner.Error.Contains("std::bad_alloc") || runner.PeakMemory > problem.MemoryLimitationPerCaseInByte)
+                else if (runRunner.ExitCode == 139 || runActor.Exceptions.Any(x => x.Contains("May cause by out of memory")) || runRunner.Error.Contains("std::bad_alloc") || runRunner.PeakMemory > problem.MemoryLimitationPerCaseInByte)
                 {
-                    sub.TimeUsedInMs = runner.UserTime;
+                    sub.TimeUsedInMs = runRunner.UserTime;
                     sub.MemoryUsedInByte = problem.MemoryLimitationPerCaseInByte;
                     sub.Result = JudgeResult.MemoryExceeded;
-                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error;
+                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runRunner.Error;
                 }
-                else if (runner.ExitCode != 0)
+                else if (runRunner.ExitCode != 0)
                 {
-                    sub.TimeUsedInMs = runner.UserTime;
-                    sub.MemoryUsedInByte = runner.PeakMemory;
+                    sub.TimeUsedInMs = runRunner.UserTime;
+                    sub.MemoryUsedInByte = runRunner.PeakMemory;
                     sub.Result = JudgeResult.RuntimeError;
-                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runner.Error + Environment.NewLine + $"User process exited with code { runner.ExitCode }";
+                    sub.Hint = string.Join(Environment.NewLine, runActor.Exceptions) + Environment.NewLine + runRunner.Error + Environment.NewLine + $"User process exited with code { runRunner.ExitCode }";
                 }
             }
             else if (actors.Count(x => x.Name == "CompareActor") > 0)
@@ -197,8 +207,7 @@ namespace JoyOI.OnlineJudge.WebApi.Lib
                     .Where(x => x.ProblemId == problem.Id)
                     .Select(x => x.Id)
                     .ToListAsync(token);
-
-
+                
                 var status = await _db.JudgeStatuses
                     .Include(x => x.SubStatuses)
                     .SingleAsync(x => x.Id == statusId, token);

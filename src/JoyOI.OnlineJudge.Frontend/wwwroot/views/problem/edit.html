@@ -70,7 +70,7 @@
                         <div class="problem-edit-buttons-outer">
                             <a class="code-editor-button" v-on:click="saveSpj()"><i class="fa fa-save"></i> 保存比较器</a>
                             <select class="code-editor-button" v-model="validator.language">
-                                <option v-for="language in languages">{{ language }}</option>
+                                <option v-for="language in languages">{{ validator.language }}</option>
                             </select>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                         <div class="problem-edit-buttons-outer">
                             <a class="code-editor-button" v-on:click="saveStd()"><i class="fa fa-save"></i> 保存标准程序</a>
                             <select class="code-editor-button" v-model="standard.language">
-                                <option v-for="language in languages">{{ language }}</option>
+                                <option v-for="language in languages">{{ standard.language }}</option>
                             </select>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                         <div class="problem-edit-buttons-outer">
                             <a class="code-editor-button" v-on:click="saveRange()"><i class="fa fa-save"></i> 保存数据校验器</a>
                             <select class="code-editor-button" v-model="range.language">
-                                <option v-for="language in languages">{{ language }}</option>
+                                <option v-for="language in languages">{{ range.language }}</option>
                             </select>
                         </div>
                     </div>

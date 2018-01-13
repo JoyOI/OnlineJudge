@@ -5,7 +5,6 @@ component.data = function () {
             statuses: statuses,
             languages: languages,
             hackStatuses: hackStatuses,
-            highlighters: syntaxHighlighter,
             editorActiveTag: 'data',
             isInHackMode: false
         },
@@ -37,32 +36,32 @@ component.created = function () {
     var self = this;
     self.view = qv.createView('/api/judge/' + this.id);
     self.view.fetch(x => {
-            self.code = x.data.code;
-            self.hint = x.data.hint;
-            self.time = x.data.createdTime;
-            self.problem.id = x.data.problemId;
-            self.contestId = x.data.contestId;
-            self.user.id = x.data.userId.substr(0, 8);
-            self.isHackable = x.data.isHackable;
-            self.isRejudgable = x.data.isRejudgable;
-            self.substatuses = x.data.subStatuses.map(y =>
-            {
-                return { hint: y.hint, status: formatJudgeResult(y.result), time: y.timeUsedInMs, memory: y.memoryUsedInByte };
+        self.hint = x.data.hint;
+        self.time = x.data.createdTime;
+        self.problem.id = x.data.problemId;
+        self.contestId = x.data.contestId;
+        self.user.id = x.data.userId.substr(0, 8);
+        self.isHackable = x.data.isHackable;
+        self.isRejudgable = x.data.isRejudgable;
+        self.substatuses = x.data.subStatuses.map(y => {
+            return { hint: y.hint, status: formatJudgeResult(y.result), time: y.timeUsedInMs, memory: y.memoryUsedInByte };
+        });
+        self.language = x.data.language;
+        self.code = x.data.code;
+        qv.createView('/api/user/role', { userids: x.data.userId })
+            .fetch(y => {
+                self.user.username = y.data[x.data.userId].username;
+                self.user.roleClass = ConvertUserRoleToCss(y.data[x.data.userId].role);
+                self.user.avatarUrl = y.data[x.data.userId].avatarUrl;
             });
-            self.language = x.data.language;
-            qv.createView('/api/user/role', { userids: x.data.userId })
-                .fetch(y =>
-                {
-                    self.user.username = y.data[x.data.userId].username;
-                    self.user.roleClass = ConvertUserRoleToCss(y.data[x.data.userId].role);
-                    self.user.avatarUrl = y.data[x.data.userId].avatarUrl;
-                });
 
-            qv.createView('/api/problem/title', { problemids: self.problem.id })
-                .fetch(y =>
-                {
-                    self.problem.title = y.data[self.problem.id].title;
-                })
+        qv.createView('/api/problem/title', { problemids: self.problem.id })
+            .fetch(y => {
+                self.problem.title = y.data[self.problem.id].title;
+            })
+
+        var mode = syntaxHighlighter[self.language];
+        var dom = $('.judge-code');
     })
         .catch(err => {
             if (err.responseJSON.code == 404) {
@@ -104,21 +103,6 @@ component.computed = {
             mem = Math.max(this.substatuses[i].memory, mem);
         }
         return mem;
-    }
-};
-
-component.watch = {
-    language: function (val) {
-        var mode = this.control.highlighters[val];
-        var dom = $('.code-box-outer .code-box');
-        if (!dom.length || !dom[0].editor) return;
-        dom[0].editor.session.setMode('ace/mode/' + mode);
-    },
-    code: function (val) {
-        var dom = $('.code-box-outer .code-box');
-        if (!dom.length || !dom[0].editor) return;
-        dom[0].editor.setValue(val);
-        dom[0].editor.selection.moveCursorToPosition({ row: 0, column: 0 });
     }
 };
 
