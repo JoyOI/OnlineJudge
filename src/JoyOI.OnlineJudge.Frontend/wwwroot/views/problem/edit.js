@@ -262,6 +262,9 @@ component.methods = {
                     app.notification('error', '删除失败', err.responseJSON.msg);
                 });
         }
+    },
+    setTimeout: function (func, time) {
+        return setTimeout(func, time);
     }
 };
 

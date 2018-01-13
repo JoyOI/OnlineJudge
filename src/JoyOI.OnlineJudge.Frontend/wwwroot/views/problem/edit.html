@@ -66,7 +66,7 @@
                         <div v-html="$root.marked(validator.error)"></div>
                     </div>
                     <div class="code-box-outer">
-                        <pre class="code-box editable spjEditor">{{ validator.code }}</pre>
+                        <pre class="code-box editable spjEditor" v-bind:data-language="validator.language">{{ validator.code }}</pre>
                         <div class="problem-edit-buttons-outer">
                             <a class="code-editor-button" v-on:click="saveSpj()"><i class="fa fa-save"></i> 保存比较器</a>
                             <select class="code-editor-button" v-model="validator.language">
@@ -82,7 +82,7 @@
                         <div v-html="$root.marked(standard.error)"></div>
                     </div>
                     <div class="code-box-outer">
-                        <pre class="code-box editable stdEditor">{{ standard.code }}</pre>
+                        <pre class="code-box editable stdEditor" v-bind:data-language="standard.language">{{ standard.code }}</pre>
                         <div class="problem-edit-buttons-outer">
                             <a class="code-editor-button" v-on:click="saveStd()"><i class="fa fa-save"></i> 保存标准程序</a>
                             <select class="code-editor-button" v-model="standard.language">
@@ -98,7 +98,7 @@
                         <div v-html="$root.marked(range.error)"></div>
                     </div>
                     <div class="code-box-outer">
-                        <pre class="code-box editable rangeEditor">{{ range.code }}</pre>
+                        <pre class="code-box editable rangeEditor" v-bind:data-language="range.language">{{ range.code }}</pre>
                         <div class="problem-edit-buttons-outer">
                             <a class="code-editor-button" v-on:click="saveRange()"><i class="fa fa-save"></i> 保存数据校验器</a>
                             <select class="code-editor-button" v-model="range.language">
@@ -212,21 +212,21 @@
                 </a>
                 <a class="sidebar-section-button"
                    v-if="source === 'Local'"
-                   v-on:click="active = 'spj'"
+                   v-on:click="active=''; setTimeout(function(){ active = 'spj'; }, 150)"
                    v-bind:class="{ active: active === 'spj' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>特殊比较器</span>
                 </a>
                 <a class="sidebar-section-button"
                    v-if="source === 'Local'"
-                   v-on:click="active = 'std'"
+                   v-on:click="active=''; setTimeout(function(){ active = 'std'; }, 150)"
                    v-bind:class="{ active: active === 'std' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>标准程序</span>
                 </a>
                 <a class="sidebar-section-button"
                    v-if="source === 'Local'"
-                   v-on:click="active = 'range'"
+                   v-on:click="active=''; setTimeout(function(){ active = 'range'; }, 150)"
                    v-bind:class="{ active: active === 'range' }">
                     <i class="fa fa-file-code-o"></i>
                     <span>数据校验器</span>
