@@ -38,7 +38,8 @@
         tags: [],
         selected: [],
         languages: languages,
-        testCaseView: null
+        testCaseView: null,
+        problemView: null
     }
 };
 
@@ -47,7 +48,8 @@ component.created = function () {
     app.links = [{ text: '题目列表', to: '/problem' }, { text: '未知题目', to: '/problem' }];
 
     var self = this;
-    qv.createView('/api/problem/' + router.history.current.params.id).fetch(x => {
+    self.problemView = qv.createView('/api/problem/' + router.history.current.params.id);
+    self.problemView.fetch(x => {
             self.title = x.data.title;
             app.links[1].text = x.data.title;
             app.links[1].to = { name: '/problem/:id', path: '/problem/' + router.history.current.params.id, params: { id: router.history.current.params.id } };
@@ -138,6 +140,7 @@ component.methods = {
             });
     },
     saveSpj: function () {
+        var self = this;
         app.notification('pending', '正在保存题目');
         this.validator.code = $('.spjEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
@@ -146,12 +149,15 @@ component.methods = {
         })
             .then(x => {
                 app.notification('succeeded', '题目编辑成功', x.msg);
+                self.problemView.refresh();
             })
             .catch(err => {
                 app.notification('error', '题目编辑失败', err.responseJSON.msg);
+                self.problemView.refresh();
             });
     },
     saveStd: function () {
+        var self = this;
         app.notification('pending', '正在保存题目');
         this.validator.code = $('.stdEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
@@ -160,12 +166,15 @@ component.methods = {
         })
             .then(x => {
                 app.notification('succeeded', '题目编辑成功', x.msg);
+                self.problemView.refresh();
             })
             .catch(err => {
                 app.notification('error', '题目编辑失败', err.responseJSON.msg);
+                self.problemView.refresh();
             });
     },
     saveRange: function () {
+        var self = this;
         app.notification('pending', '正在保存题目');
         this.validator.code = $('.rangeEditor')[0].editor.session.getValue();
         qv.patch('/api/problem/' + this.id, {
@@ -174,9 +183,11 @@ component.methods = {
         })
             .then(x => {
                 app.notification('succeeded', '题目编辑成功', x.msg);
+                self.problemView.refresh();
             })
             .catch(err => {
                 app.notification('error', '题目编辑失败', err.responseJSON.msg);
+                self.problemView.refresh();
             });
     },
     triggerTag: function (tag) {
