@@ -346,7 +346,7 @@
             var cachedUsers = Object.getOwnPropertyNames(app.lookup.user);
             var uncachedUsers = (query.userIds ? query.userIds : query.usernames).filter(x => !cachedUsers.some(y => y == x));
             if (uncachedUsers.length) {
-                return qv.get('/api/user/role', query.userIds ? { userIds: query.userIds.toString() } : { usernames: query.usernames.toString() })
+                return qv.post('/api/user/role', query.userIds ? { userIds: query.userIds.toString() } : { usernames: query.usernames.toString() })
                     .then(result => {
                         for (var i in result.data) {
                             var x = result.data[i];

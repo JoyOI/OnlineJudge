@@ -82,11 +82,24 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
         }
 
         [HttpGet("role")]
+        [HttpPost("role")]
         public async Task<IActionResult> GetUserRoles(string usernames, string userids, CancellationToken token)
         {
             object ret = null;
             var roles = await DB.Roles.ToDictionaryAsync(x => x.Id, x => x.Name, token);
 
+            if (Request.Method.ToLower() == "post")
+            {
+                var request = JsonConvert.DeserializeObject<Dictionary<string, string>>(RequestBody);
+                if (request.Keys.Any(x => x.ToLower() == "usernames"))
+                {
+                    usernames = request[request.Keys.Single(x => x.ToLower() == "usernames")];
+                }
+                else if (request.Keys.Any(x => x.ToLower() == "userids"))
+                {
+                    userids = request[request.Keys.Single(x => x.ToLower() == "userids")];
+                }
+            }
             if (!string.IsNullOrWhiteSpace(usernames))
             {
                 var users = usernames.Split(',').Select(x => x.Trim());

@@ -72,6 +72,9 @@
     get: function (endpoint, params) {
         return this.request(endpoint, 'GET', params);
     },
+    post: function (endpoint, params) {
+        return this.request(endpoint, 'POST', params);
+    },
     patch: function (endpoint, params) {
         return this.request(endpoint, 'POST', params);
     },
