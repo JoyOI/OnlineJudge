@@ -12,7 +12,13 @@
                 <thead>
                     <tr>
                         <th class="problem-list-status" v-if="$root.user.isSignedIn">状态</th>
-                        <th class="problem-list-title">题目</th>
+                        <th class="problem-list-title">
+                            <a v-on:click="titleFiltering = true;" v-if="!titleFiltering">{{ request.title || '题目' }} <i class="fa fa-filter"></i></a>
+                            <div v-if="titleFiltering">
+                                <input type="text" class="form-control" id="txtSearchProblemTitle" placeholder="题目名称" style="display: inline-block; width: calc(100% - 65px);" />
+                                <a v-on:click="setSearchTitle();" class="sidebar-button" style="text-align: center; width: 60px; height: 34px; line-height: 34px; display: inline-block">过滤</a>
+                            </div>
+                        </th>
                         <th>提交</th>
                         <th>AC%</th>
                         <th>难度</th>
@@ -85,16 +91,6 @@
                             </li>
                         </ul>
                     </div>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-section-header">
-                    <h1>搜索题目</h1>
-                </div>
-                <div class="sidebar-section-body">
-                    <p><input type="text" class="form-control" id="txtSearchProblemTitle" placeholder="题目名称或ID" /></p>
-                    <p><a class="sidebar-button" v-on:click="setSearchTitle()"><i class="fa fa-search"></i> 搜索</a></p>
                 </div>
             </div>
 
