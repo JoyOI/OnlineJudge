@@ -11,6 +11,7 @@
             title: null
         },
         view: null,
+        titleFiltering: false,
         result: []
     };
 }
@@ -65,6 +66,7 @@ component.methods = {
         }
     },
     setSearchTitle: function () {
+        this.titleFiltering = false;
         this.request.title = $('#txtSearchProblemTitle').val();
     },
     loadProblems: function () {
