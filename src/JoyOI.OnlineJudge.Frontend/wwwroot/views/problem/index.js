@@ -19,6 +19,7 @@ component.data = function () {
         isVisible: null,
         isSpecialJudge: null,
         claims: [],
+        coin: null,
         control: {
             editorActiveTag: 'code',
             isInEditMode: false,
@@ -150,6 +151,11 @@ component.created = function () {
     qv.createView('/api/problem/' + router.history.current.params.id + '/testcase/all').fetch(x => {
         self.testCases = x.data;
     });
+
+    qv.get('/api/user/session/coin')
+        .then(x => {
+            this.coin = x.data;
+        });
 
     this.isSpecialJudge = false;
     this.form.language = app.preferences.language;

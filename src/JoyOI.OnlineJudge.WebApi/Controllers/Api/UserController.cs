@@ -165,6 +165,19 @@ namespace JoyOI.OnlineJudge.WebApi.Controllers.Api
             return Result<dynamic>(ret);
         }
 
+        [HttpGet("session/coin")]
+        public async Task<IActionResult> GetSessionCoin([FromServices] JoyOIUC UC, CancellationToken token)
+        {
+            if (User.IsSignedIn())
+            {
+                return Result((await UC.GetExtensionCoinAsync(User.Current.OpenId, null, "coin")).data);
+            }
+            else
+            {
+                return Result(401, "No Login");
+            }
+        }
+
         [HttpPut("session")]
         public async Task<IActionResult> PutSession([FromServices] JoyOIUC UC, CancellationToken token)
         {
