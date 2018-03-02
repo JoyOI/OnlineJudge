@@ -70,7 +70,7 @@
                                             </div>
                                             <div class="group-main">
                                                 <div class="group-main-inner">
-                                                    <a target="_blank" class="group-name" v-bind:href="x.domain ? ('//' + x.domain) : ($root.hosts.group.replace('{GROUPID}', x.id))">{{ x.name }}</a>
+                                                    <a target="_blank" class="group-name" v-bind:href="(x.domain ? ('//' + x.domain) : ($root.hosts.group.replace('{GROUPID}', x.id))) + '?from=main'">{{ x.name }}</a>
                                                     <div>
                                                         <template v-if="!$root.user.isSignedIn || $root.user.profile.username !== username">
                                                             <span v-if="x.joinMethod === 'Everyone'" class="group-open">任何人可加入</span>

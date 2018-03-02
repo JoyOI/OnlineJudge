@@ -56,12 +56,10 @@
                             <li class="home" v-if="!isGroup"><a v-bind:href="hosts.forum" target="_blank">论坛</a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li v-if="user.isSignedIn && !isGroup"><a v-bind:href="hosts.blog.replace('{USERNAME}', user.profile.username) + '/admin/login'" target="_blank">我的空间</a></li>
                             <li v-if="user.isSignedIn">
                                 <router-link :to="{ name: '/user/:username', path: '/user/' + user.profile.username, params: { 'username': user.profile.username } }">
-                                    我的资料
+                                    {{ $root.user.profile.username }}
                                 </router-link>
-                            <li v-if="user.isSignedIn"><a v-bind:href="hosts.uc + '/account/login'" target="_blank"> 用户中心</a></li>
                             <li v-if="isGroup && groupSession.isMaster">
                                 <router-link :to="{ name: '/group/manage', path: '/group/manage' }">
                                     管理团队

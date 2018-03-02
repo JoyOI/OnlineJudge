@@ -1,5 +1,6 @@
 ﻿component.data = function () {
     return {
+        from: null,
         contests: [],
         threads: [],
         carousel: {
@@ -17,6 +18,9 @@ component.created = function () {
     if (!app.isGroup) {
         this.loadThreads();
         this.startCarousel();
+    }
+    if (app.isGroup && this.from === 'main' && !app.user.isSignedIn) {
+        app.toggleLoginBox();
     }
 }
 

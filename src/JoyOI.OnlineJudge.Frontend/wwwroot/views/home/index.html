@@ -55,6 +55,27 @@
         </div>
 
         <div class="col-md-3 title-align">
+            <div class="sidebar-section all-buttons" v-if="!$root.isGroup">
+                <a class="sidebar-section-button"
+                   v-bind:href="$root.hosts.uc + '/account/login'"
+                   target="_blank">
+                    <i class="fa fa-key"></i>
+                    <span>账号中心</span>
+                </a>
+                <a class="sidebar-section-button"
+                   v-bind:href="$root.hosts.blog.replace('{USERNAME}', $root.user.profile.username) + '/admin/login'"
+                   target="_blank">
+                    <i class="fa fa-home"></i>
+                    <span>我的博客</span>
+                </a>
+                <a class="sidebar-section-button"
+                   href="http://help.joyoi.cn"
+                   target="_blank">
+                    <i class="fa fa-question-circle"></i>
+                    <span>帮助中心</span>
+                </a>
+            </div>
+
             <div class="sidebar-section">
                 <div class="sidebar-section-header">
                     <h1>转到题目</h1>
