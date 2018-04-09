@@ -70,7 +70,7 @@ component.computed = {
     hasPermissionToEdit: function () {
         return this.$root.user.profile.role == 'Root'
             || this.$root.user.profile.root === 'Master'
-            || this.claims.some(x => x.toLowerCase() === this.$root.user.profile.id.toLowerCase());
+            || this.$root.user.isSignedIn && this.claims.some(x => x.toLowerCase() === this.$root.user.profile.id.toLowerCase());
     },
     cookieString: function () {
         return encodeURIComponent(document.cookie);
